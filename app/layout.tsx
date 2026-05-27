@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { getDefaultMetadata } from "@/lib/utils/seo";
 import { getSession } from "@/lib/auth/session";
+import { ThemeScript } from "@/components/layout/ThemeScript";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,21 +36,7 @@ export default async function RootLayout({
     >
       <head>
         {/* Theme init — runs before paint to prevent dark/light flash */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var stored = localStorage.getItem('theme');
-                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  if (stored === 'dark' || (!stored && prefersDark)) {
-                    document.documentElement.classList.add('dark');
-                  }
-                } catch(e) {}
-              })();
-            `,
-          }}
-        />
+        <ThemeScript />
       </head>
       <body style={{ fontFamily: "var(--font-inter, var(--font-sans))" }} suppressHydrationWarning>
         <Header session={session} />
@@ -61,3 +48,4 @@ export default async function RootLayout({
     </html>
   );
 }
+
