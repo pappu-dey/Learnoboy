@@ -3,6 +3,8 @@ import { getAllArticleSlugs } from "@/lib/services/articleService";
 import { getAllCategories } from "@/lib/services/categoryService";
 import { BASE_URL } from "@/lib/utils/seo";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const [slugs, categories] = await Promise.all([
