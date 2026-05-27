@@ -56,18 +56,7 @@ declare global {
   var __mongooseCache: MongooseCache | undefined;
 }
 
-// ─── Guard: MONGODB_URI must be present at startup ───────────────────────────
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-  throw new Error(
-    "[mongodb] MONGODB_URI is not defined.\n" +
-    "  • Development : add it to .env.local\n" +
-    "  • Production  : add it to your Vercel / hosting environment variables\n" +
-    "  Expected format: mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/<db>?retryWrites=true&w=majority"
-  );
-}
 
 // ─── Bootstrap the global cache ──────────────────────────────────────────────
 
@@ -174,6 +163,17 @@ function registerConnectionListeners() {
  * ```
  */
 export async function connectDB(): Promise<Mongoose> {
+  const MONGODB_URI = process.env.MONGODB_URI;
+
+  if (!MONGODB_URI) {
+    throw new Error(
+      "[mongodb] MONGODB_URI is not defined.\n" +
+      "  • Development : add it to .env.local\n" +
+      "  • Production  : add it to your Vercel / hosting environment variables\n" +
+      "  Expected format: mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/<db>?retryWrites=true&w=majority"
+    );
+  }
+
   // ── Fast path: already connected ──────────────────────────────────────────
   if (cache.conn) {
     return cache.conn;
