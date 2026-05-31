@@ -5,7 +5,7 @@ import Author from "@/lib/models/Author";
 import { getSession } from "@/lib/auth/session";
 import { slugify } from "@/lib/utils/slugify";
 
-// PATCH /api/users/[id] — superadmin: update role / approve/reject writer
+// PATCH /api/users/[id] — superadmin: update role / approve/reject/verify writer
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -21,12 +21,31 @@ export async function PATCH(
   await connectDB();
   const update: Record<string, unknown> = {};
 
-  if (body.role) update.role = body.role;
+  if (body.role) {
+    update.role = body.role;
+    // Align writerStatus with role changes
+    if (body.role === "writer") {
+      update.writerStatus = "approved";
+    } else if (body.role === "reader") {
+      update.writerStatus = "none";
+    }
+  }
+
   if (body.writerStatus) {
     update.writerStatus = body.writerStatus;
-    // If approving writer application, promote role too
-    if (body.writerStatus === "approved") update.role = "writer";
-    if (body.writerStatus === "rejected") update.role = "reader";
+    // Align role with writerStatus changes
+    if (body.writerStatus === "approved") {
+      update.role = "writer";
+    } else if (body.writerStatus === "rejected" || body.writerStatus === "needs-review") {
+      // Keep as reader, just update status
+      update.role = "reader";
+    }
+  }
+
+  // Verified Writer Program
+  if (typeof body.isVerified === "boolean") {
+    update.isVerified = body.isVerified;
+    update.verifiedAt = body.isVerified ? new Date() : null;
   }
 
   const user = await User.findByIdAndUpdate(id, update, {
@@ -36,7 +55,7 @@ export async function PATCH(
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
 
   // ── Auto-sync: create/update Author doc when writer is approved ──
-  if (body.writerStatus === "approved" || update.role === "writer") {
+  if (user.writerStatus === "approved" || user.role === "writer") {
     try {
       const baseSlug = slugify(user.name);
       const existingAuthor = await Author.findOne({ email: user.email });
@@ -49,25 +68,61 @@ export async function PATCH(
           slug = `${baseSlug}-${Date.now().toString(36)}`;
         }
 
+        // Copy expertise/qualification from the writerApplication if available
+        const app = user.writerApplication;
+
         await Author.create({
           name: user.name,
           email: user.email,
           slug,
           bio: "",
-          avatar: (user as typeof user & { avatar?: string }).avatar || "",
+          avatar: user.avatar || "",
+          expertise: app?.expertise || [],
+          qualification: app?.qualification || "",
+          company: app?.company || "",
+          experience: app?.experience || 0,
           social: {},
           articleCount: 0,
+          totalViews: 0,
+          userId: user._id,
         });
       } else {
-        // Update avatar in case it changed
-        const avatarVal = (user as typeof user & { avatar?: string }).avatar;
-        if (avatarVal && !existingAuthor.avatar) {
-          await Author.findByIdAndUpdate(existingAuthor._id, { avatar: avatarVal });
+        // Update name, avatar, isVerified and other fields
+        const authorUpdate: Record<string, unknown> = {};
+        if (user.name && user.name !== existingAuthor.name) {
+          authorUpdate.name = user.name;
+        }
+        if (user.avatar && user.avatar !== existingAuthor.avatar) {
+          authorUpdate.avatar = user.avatar;
+        }
+        // Sync verification
+        if (typeof body.isVerified === "boolean") {
+          authorUpdate.isVerified = body.isVerified;
+          authorUpdate.verifiedAt = body.isVerified ? new Date() : null;
+        }
+        if (!existingAuthor.userId) {
+          authorUpdate.userId = user._id;
+        }
+
+        if (Object.keys(authorUpdate).length > 0) {
+          await Author.findByIdAndUpdate(existingAuthor._id, authorUpdate);
         }
       }
     } catch (authorErr) {
       // Non-fatal: log but don't fail the user update
       console.error("[PATCH /api/users/[id]] Author sync failed:", authorErr);
+    }
+  }
+
+  // ── Sync isVerified to Author even if they're already a writer ──
+  if (typeof body.isVerified === "boolean" && user.role === "writer") {
+    try {
+      await Author.findOneAndUpdate(
+        { email: user.email },
+        { isVerified: body.isVerified, verifiedAt: body.isVerified ? new Date() : null }
+      );
+    } catch (err) {
+      console.error("[PATCH /api/users/[id]] Author verification sync failed:", err);
     }
   }
 

@@ -20,9 +20,10 @@ interface Article {
 interface Props {
   articles: Article[];
   status: string;
+  newArticleHref?: string;
 }
 
-export function ArticlesTable({ articles, status }: Props) {
+export function ArticlesTable({ articles, status, newArticleHref }: Props) {
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -83,7 +84,7 @@ export function ArticlesTable({ articles, status }: Props) {
             </p>
             {!search && (
               <Link
-                href="/admin/articles/new"
+                href={newArticleHref || "/admin/articles/new"}
                 className="text-sm mt-2 inline-block hover:underline font-medium"
                 style={{ color: "var(--link-color)" }}
               >

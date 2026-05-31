@@ -114,6 +114,24 @@ export default async function WriterDashboard() {
         </div>
       )}
 
+      {/* Profile completeness banner — shown when author exists but profile is incomplete */}
+      {authorDoc && (!authorDoc.bio || !authorDoc.avatar) && (
+        <div
+          className="flex items-center gap-3 p-4 rounded-2xl border"
+          style={{ background: "rgba(37,99,235,0.05)", borderColor: "rgba(37,99,235,0.2)" }}
+        >
+          <span className="text-2xl">✨</span>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-[var(--link-color)]">Complete your public profile</p>
+            <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+              Add a bio, photo, and social links to make your author profile shine.{" "}
+              <Link href="/writer/profile" className="underline font-medium text-[var(--link-color)]">Complete profile →</Link>
+            </p>
+          </div>
+        </div>
+      )}
+
+
       {/* Stats grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map(({ label, value, icon: Icon, gradient, glow, href }) => (

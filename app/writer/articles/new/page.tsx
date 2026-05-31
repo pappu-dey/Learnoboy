@@ -7,12 +7,16 @@ import Tag from "@/lib/models/Tag";
 import { ArticleForm } from "@/components/admin/ArticleForm";
 import { serializeArray } from "@/lib/utils/serialize";
 import type { IAuthor, ITag } from "@/types";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = { title: "New Article — Writer — Learno-Boy" };
 
 export default async function WriterNewArticlePage() {
   const session = await getSession();
-  if (!session) return null;
+  if (!session) redirect("/login");
+  if (session.role !== "writer" && session.role !== "superadmin") {
+    redirect("/profile");
+  }
 
   await connectDB();
 

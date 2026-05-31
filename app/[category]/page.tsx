@@ -152,18 +152,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             >
               <div className="text-5xl mb-4">📭</div>
               <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
-                No articles yet
+                No articles found
               </h3>
-              <p className="text-[var(--text-secondary)] mb-6 max-w-md mx-auto">
-                We are currently working on articles for this category. Check back soon or create one in the admin dashboard!
+              <p className="text-[var(--text-secondary)] max-w-md mx-auto">
+                We are currently working on articles for this category. Check back soon!
               </p>
-              <Link
-                href="/admin/articles/new"
-                className="inline-flex items-center px-5 py-2.5 rounded-lg font-medium text-white transition-opacity hover:opacity-90"
-                style={{ background: "var(--link-color)" }}
-              >
-                Write an Article
-              </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-16">

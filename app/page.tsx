@@ -40,18 +40,11 @@ export default async function HomePage() {
           >
             <div className="text-5xl mb-4">📚</div>
             <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
-              No articles yet
+              No articles found
             </h2>
-            <p className="text-[var(--text-secondary)] mb-6">
-              Run the seed script to populate sample articles, or create your first article in the admin dashboard.
+            <p className="text-[var(--text-secondary)]">
+              We are currently working on articles. Check back soon!
             </p>
-            <a
-              href="/admin/articles/new"
-              className="inline-flex items-center px-5 py-2.5 rounded-lg font-medium text-white transition-opacity hover:opacity-90"
-              style={{ background: "var(--link-color)" }}
-            >
-              Create First Article
-            </a>
           </div>
         )}
       </div>

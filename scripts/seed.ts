@@ -67,6 +67,27 @@ const Category = mongoose.models.Category || mongoose.model("Category", Category
 const Tag = mongoose.models.Tag || mongoose.model("Tag", TagSchema);
 const Article = mongoose.models.Article || mongoose.model("Article", ArticleSchema);
 
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  passwordHash: { type: String, required: true },
+  role: { type: String, default: "reader" },
+  avatar: { type: String, default: "" },
+  writerStatus: { type: String, default: "none" },
+}, { timestamps: true });
+
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
+
+function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-");
+}
+
 // ---- Seed data ----
 const JS_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><rect width="32" height="32" rx="4" fill="#f7df1e"/><path d="M9.5 24.5c.6 1 1.4 1.7 2.8 1.7 1.6 0 2.6-.8 2.6-2.3V14h-2.3v9.8c0 .7-.3 1-.8 1-.5 0-.8-.3-1.1-.8l-1.2 1.5zm7.8-.4c.7 1.2 1.8 2 3.6 2 1.9 0 3.3-1 3.3-2.7 0-1.6-.9-2.3-2.6-3.1l-.6-.3c-.9-.4-1.3-.7-1.3-1.3 0-.5.4-.9 1-.9.6 0 1 .3 1.4.9l1.6-1c-.7-1.2-1.7-1.7-3-1.7-1.8 0-3 1.1-3 2.7 0 1.6.9 2.4 2.4 3.1l.6.3c1 .5 1.5.8 1.5 1.5 0 .6-.5 1-1.3 1-.9 0-1.5-.5-1.9-1.3l-1.7 1z" fill="#323330"/></svg>`;
 
@@ -95,26 +116,10 @@ const TAGS = [
   { name: "Tutorial", slug: "tutorial" },
   { name: "Interview Prep", slug: "interview-prep" },
   { name: "Best Practices", slug: "best-practices" },
+  { name: "Automate", slug: "automate" },
 ];
 
-const AUTHORS = [
-  {
-    name: "Alex Kumar",
-    slug: "alex-kumar",
-    bio: "Senior software engineer with 10 years of experience. Loves teaching complex topics simply.",
-    avatar: "https://api.dicebear.com/8.x/avataaars/svg?seed=alex",
-    email: "alex@learnoboy.dev",
-    social: { twitter: "alexkumar", github: "alexkumar" },
-  },
-  {
-    name: "Priya Sharma",
-    slug: "priya-sharma",
-    bio: "Full-stack developer and technical writer. Specializes in JavaScript and React.",
-    avatar: "https://api.dicebear.com/8.x/avataaars/svg?seed=priya",
-    email: "priya@learnoboy.dev",
-    social: { github: "priyasharma" },
-  },
-];
+
 
 const ARTICLE_CONTENT = `## Introduction
 
@@ -210,12 +215,6 @@ async function getData() {
 JavaScript is a powerful and versatile language. By mastering its fundamentals, you'll be ready to build modern web applications and dive deeper into frameworks like React, Vue, or Node.js.
 
 > **Pro Tip:** Practice daily coding challenges on platforms like LeetCode to reinforce your JavaScript skills!
-
-## Further Reading
-
-- [MDN Web Docs — JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-- [You Don't Know JS](https://github.com/getify/You-Dont-Know-JS)
-- [JavaScript.info](https://javascript.info)
 `;
 
 async function seed() {
@@ -241,9 +240,42 @@ async function seed() {
     const insertedTags = await Tag.insertMany(TAGS);
     console.log(`✅ Inserted ${insertedTags.length} tags`);
 
-    // Insert authors
-    const insertedAuthors = await Author.insertMany(AUTHORS);
-    console.log(`✅ Inserted ${insertedAuthors.length} authors`);
+    // ---- Find real users with role 'writer' or 'superadmin' ----
+    let writers = await User.find({ role: { $in: ["writer", "superadmin"] } }).lean();
+    if (writers.length === 0) {
+      console.log("👤 No writer/superadmin found. Creating default admin...");
+      const defaultAdmin = await User.create({
+        name: "Admin LearnoBoy",
+        email: process.env.SUPERADMIN_EMAIL || "admin@learnoboy.dev",
+        passwordHash: "$2a$12$D37NnQ.F53z9YpU8vD.nkuv.wZ6eS3m/WkL0sBlybWlK5g4.eO/eq", // pre-hashed "password123"
+        role: "superadmin",
+        writerStatus: "approved",
+      });
+      writers = [defaultAdmin.toObject()];
+    }
+
+    const authorsToInsert = [];
+    for (const user of writers) {
+      const baseSlug = slugify(user.name);
+      let slug = baseSlug;
+      let count = 1;
+      while (await Author.findOne({ slug })) {
+        slug = `${baseSlug}-${count++}`;
+      }
+
+      authorsToInsert.push({
+        name: user.name,
+        email: user.email,
+        slug,
+        bio: user.role === "superadmin" ? "Super Admin and content moderator." : "Technical Writer.",
+        avatar: user.avatar || `https://api.dicebear.com/8.x/avataaars/svg?seed=${encodeURIComponent(user.name)}`,
+        social: {},
+        articleCount: 0,
+      });
+    }
+
+    const insertedAuthors = await Author.insertMany(authorsToInsert);
+    console.log(`✅ Created ${insertedAuthors.length} authors from real users`);
 
     // Insert sample articles
     const jsCategory = insertedCategories.find((c) => c.slug === "javascript");
@@ -274,8 +306,8 @@ async function seed() {
         title: "Python for Data Science: Getting Started with NumPy",
         slug: "python-data-science-numpy-guide",
         category: pyCategory?._id,
-        author: insertedAuthors[1]._id,
-        tags: [insertedTags[0]._id, insertedTags[2]._id],
+        author: insertedAuthors[1]?._id || insertedAuthors[0]._id,
+        tags: [insertedTags[0]._id, insertedTags[2]._id, insertedTags[5]._id],
         content: ARTICLE_CONTENT.replace(/JavaScript/g, "Python").replace(/javascript/g, "python"),
         excerpt: "Explore NumPy, the fundamental package for scientific computing in Python. Learn arrays, operations, and data manipulation.",
         coverImage: "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=1200&q=80",
@@ -312,7 +344,7 @@ async function seed() {
         title: "React Hooks Deep Dive: useState, useEffect, and Custom Hooks",
         slug: "react-hooks-deep-dive-usestate-useeffect-custom-hooks",
         category: jsCategory?._id,
-        author: insertedAuthors[1]._id,
+        author: insertedAuthors[1]?._id || insertedAuthors[0]._id,
         tags: [insertedTags[1]._id, insertedTags[4]._id],
         content: ARTICLE_CONTENT,
         excerpt: "Master React Hooks with a comprehensive deep dive into useState, useEffect, useRef, and how to build powerful custom hooks.",

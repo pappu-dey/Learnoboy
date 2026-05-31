@@ -29,7 +29,10 @@ export async function PATCH(
   }
 
   const body = await req.json();
-  const allowed = ["bio", "avatar", "social", "name"];
+  const allowed = [
+    "bio", "avatar", "bannerImage", "social", "name",
+    "location", "qualification", "company", "experience", "expertise",
+  ];
   const update: Record<string, unknown> = {};
 
   for (const key of allowed) {
@@ -42,6 +45,10 @@ export async function PATCH(
   if (session.role === "superadmin") {
     if (body.slug !== undefined) update.slug = body.slug;
     if (body.email !== undefined) update.email = body.email;
+    if (typeof body.isVerified === "boolean") {
+      update.isVerified = body.isVerified;
+      update.verifiedAt = body.isVerified ? new Date() : null;
+    }
   }
 
   const updated = await Author.findByIdAndUpdate(id, update, { new: true });

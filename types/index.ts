@@ -8,15 +8,38 @@ export interface IAuthor {
   slug: string;
   bio: string;
   avatar: string;
+  bannerImage?: string;
   email: string;
+  location?: string;
+  qualification?: string;
+  company?: string;
+  experience?: number;
+  expertise: string[];
   social?: {
     twitter?: string;
     github?: string;
     linkedin?: string;
     website?: string;
+    portfolio?: string;
   };
+  isVerified: boolean;
+  verifiedAt?: string;
   articleCount: number;
+  totalViews: number;
+  userId?: string;
   createdAt: string;
+}
+
+export interface IWriterApplication {
+  fullName: string;
+  email: string;
+  qualification: string;
+  expertise: string[];
+  whyWrite: string;
+  college?: string;
+  company?: string;
+  experience?: number;
+  appliedAt: string;
 }
 
 export interface ICategory {
@@ -44,6 +67,13 @@ export interface IArticleSEO {
   ogImage?: string;
 }
 
+export interface IAuthorSnapshot {
+  name: string;
+  slug: string;
+  avatar: string;
+  isVerified: boolean;
+}
+
 export interface IArticle {
   _id: string;
   title: string;
@@ -62,6 +92,7 @@ export interface IArticle {
   createdAt: string;
   updatedAt: string;
   seo?: IArticleSEO;
+  authorSnapshot?: IAuthorSnapshot;
 }
 
 // API Response types
@@ -108,3 +139,29 @@ export interface TocItem {
   text: string;
   level: number;
 }
+
+// Writer Application
+export const EXPERTISE_OPTIONS = [
+  "Web Development",
+  "Machine Learning",
+  "Artificial Intelligence",
+  "Cyber Security",
+  "Networking",
+  "Cloud Computing",
+  "Java",
+  "Python",
+  "C++",
+  "JavaScript",
+  "React",
+  "Next.js",
+  "Data Structures & Algorithms",
+  "Database Management",
+  "Operating Systems",
+  "Mobile Development",
+  "DevOps",
+  "UI/UX Design",
+  "Career Guidance",
+  "Other",
+] as const;
+
+export type ExpertiseOption = (typeof EXPERTISE_OPTIONS)[number];

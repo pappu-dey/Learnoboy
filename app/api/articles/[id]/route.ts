@@ -5,6 +5,7 @@ import {
   deleteArticle,
 } from "@/lib/services/articleService";
 import { calculateReadingTime } from "@/lib/utils/readingTime";
+import { getSession } from "@/lib/auth/session";
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -34,6 +35,14 @@ export async function GET(_request: NextRequest, { params }: Params) {
 
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session || (session.role !== "writer" && session.role !== "superadmin")) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
     const body = await request.json();
 
@@ -68,6 +77,14 @@ export async function PUT(request: NextRequest, { params }: Params) {
 
 export async function DELETE(_request: NextRequest, { params }: Params) {
   try {
+    const session = await getSession();
+    if (!session || (session.role !== "writer" && session.role !== "superadmin")) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
     const deleted = await deleteArticle(id);
 

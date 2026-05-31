@@ -3,14 +3,17 @@ import Link from "next/link";
 import { Clock, Calendar, Eye, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
+import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import type { IArticle, ICategory, IAuthor, ITag } from "@/types";
 import { format } from "date-fns";
+import { ListenButton } from "@/components/article/ListenButton";
 
 interface ArticleHeaderProps {
   article: IArticle;
+  content?: string;
 }
 
-export function ArticleHeader({ article }: ArticleHeaderProps) {
+export function ArticleHeader({ article, content = "" }: ArticleHeaderProps) {
   const category =
     typeof article.category === "object"
       ? (article.category as ICategory)
@@ -75,26 +78,30 @@ export function ArticleHeader({ article }: ArticleHeaderProps) {
       >
         {/* Author */}
         {author && (
-          <div className="flex items-center gap-2.5">
-            {author.avatar ? (
-              <Image
-                src={author.avatar}
-                alt={author.name}
-                width={36}
-                height={36}
-                className="rounded-full object-cover"
-              />
-            ) : (
-              <div
-                className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
-                style={{ background: "linear-gradient(135deg, #2563eb, #60a5fa)" }}
-              >
-                {author.name[0]}
-              </div>
-            )}
+          <Link
+            href={`/author/${author.slug}`}
+            className="flex items-center gap-2.5 hover:opacity-80 transition-opacity group"
+          >
+            <div className="relative w-9 h-9 rounded-full overflow-hidden border border-[var(--border-color)] flex-shrink-0">
+              {author.avatar ? (
+                <Image
+                  src={author.avatar}
+                  alt={author.name}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center" style={{ background: "linear-gradient(135deg, #2563eb, #60a5fa)" }}>
+                  <svg viewBox="0 0 24 24" style={{ width: "55%", height: "55%", fill: "#fff", opacity: 0.9 }}>
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
+                </div>
+              )}
+            </div>
             <div>
-              <p className="text-sm font-semibold text-[var(--text-primary)] leading-none">
+              <p className="text-sm font-semibold text-[var(--text-primary)] leading-none group-hover:text-[var(--link-color)] transition-colors flex items-center gap-1.5">
                 {author.name}
+                {author.isVerified && <VerifiedBadge size="sm" showLabel={false} />}
               </p>
               <div className="flex items-center gap-2 mt-0.5">
                 {(author.social?.twitter || author.social?.github || author.social?.linkedin) && (
@@ -115,7 +122,7 @@ export function ArticleHeader({ article }: ArticleHeaderProps) {
                 )}
               </div>
             </div>
-          </div>
+          </Link>
         )}
 
         {/* Divider */}
@@ -142,6 +149,12 @@ export function ArticleHeader({ article }: ArticleHeaderProps) {
           <Eye size={13} />
           <span>{article.views.toLocaleString()} views</span>
         </div>
+
+        {/* Divider */}
+        <div className="hidden sm:block w-px h-6 bg-[var(--border-color)]" />
+
+        {/* Listen button */}
+        <ListenButton title={article.title} content={content} />
       </div>
 
       {/* Tags */}

@@ -6,10 +6,17 @@ import Tag from "@/lib/models/Tag";
 import { ArticleForm } from "@/components/admin/ArticleForm";
 import { serializeArray } from "@/lib/utils/serialize";
 import type { IAuthor, ITag } from "@/types";
+import { getSession } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = { title: "Create New Article" };
 
 export default async function NewArticlePage() {
+  const session = await getSession();
+  if (!session || session.role !== "superadmin") {
+    redirect("/login");
+  }
+
   let categories: IAuthor[] = [];
   let authors: IAuthor[] = [];
   let tags: ITag[] = [];

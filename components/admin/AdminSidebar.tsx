@@ -11,6 +11,7 @@ import {
   ExternalLink,
   LogOut,
   Users,
+  ClipboardList,
 } from "lucide-react";
 
 const ADMIN_NAV = [
@@ -18,6 +19,7 @@ const ADMIN_NAV = [
   { href: "/admin/articles", icon: BookOpen, label: "Articles", exact: false },
   { href: "/admin/articles/new", icon: PlusCircle, label: "New Article", exact: true },
   { href: "/admin/categories", icon: Layers, label: "Categories", exact: false },
+  { href: "/admin/applications", icon: ClipboardList, label: "Applications", exact: false },
   { href: "/admin/users", icon: Users, label: "Users", exact: false },
 ];
 

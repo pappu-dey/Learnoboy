@@ -31,12 +31,7 @@ export default function LoginPage() {
       }
 
       // Redirect based on role
-      if (data.role === "superadmin" || data.role === "writer") {
-        router.push("/admin");
-      } else {
-        router.push("/");
-      }
-      router.refresh();
+      window.location.href = data.role === "superadmin" || data.role === "writer" ? "/admin" : "/";
     } catch {
       setError("Network error. Please try again.");
     } finally {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getArticles, createArticle } from "@/lib/services/articleService";
 import { calculateReadingTime } from "@/lib/utils/readingTime";
 import { slugify } from "@/lib/utils/slugify";
+import { getSession } from "@/lib/auth/session";
 
 export async function GET(request: NextRequest) {
   try {
@@ -34,6 +35,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session || (session.role !== "writer" && session.role !== "superadmin")) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
 
     // Validate required fields

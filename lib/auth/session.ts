@@ -10,8 +10,16 @@ export type SessionPayload = {
   avatar?: string | null;
 };
 
+const rawSecret = process.env.SESSION_SECRET;
+if (!rawSecret) {
+  console.error(
+    "[session] WARNING: SESSION_SECRET is not set. " +
+    "Authentication will not work correctly in production. " +
+    "Set SESSION_SECRET in your Vercel environment variables."
+  );
+}
 const SECRET = new TextEncoder().encode(
-  process.env.SESSION_SECRET ?? "fallback-secret-change-me"
+  rawSecret ?? "fallback-secret-dev-only-change-in-production"
 );
 
 const COOKIE_NAME = "lb_session";

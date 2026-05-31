@@ -20,6 +20,13 @@ export interface IArticleDocument extends Document {
     canonicalUrl?: string;
     ogImage?: string;
   };
+  /** Denormalized author snapshot for fast rendering without populate */
+  authorSnapshot?: {
+    name: string;
+    slug: string;
+    avatar: string;
+    isVerified: boolean;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,6 +63,12 @@ const ArticleSchema = new Schema<IArticleDocument>(
       metaDescription: { type: String, default: "" },
       canonicalUrl: { type: String, default: "" },
       ogImage: { type: String, default: "" },
+    },
+    authorSnapshot: {
+      name: { type: String, default: "" },
+      slug: { type: String, default: "" },
+      avatar: { type: String, default: "" },
+      isVerified: { type: Boolean, default: false },
     },
   },
   {

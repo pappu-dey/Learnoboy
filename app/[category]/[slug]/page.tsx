@@ -3,12 +3,13 @@ import type { Metadata } from "next";
 import { getArticleBySlug, getRelatedArticles, getAllArticleSlugs } from "@/lib/services/articleService";
 import { ArticleHeader } from "@/components/article/ArticleHeader";
 import { ArticleBody } from "@/components/article/ArticleBody";
+import { AuthorBox } from "@/components/article/AuthorBox";
 import { TableOfContents } from "@/components/article/TableOfContents";
 import { extractTableOfContents } from "@/lib/utils/toc";
 import { RelatedArticles } from "@/components/article/RelatedArticles";
 import { ReadingProgress } from "@/components/article/ReadingProgress";
 import { getArticleMetadata, getArticleJsonLd, getBreadcrumbJsonLd, BASE_URL } from "@/lib/utils/seo";
-import type { ICategory } from "@/types";
+import type { ICategory, IAuthor } from "@/types";
 import { stripFirstH1 } from "@/lib/utils/stripFirstHeading";
 
 interface PageParams {
@@ -81,7 +82,7 @@ export default async function ArticlePage({ params }: PageParams) {
         <div className="flex gap-8 xl:gap-12">
           {/* Main content */}
           <article className="flex-1 min-w-0 max-w-4xl">
-            <ArticleHeader article={article} />
+            <ArticleHeader article={article} content={strippedContent} />
 
             {/* Cover image */}
             {article.coverImage && (
@@ -105,6 +106,11 @@ export default async function ArticlePage({ params }: PageParams) {
 
             {/* Article Body */}
             <ArticleBody content={strippedContent} />
+
+            {/* Author Box */}
+            {typeof article.author === "object" && (
+              <AuthorBox author={article.author as IAuthor} />
+            )}
 
             {/* Related Articles */}
             <RelatedArticles articles={relatedArticles} />

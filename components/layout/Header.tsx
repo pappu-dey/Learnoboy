@@ -31,17 +31,75 @@ interface UserInfo {
   avatar?: string;
 }
 
-// ── Helper: initials from name ─────────────────────────────────────────────
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
+// ── Logo + Wordmark ────────────────────────────────────────────────────────
+function Logo() {
+  return (
+    <Link
+      href="/"
+      className="flex items-center gap-2.5 flex-shrink-0 group"
+      aria-label="LearnoBoy home"
+    >
+      {/* Logo image — always visible */}
+      <div
+        className="relative flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
+        style={{ width: 40, height: 40 }}
+      >
+        <Image
+          src="/images/logo.png"
+          alt="LearnoBoy"
+          width={40}
+          height={40}
+          unoptimized
+          loading="eager"
+          fetchPriority="high"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            borderRadius: "28%",
+          }}
+        />
+      </div>
+
+      {/* Wordmark — hidden on mobile, visible on sm+ */}
+      <div className="hidden sm:flex flex-col leading-none select-none">
+        <span
+          className="font-extrabold tracking-tight"
+          style={{
+            fontSize: "1.15rem",
+            letterSpacing: "-0.02em",
+            background: "linear-gradient(135deg, var(--link-color) 0%, #1e40af 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            lineHeight: 1.1,
+          }}
+        >
+          Learno
+          <span
+            style={{
+              fontWeight: 900,
+              background: "linear-gradient(135deg, #1d4ed8 0%, #0d0643ff 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            Boy
+          </span>
+        </span>
+        <span
+          className="text-[9px] font-semibold tracking-widest uppercase"
+          style={{ color: "var(--text-secondary)", opacity: 0.7, letterSpacing: "0.18em" }}
+        >
+          Learn · Code · Grow
+        </span>
+      </div>
+    </Link>
+  );
 }
 
-// ── Avatar circle (shared between desktop & mobile) ────────────────────────
+// ── Avatar circle ──────────────────────────────────────────────────────────
 function AvatarCircle({
   user,
   size = 8,
@@ -55,12 +113,16 @@ function AvatarCircle({
     reader: "linear-gradient(135deg, #2563eb, #1d4ed8)",
   };
 
-  const px = size * 4; // Tailwind w-8 → 32px, w-9 → 36px
+  const px = size * 4;
 
   return (
     <div
-      className={`w-${size} h-${size} rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0 shadow-sm overflow-hidden`}
-      style={{ background: gradientByRole[user.role], width: `${px}px`, height: `${px}px` }}
+      className="rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0 shadow-sm overflow-hidden"
+      style={{
+        background: gradientByRole[user.role],
+        width: `${px}px`,
+        height: `${px}px`,
+      }}
     >
       {user.avatar ? (
         <img
@@ -69,7 +131,14 @@ function AvatarCircle({
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
       ) : (
-        getInitials(user.name)
+        <div className="w-full h-full flex items-center justify-center">
+          <svg
+            viewBox="0 0 24 24"
+            style={{ width: "55%", height: "55%", fill: "#fff", opacity: 0.9 }}
+          >
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+          </svg>
+        </div>
       )}
     </div>
   );
@@ -125,39 +194,74 @@ function UserProfileButton({ user }: { user: UserInfo }) {
         />
       </button>
 
-      {/* Dropdown */}
       {open && (
         <>
-          {/* Backdrop */}
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-
           <div
-            className="absolute right-0 mt-2 w-56 rounded-2xl shadow-xl z-50 overflow-hidden"
+            className="absolute right-0 mt-2 w-60 rounded-2xl shadow-2xl z-50 overflow-hidden"
             style={{
               background: "var(--bg-surface)",
               border: "1px solid var(--border-color)",
-              boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+              boxShadow: "0 12px 40px rgba(0,0,0,0.18)",
             }}
           >
-            {/* User info header */}
-            <div className="px-4 py-3.5 border-b" style={{ borderColor: "var(--border-color)" }}>
-              <div className="flex items-center gap-3">
-                <AvatarCircle user={user} size={9} />
+            {/* User card header — deep navy blue matching logo */}
+            <div
+              className="px-4 py-4 relative overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, #0f1e4a 0%, #1a3070 60%, #1e3a8a 100%)",
+              }}
+            >
+              {/* Subtle radial glow top-right */}
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  top: -20,
+                  right: -20,
+                  width: 80,
+                  height: 80,
+                  borderRadius: "50%",
+                  background: "radial-gradient(circle, rgba(59,130,246,0.25) 0%, transparent 70%)",
+                  pointerEvents: "none",
+                }}
+              />
+
+              <div className="flex items-center gap-3 relative">
+                {/* Avatar with ring */}
+                <div
+                  className="rounded-full flex-shrink-0"
+                  style={{
+                    padding: 2,
+                    background: "linear-gradient(135deg, #3b82f6, #06b6d4)",
+                  }}
+                >
+                  <AvatarCircle user={user} size={9} />
+                </div>
+
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold truncate" style={{ color: "var(--text-primary)" }}>
+                  <p
+                    className="text-sm font-bold truncate"
+                    style={{ color: "#ffffff", letterSpacing: "-0.01em" }}
+                  >
                     {user.name}
                   </p>
-                  <p className="text-xs truncate mt-0.5" style={{ color: "var(--text-secondary)" }}>
+                  <p
+                    className="text-xs truncate mt-0.5"
+                    style={{ color: "rgba(147,197,253,0.85)" }}
+                  >
                     {user.email}
                   </p>
-                  <div className="mt-1">
+                  <div className="mt-1.5">
                     <RoleBadge role={user.role} />
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Menu items */}
+            {/* Thin accent line */}
+            <div style={{ height: 1, background: "linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%)", opacity: 0.5 }} />
+
             <div className="py-1.5">
               <Link
                 href="/profile"
@@ -169,7 +273,6 @@ function UserProfileButton({ user }: { user: UserInfo }) {
                 My Profile
               </Link>
 
-              {/* Writer panel — for writers and superadmins */}
               {(user.role === "writer" || user.role === "superadmin") && (
                 <Link
                   href="/writer"
@@ -182,7 +285,6 @@ function UserProfileButton({ user }: { user: UserInfo }) {
                 </Link>
               )}
 
-              {/* Admin panel — superadmin only */}
               {user.role === "superadmin" && (
                 <Link
                   href="/admin"
@@ -219,11 +321,11 @@ export function Header({ session }: { session: any }) {
   const [user, setUser] = useState<UserInfo | null>(
     session
       ? {
-          name: session.name,
-          email: session.email,
-          role: session.role,
-          avatar: session.avatar || undefined,
-        }
+        name: session.name,
+        email: session.email,
+        role: session.role,
+        avatar: session.avatar || undefined,
+      }
       : null
   );
 
@@ -233,17 +335,33 @@ export function Header({ session }: { session: any }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Fetch current user info from session
   useEffect(() => {
     fetch("/api/profile/me")
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data?.success && data.user) {
-          setUser(data.user);
-        }
+        if (data?.success && data.user) setUser(data.user);
       })
       .catch(() => null);
   }, []);
+
+  useEffect(() => {
+    if (session) {
+      setUser({
+        name: session.name,
+        email: session.email,
+        role: session.role,
+        avatar: session.avatar || undefined,
+      });
+      fetch("/api/profile/me")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (data?.success && data.user) setUser(data.user);
+        })
+        .catch(() => null);
+    } else {
+      setUser(null);
+    }
+  }, [session]);
 
   async function handleLogout() {
     try {
@@ -259,41 +377,25 @@ export function Header({ session }: { session: any }) {
       className="sticky top-0 z-50 transition-all duration-300"
       style={{
         background: isScrolled
-          ? "color-mix(in srgb, var(--bg-base) 95%, transparent)"
+          ? "color-mix(in srgb, var(--bg-base) 92%, transparent)"
           : "var(--bg-base)",
-        borderBottom: `1px solid var(--border-color)`,
-        backdropFilter: isScrolled ? "blur(12px)" : "none",
-        WebkitBackdropFilter: isScrolled ? "blur(12px)" : "none",
+        borderBottom: `1px solid ${isScrolled ? "var(--border-color)" : "transparent"}`,
+        backdropFilter: isScrolled ? "blur(16px) saturate(180%)" : "none",
+        WebkitBackdropFilter: isScrolled ? "blur(16px) saturate(180%)" : "none",
+        boxShadow: isScrolled ? "0 1px 12px rgba(0,0,0,0.06)" : "none",
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14">
 
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center flex-shrink-0"
-            aria-label="LearnoBoy home"
-          >
-            <div
-              className="flex items-center justify-center"
-              style={{ height: "120px" }}
-            >
-              <Image
-                src="/images/logo.png"
-                alt="LearnoBoy"
-                width={200}
-                height={200}
-                unoptimized
-                loading="eager"
-                fetchPriority="high"
-                style={{ height: "100%", width: "auto", objectFit: "contain", borderRadius: "30%" }}
-              />
-            </div>
-          </Link>
+          {/* Logo + Wordmark */}
+          <Logo />
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-0.5" aria-label="Main navigation">
+          <nav
+            className="hidden md:flex items-center gap-0.5"
+            aria-label="Main navigation"
+          >
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -306,20 +408,19 @@ export function Header({ session }: { session: any }) {
           </nav>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:block w-56">
+          <div className="flex items-center gap-1.5">
+            <div className="hidden sm:block w-52">
               <SearchBar compact />
             </div>
             <ThemeToggle />
 
-            {/* Profile button — only show when logged in */}
             {user ? (
               <UserProfileButton user={user} />
             ) : (
               <div className="hidden md:flex items-center gap-2">
                 <Link
                   href="/login"
-                  className="px-4 py-2 rounded-xl text-sm font-medium transition-all hover:bg-[var(--bg-surface)]"
+                  className="px-4 py-1.5 rounded-xl text-sm font-medium transition-all hover:bg-[var(--bg-surface)]"
                   style={{ color: "var(--text-secondary)" }}
                 >
                   Sign in
@@ -341,7 +442,10 @@ export function Header({ session }: { session: any }) {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-[var(--border-color)] py-3 space-y-1 animate-fade-in">
+          <div
+            className="md:hidden border-t py-3 space-y-1"
+            style={{ borderColor: "var(--border-color)" }}
+          >
             <div className="pb-3">
               <SearchBar compact />
             </div>
@@ -359,8 +463,10 @@ export function Header({ session }: { session: any }) {
 
             {/* Mobile user section */}
             {user ? (
-              <div className="mt-2 pt-2 border-t space-y-1" style={{ borderColor: "var(--border-color)" }}>
-                {/* User info row */}
+              <div
+                className="mt-2 pt-2 border-t space-y-1"
+                style={{ borderColor: "var(--border-color)" }}
+              >
                 <Link
                   href="/profile"
                   onClick={() => setIsMenuOpen(false)}
@@ -368,7 +474,10 @@ export function Header({ session }: { session: any }) {
                 >
                   <AvatarCircle user={user} size={9} />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold truncate" style={{ color: "var(--text-primary)" }}>
+                    <p
+                      className="text-sm font-semibold truncate"
+                      style={{ color: "var(--text-primary)" }}
+                    >
                       {user.name}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
@@ -380,7 +489,6 @@ export function Header({ session }: { session: any }) {
                   </div>
                 </Link>
 
-                {/* Writer panel */}
                 {(user.role === "writer" || user.role === "superadmin") && (
                   <Link
                     href="/writer"
@@ -393,7 +501,6 @@ export function Header({ session }: { session: any }) {
                   </Link>
                 )}
 
-                {/* Admin panel */}
                 {user.role === "superadmin" && (
                   <Link
                     href="/admin"
@@ -415,7 +522,10 @@ export function Header({ session }: { session: any }) {
                 </button>
               </div>
             ) : (
-              <div className="mt-2 pt-2 border-t" style={{ borderColor: "var(--border-color)" }}>
+              <div
+                className="mt-2 pt-2 border-t"
+                style={{ borderColor: "var(--border-color)" }}
+              >
                 <Link
                   href="/login"
                   onClick={() => setIsMenuOpen(false)}

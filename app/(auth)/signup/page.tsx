@@ -53,12 +53,8 @@ export default function SignupPage() {
         return;
       }
 
-      if (data.role === "superadmin" || data.role === "writer") {
-        router.push("/admin");
-      } else {
-        router.push("/");
-      }
-      router.refresh();
+      // Redirect based on role
+      window.location.href = data.role === "superadmin" || data.role === "writer" ? "/admin" : "/";
     } catch {
       setError("Network error. Please try again.");
     } finally {

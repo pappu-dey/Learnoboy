@@ -80,7 +80,7 @@ export async function getArticles(
   const [articles, total] = await Promise.all([
     Article.find(filter)
       .populate("category", "name slug icon color")
-      .populate("author", "name slug avatar")
+      .populate("author", "name slug avatar isVerified")
       .populate("tags", "name slug")
       .sort(sortMap[sort])
       .skip(skip)
@@ -109,7 +109,7 @@ export async function getArticleBySlug(
 
   const article = await Article.findOne({ slug: articleSlug, status: "published" })
     .populate("category", "name slug icon color description")
-    .populate("author", "name slug avatar bio social")
+    .populate("author", "name slug avatar bio social isVerified expertise location totalViews articleCount")
     .populate("tags", "name slug")
     .lean();
 
@@ -133,7 +133,7 @@ export async function getArticleById(id: string): Promise<IArticle | null> {
   await connectDB();
   const article = await Article.findById(id)
     .populate("category", "name slug icon color")
-    .populate("author", "name slug avatar bio")
+    .populate("author", "name slug avatar bio isVerified")
     .populate("tags", "name slug")
     .lean();
 
@@ -171,7 +171,7 @@ export async function getFeaturedArticles(limit = 3): Promise<IArticle[]> {
   await connectDB();
   const articles = await Article.find({ isFeatured: true, status: "published" })
     .populate("category", "name slug icon color")
-    .populate("author", "name slug avatar")
+    .populate("author", "name slug avatar isVerified")
     .sort({ publishedAt: -1 })
     .limit(limit)
     .lean();
@@ -186,7 +186,7 @@ export async function getLatestArticles(limit = 8): Promise<IArticle[]> {
   await connectDB();
   const articles = await Article.find({ status: "published" })
     .populate("category", "name slug icon color")
-    .populate("author", "name slug avatar")
+    .populate("author", "name slug avatar isVerified")
     .sort({ publishedAt: -1 })
     .limit(limit)
     .lean();

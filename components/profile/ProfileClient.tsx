@@ -14,9 +14,8 @@ import {
   LayoutDashboard,
   PenLine,
   ShieldCheck,
-  Send,
-  AlertCircle,
   Clock,
+  AlertTriangle,
 } from "lucide-react";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
@@ -33,14 +32,6 @@ export interface Session {
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
 
 const ROLE_CONFIG = {
   superadmin: {
@@ -78,11 +69,7 @@ export function ProfileClient({ session }: { session: Session }) {
   const [uploadMsg, setUploadMsg] = useState<{ text: string; ok: boolean } | null>(null);
   
   // Writer application states
-  const [writerStatus, setWriterStatus] = useState<string>(session.user.writerStatus || "none");
-  const [writerMsg, setWriterMsg] = useState<string>(session.user.writerApplicationMessage || "");
-  const [applying, setApplying] = useState(false);
-  const [applyError, setApplyError] = useState<string | null>(null);
-  const [applySuccess, setApplySuccess] = useState<string | null>(null);
+  const [writerStatus] = useState<string>(session.user.writerStatus || "none");
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -90,7 +77,6 @@ export function ProfileClient({ session }: { session: Session }) {
   const role = (user.role ?? "reader") as keyof typeof ROLE_CONFIG;
   const roleConf = ROLE_CONFIG[role] || ROLE_CONFIG.reader;
   const RoleIcon = roleConf.icon;
-  const initials = user.name ? getInitials(user.name) : "??";
 
   async function handleLogout() {
     setLoggingOut(true);
@@ -107,36 +93,6 @@ export function ProfileClient({ session }: { session: Session }) {
       navigator.clipboard.writeText(user.email);
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
-    }
-  }
-
-  async function handleSubmitApplication(e: React.FormEvent) {
-    e.preventDefault();
-    if (!writerMsg.trim()) {
-      setApplyError("Please write a short application message.");
-      return;
-    }
-    setApplying(true);
-    setApplyError(null);
-    setApplySuccess(null);
-    try {
-      const res = await fetch("/api/users", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: writerMsg.trim() }),
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setWriterStatus("pending");
-        setApplySuccess("Application submitted successfully!");
-        setTimeout(() => setApplySuccess(null), 5000);
-      } else {
-        setApplyError(data.error || "Submission failed. Please try again.");
-      }
-    } catch {
-      setApplyError("Network error. Please check your connection.");
-    } finally {
-      setApplying(false);
     }
   }
 
@@ -281,10 +237,19 @@ export function ProfileClient({ session }: { session: Session }) {
               position: "relative",
               boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
             }}>
-              {avatarUrl
-                ? <img src={avatarUrl} alt={user.name ?? "avatar"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                : initials
-              }
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={user.name ?? "avatar"}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" style={{ width: "55%", height: "55%", fill: "#fff", opacity: 0.9 }}>
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
+                </div>
+              )}
             </div>
 
             {/* Hover overlay */}
@@ -535,23 +500,21 @@ export function ProfileClient({ session }: { session: Session }) {
             <div
               style={{
                 marginTop: "24px",
-                padding: "20px",
                 borderRadius: "18px",
                 border: "1px solid var(--border-color)",
                 background: "var(--bg-muted)",
                 textAlign: "left",
-                animation: "profileRise 0.3s ease both",
+                overflow: "hidden",
               }}
             >
-              {writerStatus === "pending" ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {/* Pending state */}
+              {(writerStatus === "pending" || writerStatus === "needs-review") && (
+                <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                     <div
                       style={{
-                        width: "10px",
-                        height: "10px",
-                        borderRadius: "50%",
-                        background: "#f59e0b",
+                        width: "10px", height: "10px", borderRadius: "50%",
+                        background: writerStatus === "needs-review" ? "#6366f1" : "#f59e0b",
                         animation: "profilePulse 1.5s infinite ease-in-out",
                       }}
                     />
@@ -562,141 +525,90 @@ export function ProfileClient({ session }: { session: Session }) {
                         100% { transform: scale(0.9); opacity: 0.5; }
                       }
                     `}</style>
-                    <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#d97706", display: "flex", alignItems: "center", gap: "6px" }}>
-                      <Clock size={14} /> Pending Review
+                    <span style={{ fontSize: "0.82rem", fontWeight: 700, color: writerStatus === "needs-review" ? "#6366f1" : "#d97706", display: "flex", alignItems: "center", gap: "6px" }}>
+                      {writerStatus === "needs-review" ? <AlertTriangle size={13} /> : <Clock size={13} />}
+                      {writerStatus === "needs-review" ? "Needs Additional Review" : "Pending Review"}
                     </span>
                   </div>
-                  <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
+                  <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
                     Application Under Review
                   </h3>
-                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.4 }}>
-                    Our administrators are reviewing your request to become a writer. We will update your role as soon as it's processed!
+                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.5 }}>
+                    {writerStatus === "needs-review"
+                      ? "Our team has flagged your application for additional review. We may reach out for more info."
+                      : "Our administrators are reviewing your application. We will update your role once it's processed!"}
                   </p>
-                  {writerMsg && (
-                    <div
+                </div>
+              )}
+
+              {/* Rejected — re-apply CTA */}
+              {writerStatus === "rejected" && (
+                <>
+                  <div style={{ padding: "14px 20px", background: "rgba(239,68,68,0.07)", borderBottom: "1px solid rgba(239,68,68,0.15)" }}>
+                    <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "#dc2626", margin: 0 }}>
+                      ✗ Your previous application was not approved.
+                    </p>
+                  </div>
+                  <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                    <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-primary)", margin: 0, display: "flex", alignItems: "center", gap: "6px" }}>
+                      <PenLine size={15} style={{ color: "var(--link-color)" }} /> Apply Again
+                    </h3>
+                    <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.5 }}>
+                      You can revise your application and reapply with more details about your expertise.
+                    </p>
+                    <Link
+                      href="/apply"
                       style={{
-                        marginTop: "4px",
-                        padding: "10px 14px",
-                        borderRadius: "10px",
-                        background: "var(--bg-base)",
-                        borderLeft: "3.5px solid #f59e0b",
-                        fontSize: "0.8rem",
-                        fontStyle: "italic",
-                        color: "var(--text-secondary)",
-                        lineHeight: 1.4,
+                        display: "inline-flex", alignItems: "center", justifyContent: "center",
+                        gap: "6px", padding: "10px 16px", borderRadius: "10px",
+                        background: "linear-gradient(135deg, var(--link-color), #1d4ed8)",
+                        color: "#fff", fontSize: "0.82rem", fontWeight: 600,
+                        textDecoration: "none", boxShadow: "0 2px 8px rgba(37,99,235,0.25)",
                       }}
                     >
-                      "{writerMsg}"
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <form onSubmit={handleSubmitApplication} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                      <PenLine size={13} /> Start New Application
+                    </Link>
+                  </div>
+                </>
+              )}
+
+              {/* None — apply CTA */}
+              {writerStatus === "none" && (
+                <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {/* Gradient accent top bar */}
+                  <div style={{
+                    height: "3px", borderRadius: "2px", marginBottom: "4px",
+                    background: "linear-gradient(90deg, #2563eb, #7c3aed, #10b981)",
+                  }} />
                   <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--text-primary)", margin: 0, display: "flex", alignItems: "center", gap: "6px" }}>
                     <PenLine size={16} style={{ color: "var(--link-color)" }} /> Apply to be a Writer
                   </h3>
-                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.4 }}>
-                    Share your coding knowledge and write premium development tutorials directly on Learno-Boy.
+                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.5 }}>
+                    Share your knowledge, build your brand, and help thousands of learners grow.
+                    Our full application takes just 2 minutes.
                   </p>
-
-                  {writerStatus === "rejected" && (
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "8px",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
-                        background: "rgba(239, 68, 68, 0.08)",
-                        border: "1px solid rgba(239, 68, 68, 0.2)",
-                        color: "#ef4444",
-                        fontSize: "0.78rem",
-                        fontWeight: 500,
-                        lineHeight: 1.4,
-                      }}
-                    >
-                      <AlertCircle size={15} style={{ flexShrink: 0, marginTop: "1px" }} />
-                      <div>
-                        Your previous application was not approved. You are welcome to revise your message and re-apply!
-                      </div>
-                    </div>
-                  )}
-
-                  <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                    <label style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>
-                      Your Message / Bio
-                    </label>
-                    <textarea
-                      placeholder="Tell us about yourself, your development experience, and what topics you would love to write about..."
-                      value={writerMsg}
-                      onChange={(e) => setWriterMsg(e.target.value)}
-                      rows={3}
-                      style={{
-                        width: "100%",
-                        padding: "10px 12px",
-                        borderRadius: "10px",
-                        border: "1.5px solid var(--border-color)",
-                        background: "var(--bg-base)",
-                        color: "var(--text-primary)",
-                        fontSize: "0.82rem",
-                        outline: "none",
-                        resize: "none",
-                        lineHeight: 1.4,
-                        transition: "border-color 0.2s",
-                      }}
-                      onFocus={(e) => (e.target.style.borderColor = "var(--link-color)")}
-                      onBlur={(e) => (e.target.style.borderColor = "var(--border-color)")}
-                    />
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    {["📚 Share Knowledge", "🏅 Get Recognised", "🚀 Grow Together"].map((b) => (
+                      <span key={b} style={{
+                        fontSize: "0.72rem", fontWeight: 600, padding: "3px 10px",
+                        borderRadius: "999px", background: "rgba(37,99,235,0.08)",
+                        color: "var(--link-color)", border: "1px solid rgba(37,99,235,0.15)",
+                      }}>{b}</span>
+                    ))}
                   </div>
-
-                  {applyError && (
-                    <div style={{ fontSize: "0.78rem", color: "#ef4444", fontWeight: 500 }}>
-                      ✗ {applyError}
-                    </div>
-                  )}
-
-                  {applySuccess && (
-                    <div style={{ fontSize: "0.78rem", color: "#10b981", fontWeight: 500 }}>
-                      ✓ {applySuccess}
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={applying}
+                  <Link
+                    href="/apply"
                     style={{
-                      marginTop: "4px",
-                      padding: "10px 16px",
-                      borderRadius: "10px",
-                      background: "linear-gradient(135deg, var(--link-color), #1d4ed8)",
-                      color: "#fff",
-                      border: "none",
-                      fontSize: "0.82rem",
-                      fontWeight: 600,
-                      cursor: applying ? "not-allowed" : "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "6px",
-                      transition: "opacity 0.2s",
-                      opacity: applying ? 0.75 : 1,
-                      boxShadow: "0 2px 8px rgba(37,99,235,0.25)",
+                      display: "inline-flex", alignItems: "center", justifyContent: "center",
+                      gap: "6px", padding: "11px 16px", borderRadius: "10px",
+                      background: "linear-gradient(135deg, #2563eb, #7c3aed)",
+                      color: "#fff", fontSize: "0.85rem", fontWeight: 600,
+                      textDecoration: "none", boxShadow: "0 4px 12px rgba(37,99,235,0.3)",
                     }}
-                    onMouseEnter={(e) => { if (!applying) e.currentTarget.style.opacity = "0.9"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
                   >
-                    {applying ? (
-                      <>
-                        <Loader2 size={13} style={{ animation: "profileSpin 0.7s linear infinite" }} />
-                        Submitting…
-                      </>
-                    ) : (
-                      <>
-                        <Send size={13} />
-                        Submit Application
-                      </>
-                    )}
-                  </button>
-                </form>
+                    <PenLine size={14} /> Start Application →
+                  </Link>
+                </div>
               )}
             </div>
           )}

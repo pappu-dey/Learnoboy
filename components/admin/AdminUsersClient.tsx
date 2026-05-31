@@ -12,9 +12,10 @@ import {
   RefreshCw,
   Search,
   ChevronDown,
+  ShieldCheck,
 } from "lucide-react";
 
-type WriterStatus = "none" | "pending" | "approved" | "rejected";
+type WriterStatus = "none" | "pending" | "needs-review" | "approved" | "rejected";
 type UserRole = "reader" | "writer" | "superadmin";
 
 interface UserRow {
@@ -24,6 +25,7 @@ interface UserRow {
   role: UserRole;
   writerStatus: WriterStatus;
   writerApplicationMessage?: string;
+  isVerified?: boolean;
   createdAt: string;
   avatar?: string;
 }
@@ -35,10 +37,11 @@ const ROLE_STYLES: Record<UserRole, { label: string; bg: string; color: string }
 };
 
 const STATUS_STYLES: Record<WriterStatus, { label: string; bg: string; color: string }> = {
-  pending:  { label: "Pending",  bg: "rgba(245,158,11,0.12)", color: "#d97706" },
-  approved: { label: "Approved", bg: "rgba(16,185,129,0.12)", color: "#059669" },
-  rejected: { label: "Rejected", bg: "rgba(239,68,68,0.12)",  color: "#dc2626" },
-  none:     { label: "—",        bg: "transparent",           color: "var(--text-tertiary)" },
+  pending:        { label: "Pending",      bg: "rgba(245,158,11,0.12)", color: "#d97706" },
+  "needs-review": { label: "Needs Review", bg: "rgba(99,102,241,0.12)", color: "#6366f1" },
+  approved:       { label: "Approved",     bg: "rgba(16,185,129,0.12)",  color: "#059669" },
+  rejected:       { label: "Rejected",     bg: "rgba(239,68,68,0.12)",   color: "#dc2626" },
+  none:           { label: "—",            bg: "transparent",            color: "var(--text-tertiary)" },
 };
 
 export default function AdminUsersClient() {
@@ -68,7 +71,7 @@ export default function AdminUsersClient() {
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
-  const patch = async (id: string, body: Record<string, string>, successMsg: string) => {
+  const patch = async (id: string, body: Record<string, unknown>, successMsg: string) => {
     setActionLoading(id + JSON.stringify(body));
     try {
       const res = await fetch(`/api/users/${id}`, {
@@ -297,6 +300,28 @@ export default function AdminUsersClient() {
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="flex items-center justify-end gap-1.5">
+                          {/* Verify / Unverify writer */}
+                          {u.role === "writer" && !u.isVerified && (
+                            <button
+                              onClick={() => patch(u._id, { isVerified: true }, `${u.name} verified!`)}
+                              disabled={!!actionLoading}
+                              title="Verify Writer"
+                              className="p-1.5 rounded-lg border border-[var(--border-color)] text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all disabled:opacity-40"
+                            >
+                              <ShieldCheck size={13} />
+                            </button>
+                          )}
+                          {u.role === "writer" && u.isVerified && (
+                            <button
+                              onClick={() => patch(u._id, { isVerified: false }, `${u.name} verification removed.`)}
+                              disabled={!!actionLoading}
+                              title="Remove Verification"
+                              className="p-1.5 rounded-lg border text-blue-500 bg-blue-50 dark:bg-blue-950/20 transition-all disabled:opacity-40"
+                              style={{ borderColor: "rgba(37,99,235,0.3)" }}
+                            >
+                              <ShieldCheck size={13} />
+                            </button>
+                          )}
                           {/* Promote to writer */}
                           {u.role === "reader" && u.writerStatus !== "pending" && (
                             <button
