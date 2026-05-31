@@ -220,7 +220,7 @@ JavaScript is a powerful and versatile language. By mastering its fundamentals, 
 async function seed() {
   try {
     console.log("🔗 Connecting to MongoDB...");
-    await mongoose.connect(MONGODB_URI!);
+    await mongoose.connect(MONGODB_URI!, { dbName: "learno-boy" });
     console.log("✅ Connected!");
 
     // Clear existing data

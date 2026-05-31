@@ -91,6 +91,7 @@ const cache: MongooseCache = (global.__mongooseCache ??= {
  *                           "connection closed" surprises on long-idle functions.
  */
 const MONGOOSE_OPTS: mongoose.ConnectOptions = {
+  dbName: "learno-boy",
   bufferCommands: false,
   maxPoolSize: 10,
   minPoolSize: 0,
