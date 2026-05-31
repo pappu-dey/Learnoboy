@@ -33,6 +33,11 @@ export async function POST(req: NextRequest) {
     const emailSent = await sendPasswordResetEmail(user.email, token);
     if (!emailSent) {
       console.error("[forgot-password] Failed to send password reset email.");
+      if (process.env.NODE_ENV !== "production") {
+        return NextResponse.json({
+          error: "Resend failed to deliver the email. Please check your terminal console for the exact error. (If using Resend Sandbox, make sure this recipient email is verified in your Resend dashboard).",
+        }, { status: 500 });
+      }
     }
 
     return NextResponse.json({

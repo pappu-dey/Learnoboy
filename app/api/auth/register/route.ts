@@ -43,6 +43,11 @@ export async function POST(req: NextRequest) {
     const emailSent = await sendVerificationEmail(user.email, user.name, verificationToken);
     if (!emailSent) {
       console.error("[register] Verification email failed to send.");
+      if (process.env.NODE_ENV !== "production") {
+        return NextResponse.json({
+          error: "Resend failed to deliver the verification email. Please check your terminal console for the exact error. (If using Resend Sandbox, make sure this recipient email is verified in your Resend dashboard).",
+        }, { status: 500 });
+      }
     }
 
     return NextResponse.json({
