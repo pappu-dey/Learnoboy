@@ -34,6 +34,9 @@ export interface IUserDocument extends Document {
   /** Password reset fields */
   resetToken?: string;
   resetTokenExpiry?: Date;
+  /** Email verification fields */
+  verificationToken?: string;
+  verificationTokenExpiry?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -81,6 +84,8 @@ const UserSchema = new Schema<IUserDocument>(
     verifiedAt: { type: Date },
     resetToken: { type: String },
     resetTokenExpiry: { type: Date },
+    verificationToken: { type: String },
+    verificationTokenExpiry: { type: Date },
   },
   {
     timestamps: true,

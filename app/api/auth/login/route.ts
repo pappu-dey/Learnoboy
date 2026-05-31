@@ -22,6 +22,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
     }
 
+    if (!user.isVerified) {
+      return NextResponse.json(
+        { error: "Please verify your email address before signing in. Check your inbox for the verification link." },
+        { status: 403 }
+      );
+    }
+
     // Force superadmin role if email matches env-configured superadmin
     const superadminEmail = process.env.SUPERADMIN_EMAIL?.toLowerCase();
     if (!superadminEmail && process.env.NODE_ENV === "production") {

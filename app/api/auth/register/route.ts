@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/lib/models/User";
 import bcrypt from "bcryptjs";
-import { createSession } from "@/lib/auth/session";
+import crypto from "crypto";
+import { sendVerificationEmail } from "@/lib/mail";
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,23 +26,29 @@ export async function POST(req: NextRequest) {
     const passwordHash = await bcrypt.hash(password, 12);
     const isSuperAdmin = email.toLowerCase() === (process.env.SUPERADMIN_EMAIL ?? "ikkapd@gmail.com").toLowerCase();
 
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
     const user = await User.create({
       name: name.trim(),
       email: email.toLowerCase().trim(),
       passwordHash,
       role: isSuperAdmin ? "superadmin" : "reader",
+      isVerified: false,
+      verificationToken,
+      verificationTokenExpiry,
     });
 
-    // Auto-create session
-    await createSession({
-      userId: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      avatar: user.avatar || null,
-    });
+    // Send verification email
+    const emailSent = await sendVerificationEmail(user.email, user.name, verificationToken);
+    if (!emailSent) {
+      console.error("[register] Verification email failed to send.");
+    }
 
-    return NextResponse.json({ success: true, role: user.role });
+    return NextResponse.json({
+      success: true,
+      message: "Registration successful! Please check your email to verify your account.",
+    });
   } catch (err) {
     console.error("[register]", err);
     return NextResponse.json({ error: "Server error. Please try again." }, { status: 500 });

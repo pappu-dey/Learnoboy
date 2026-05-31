@@ -250,6 +250,8 @@ async function seed() {
         passwordHash: "$2a$12$D37NnQ.F53z9YpU8vD.nkuv.wZ6eS3m/WkL0sBlybWlK5g4.eO/eq", // pre-hashed "password123"
         role: "superadmin",
         writerStatus: "approved",
+        isVerified: true,
+        verifiedAt: new Date(),
       });
       writers = [defaultAdmin.toObject()];
     }

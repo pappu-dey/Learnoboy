@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/lib/models/User";
 import crypto from "crypto";
+import { sendPasswordResetEmail } from "@/lib/mail";
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,10 +27,14 @@ export async function POST(req: NextRequest) {
       resetTokenExpiry: expiry,
     });
 
-    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?token=${token}`;
+    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/reset-password?token=${token}`;
 
-    // TODO: Send email with resetUrl using a mail provider (Resend, SendGrid, etc.)
-    // For now, return the URL directly for development use.
+    // Send reset email via Resend
+    const emailSent = await sendPasswordResetEmail(user.email, token);
+    if (!emailSent) {
+      console.error("[forgot-password] Failed to send password reset email.");
+    }
+
     return NextResponse.json({
       success: true,
       message: "Reset link generated.",

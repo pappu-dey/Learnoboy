@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Loader2, AlertCircle, Mail, Copy, Check, ArrowLeft } from "lucide-react";
+import { Loader2, AlertCircle, Mail, Copy, Check, ArrowLeft, CheckCircle2 } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   const [resetUrl, setResetUrl] = useState("");
   const [copied, setCopied] = useState(false);
 
@@ -16,6 +17,7 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     setError("");
     setResetUrl("");
+    setSuccess(false);
 
     try {
       const res = await fetch("/api/auth/forgot-password", {
@@ -24,8 +26,14 @@ export default function ForgotPasswordPage() {
         body: JSON.stringify({ email }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Request failed."); return; }
-      if (data.resetUrl) setResetUrl(data.resetUrl);
+      if (!res.ok) {
+        setError(data.error || "Request failed.");
+        return;
+      }
+      setSuccess(true);
+      if (data.resetUrl) {
+        setResetUrl(data.resetUrl);
+      }
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -63,24 +71,37 @@ export default function ForgotPasswordPage() {
         </div>
       )}
 
-      {resetUrl ? (
-        <div className="space-y-4">
-          <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-800">
-            <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 mb-1">Reset link generated!</p>
-            <p className="text-xs text-emerald-600 dark:text-emerald-500 mb-3">Copy this link and open it in your browser to reset your password. It expires in 1 hour.</p>
-            <div className="flex items-center gap-2 p-2.5 rounded-lg border border-emerald-200 dark:border-emerald-700 bg-white dark:bg-emerald-950/30">
-              <p className="flex-1 text-xs font-mono text-emerald-800 dark:text-emerald-300 truncate">{resetUrl}</p>
-              <button
-                onClick={handleCopy}
-                className="shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg transition-all"
-                style={{ background: copied ? "var(--link-color)" : "var(--bg-muted)", color: copied ? "#fff" : "var(--text-primary)" }}
-              >
-                {copied ? <><Check size={11} /> Copied</> : <><Copy size={11} /> Copy</>}
-              </button>
+      {success ? (
+        <div className="space-y-6">
+          <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/10 dark:border-emerald-800 flex items-start gap-3">
+            <CheckCircle2 size={20} className="shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-400 mb-1">Email Sent!</p>
+              <p className="text-xs text-emerald-700 dark:text-emerald-500 leading-relaxed">
+                If an account exists for <strong>{email}</strong>, a recovery link has been sent to your email address. Please check your inbox and spam folder.
+              </p>
             </div>
           </div>
+
+          {resetUrl && (
+            <div className="p-4 rounded-xl border border-blue-200 bg-blue-50 dark:bg-blue-900/10 dark:border-blue-800">
+              <p className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-1">Development Mode Link:</p>
+              <p className="text-xs text-blue-600 dark:text-blue-500 mb-3">Copy this simulated link to open directly in your browser:</p>
+              <div className="flex items-center gap-2 p-2.5 rounded-lg border border-blue-200 dark:border-blue-700 bg-white dark:bg-blue-950/30">
+                <p className="flex-1 text-xs font-mono text-blue-800 dark:text-blue-300 truncate">{resetUrl}</p>
+                <button
+                  onClick={handleCopy}
+                  className="shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg transition-all"
+                  style={{ background: copied ? "var(--link-color)" : "var(--bg-muted)", color: copied ? "#fff" : "var(--text-primary)" }}
+                >
+                  {copied ? <><Check size={11} /> Copied</> : <><Copy size={11} /> Copy</>}
+                </button>
+              </div>
+            </div>
+          )}
+
           <button
-            onClick={() => { setResetUrl(""); setEmail(""); }}
+            onClick={() => { setSuccess(false); setResetUrl(""); setEmail(""); }}
             className="text-sm font-medium" style={{ color: "var(--link-color)" }}
           >
             Try another email
