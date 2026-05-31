@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { getDefaultMetadata } from "@/lib/utils/seo";
 import { getSession } from "@/lib/auth/session";
 import { ThemeScript } from "@/components/layout/ThemeScript";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -44,6 +45,7 @@ export default async function RootLayout({
           {children}
         </main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
