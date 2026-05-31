@@ -32,9 +32,22 @@ export async function GET() {
 
   // ── MongoDB connectivity check ────────────────────────────────────────────
   let dbStatus = "⏳ not tested";
+  let databaseName = "";
+  let counts: Record<string, number> = {};
+
   try {
-    await connectDB();
+    const conn = await connectDB();
     dbStatus = "✅ connected";
+    databaseName = conn.connection.name; // e.g. "learno-boy" or "test"
+    
+    // Get document counts
+    const [articles, categories, tags, users] = await Promise.all([
+      conn.connection.db?.collection("articles").countDocuments() ?? 0,
+      conn.connection.db?.collection("categories").countDocuments() ?? 0,
+      conn.connection.db?.collection("tags").countDocuments() ?? 0,
+      conn.connection.db?.collection("users").countDocuments() ?? 0,
+    ]);
+    counts = { articles, categories, tags, users };
   } catch (err) {
     dbStatus = `❌ FAILED — ${err instanceof Error ? err.message : String(err)}`;
   }
@@ -44,5 +57,7 @@ export async function GET() {
     env: process.env.NODE_ENV,
     checks,
     db: dbStatus,
+    database: databaseName || undefined,
+    counts: Object.keys(counts).length ? counts : undefined,
   });
 }
