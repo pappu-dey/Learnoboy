@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { getSession } from "@/lib/auth/session";
 import { getArticleById } from "@/lib/services/articleService";
 import { getAllCategories } from "@/lib/services/categoryService";
 import connectDB from "@/lib/mongodb";
@@ -17,6 +18,12 @@ interface Props {
 }
 
 export default async function EditArticlePage({ params }: Props) {
+  const session = await getSession();
+  if (!session) redirect("/login");
+  if (session.role !== "writer" && session.role !== "superadmin") {
+    redirect("/profile");
+  }
+
   const { id } = await params;
   await connectDB();
 
@@ -34,6 +41,16 @@ export default async function EditArticlePage({ params }: Props) {
       ? (article.category as ICategory)
       : null;
 
+  // Build all category IDs (multi-category support)
+  const categoriesArr = Array.isArray(article.categories) ? article.categories : [];
+  const categoryIds: string[] = categoriesArr
+    .filter((c) => typeof c === "object" && c._id)
+    .map((c) => String((c as ICategory)._id));
+  // Fallback: if no categories[] yet, use the single category
+  if (categoryIds.length === 0 && category?._id) {
+    categoryIds.push(String(category._id));
+  }
+
   // Serialize to convert ObjectIds → strings before crossing server→client boundary
   const initialData = serialize({
     _id: String(article._id),
@@ -42,6 +59,7 @@ export default async function EditArticlePage({ params }: Props) {
     content: article.content,
     excerpt: article.excerpt,
     categoryId: category?._id ? String(category._id) : "",
+    categoryIds,
     authorId:
       typeof article.author === "object" ? String(article.author._id) : String(article.author),
     tagIds: article.tags
@@ -54,6 +72,11 @@ export default async function EditArticlePage({ params }: Props) {
     status: article.status,
     seoTitle: article.seo?.metaTitle || "",
     seoDescription: article.seo?.metaDescription || "",
+    primaryCategory: article.primaryCategory || "",
+    subcategory: article.subcategory || "",
+    difficulty: article.difficulty || "Beginner",
+    contentType: article.contentType || "Tutorial",
+    seoKeywords: article.seo?.keywords || [],
   });
 
   return (
@@ -76,6 +99,7 @@ export default async function EditArticlePage({ params }: Props) {
         tags={serializeArray(tags as unknown as ITag[]) as unknown as ITag[]}
         initialData={initialData}
         isEdit
+        sessionRole={session.role}
       />
     </div>
   );

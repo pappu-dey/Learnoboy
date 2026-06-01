@@ -1,6 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import type { ICategory } from "@/types";
-import { ArrowRight, Layers } from "lucide-react";
+import { Layers, ChevronDown, ChevronUp } from "lucide-react";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
 
 interface CategoryCardsProps {
@@ -8,7 +11,13 @@ interface CategoryCardsProps {
 }
 
 export function CategoryCards({ categories }: CategoryCardsProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   if (categories.length === 0) return null;
+
+  const showLimit = 5;
+  const hasMore = categories.length > showLimit;
+  const visibleCategories = isExpanded ? categories : categories.slice(0, showLimit);
 
   return (
     <section className="mb-10" aria-label="Browse by category">
@@ -20,7 +29,7 @@ export function CategoryCards({ categories }: CategoryCardsProps) {
       </div>
 
       <div className="flex flex-wrap gap-2.5">
-        {categories.map((category) => (
+        {visibleCategories.map((category) => (
           <Link
             key={category._id}
             href={`/${category.slug}`}
@@ -50,6 +59,28 @@ export function CategoryCards({ categories }: CategoryCardsProps) {
             </span>
           </Link>
         ))}
+
+        {hasMore && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="group flex items-center gap-2 px-4 py-1.5 rounded-xl border border-dashed transition-all duration-200 text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--link-color)] hover:border-[var(--link-color)] hover:bg-[var(--bg-surface)] cursor-pointer"
+            style={{
+              borderColor: "var(--border-color)",
+            }}
+          >
+            {isExpanded ? (
+              <>
+                <span>Show Less</span>
+                <ChevronUp size={14} className="transition-transform duration-200 group-hover:-translate-y-0.5" />
+              </>
+            ) : (
+              <>
+                <span>More (+{categories.length - showLimit})</span>
+                <ChevronDown size={14} className="transition-transform duration-200 group-hover:translate-y-0.5" />
+              </>
+            )}
+          </button>
+        )}
       </div>
     </section>
   );

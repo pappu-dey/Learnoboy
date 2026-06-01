@@ -42,6 +42,41 @@ const MAX_FILE_SIZE_MB = 10;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 const MAX_HISTORY = 200;
 
+const CATEGORY_MAP: Record<string, { name: string; subcategories: string[] }> = {
+  coding: {
+    name: "Coding",
+    subcategories: ["C", "C++", "Java", "Python", "JavaScript"]
+  },
+  dsa: {
+    name: "DSA",
+    subcategories: [
+      "Arrays", "Linked List", "Stack", "Queue", "Tree", "Graph", 
+      "Heap", "Dynamic Programming", "Greedy", "Two Pointers", 
+      "Sliding Window", "Recursion"
+    ]
+  },
+  "web-development": {
+    name: "Web Development",
+    subcategories: ["HTML", "CSS", "JavaScript", "React", "Next.js", "Node.js", "Express.js"]
+  },
+  database: {
+    name: "Database",
+    subcategories: ["SQL", "MySQL", "MongoDB", "PostgreSQL", "DBMS"]
+  },
+  "cs-fundamentals": {
+    name: "CS Fundamentals",
+    subcategories: ["Operating Systems", "Computer Networks", "Software Engineering", "Cyber Law", "Professional Ethics"]
+  },
+  "machine-learning": {
+    name: "Machine Learning",
+    subcategories: ["General ML", "Supervised Learning", "Unsupervised Learning", "Deep Learning"]
+  },
+  "cyber-security": {
+    name: "Cyber Security",
+    subcategories: ["Network Security", "Cryptography", "Penetration Testing", "Cyber Defense"]
+  }
+};
+
 /* ─── Types ─────────────────────────────────────────────── */
 
 type UploadStatus = "uploading" | "done" | "error";
@@ -60,7 +95,7 @@ interface UploadedImage {
 
 interface ArticleFormProps {
   categories: ICategory[];
-  authors: IAuthor[];
+  authors?: IAuthor[];
   tags: ITag[];
   initialData?: Partial<{
     _id: string;
@@ -68,7 +103,8 @@ interface ArticleFormProps {
     slug: string;
     content: string;
     excerpt: string;
-    categoryId: string;
+    categoryId: string;      // primary category (legacy/URL)
+    categoryIds: string[];   // all selected categories
     authorId: string;
     tagIds: string[];
     coverImage: string;
@@ -76,8 +112,15 @@ interface ArticleFormProps {
     status: "draft" | "published";
     seoTitle: string;
     seoDescription: string;
+    keywords?: string;
+    primaryCategory?: string;
+    subcategory?: string;
+    difficulty?: string;
+    contentType?: string;
+    seoKeywords?: string[];
   }>;
   isEdit?: boolean;
+  sessionRole?: "reader" | "writer" | "superadmin";
 }
 
 /* ─── Helpers ─────────────────────────────────────────────── */
@@ -725,6 +768,7 @@ export function ArticleForm({
   tags,
   initialData = {},
   isEdit = false,
+  sessionRole = "writer",
 }: ArticleFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -762,7 +806,12 @@ export function ArticleForm({
     slug: initialData.slug || "",
     content: initialData.content || "",
     excerpt: initialData.excerpt || "",
-    categoryId: initialData.categoryId || "",
+    // Multi-category: categoryIds holds all; categoryId = first (for URL routing)
+    categoryIds: initialData.categoryIds?.length
+      ? initialData.categoryIds
+      : initialData.categoryId
+        ? [initialData.categoryId]
+        : [] as string[],
     authorId: initialData.authorId || "",
     tagIds: initialData.tagIds || [],
     coverImage: initialData.coverImage || "",
@@ -770,7 +819,51 @@ export function ArticleForm({
     status: initialData.status || "draft",
     seoTitle: initialData.seoTitle || "",
     seoDescription: initialData.seoDescription || "",
+    keywords: initialData.keywords || "",
+    primaryCategory: initialData.primaryCategory || "dsa",
+    subcategory: initialData.subcategory || "arrays",
+    difficulty: (initialData.difficulty as "Beginner" | "Intermediate" | "Advanced") || "Beginner",
+    contentType: (initialData.contentType as any) || "Tutorial",
+    seoKeywords: initialData.seoKeywords || [] as string[],
   });
+
+  const [keywordInput, setKeywordInput] = useState("");
+  const [keywordError, setKeywordError] = useState("");
+
+  const addKeyword = (rawVal: string) => {
+    const clean = rawVal.trim();
+    if (!clean) return;
+    
+    if (form.seoKeywords.map(k => k.toLowerCase()).includes(clean.toLowerCase())) {
+      setKeywordError("Keyword already exists.");
+      return;
+    }
+    if (form.seoKeywords.length >= 15) {
+      setKeywordError("Maximum of 15 keywords allowed.");
+      return;
+    }
+    
+    setForm((prev) => ({
+      ...prev,
+      seoKeywords: [...prev.seoKeywords, clean],
+    }));
+    setKeywordInput("");
+    setKeywordError("");
+  };
+
+  const removeKeyword = (indexToRemove: number) => {
+    setForm((prev) => ({
+      ...prev,
+      seoKeywords: prev.seoKeywords.filter((_, idx) => idx !== indexToRemove),
+    }));
+  };
+
+  const handleKeywordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addKeyword(keywordInput);
+    }
+  };
 
   /* ── Form helpers ── */
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -810,6 +903,42 @@ export function ArticleForm({
         ? prev.tagIds.filter((id) => id !== tagId)
         : [...prev.tagIds, tagId],
     }));
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const pCat = e.target.value;
+    const subcats = CATEGORY_MAP[pCat]?.subcategories || [];
+    setForm((prev) => ({
+      ...prev,
+      primaryCategory: pCat,
+      subcategory: subcats[0] ? slugify(subcats[0]) : "",
+    }));
+  };
+
+  const handleKeywordSelect = (tagName: string) => {
+    setForm((prev) => {
+      const existing = prev.keywords
+        .split(",")
+        .map((k) => k.trim())
+        .filter((k) => k.length > 0);
+      if (existing.map(x => x.toLowerCase()).includes(tagName.toLowerCase())) {
+        // Remove if clicked again
+        const next = existing.filter(x => x.toLowerCase() !== tagName.toLowerCase()).join(", ");
+        return { ...prev, keywords: next };
+      }
+      const next = [...existing, tagName].join(", ");
+      return { ...prev, keywords: next };
+    });
+  };
+
+  const toggleCategory = (catId: string) => {
+    setForm((prev) => {
+      const already = prev.categoryIds.includes(catId);
+      const next = already
+        ? prev.categoryIds.filter((id) => id !== catId)
+        : [...prev.categoryIds, catId];
+      return { ...prev, categoryIds: next };
+    });
   };
 
   /* ── Apply a toolbar action ── */
@@ -1210,8 +1339,12 @@ export function ArticleForm({
     if (!form.title.trim()) { setError("Title is required."); setIsLoading(false); return; }
     if (!form.excerpt.trim()) { setError("Excerpt is required."); setIsLoading(false); return; }
     if (!form.content.trim()) { setError("Content is required."); setIsLoading(false); return; }
-    if (!form.categoryId) { setError("Please select a category."); setIsLoading(false); return; }
-    if (!form.authorId) { setError("Please select an author."); setIsLoading(false); return; }
+    if (!form.primaryCategory || !form.subcategory) { setError("Category and Subcategory are required."); setIsLoading(false); return; }
+    if (form.seoKeywords.length < 3 || form.seoKeywords.length > 15) {
+      setError("Please specify between 3 and 15 SEO Keywords.");
+      setIsLoading(false);
+      return;
+    }
 
     // Warn about pending uploads
     const pendingUploads = uploadedImages.filter((i) => i.status === "uploading").length;
@@ -1222,12 +1355,28 @@ export function ArticleForm({
     }
 
     try {
+      // Find dynamic category mapping matching client subcategory selection
+      const matchedCat = categories.find(c => c.slug === form.subcategory.toLowerCase());
+      const resolvedCatId = matchedCat ? matchedCat._id : "";
+
       const payload = {
         title: form.title, slug: form.slug, content: form.content,
-        excerpt: form.excerpt, categoryId: form.categoryId, authorId: form.authorId,
-        tagIds: form.tagIds, coverImage: form.coverImage, isFeatured: form.isFeatured,
+        excerpt: form.excerpt,
+        categoryId: resolvedCatId,
+        categoryIds: resolvedCatId ? [resolvedCatId] : [],
+        primaryCategory: form.primaryCategory,
+        subcategory: form.subcategory,
+        difficulty: form.difficulty,
+        contentType: form.contentType,
+        authorId: form.authorId,
+        coverImage: form.coverImage, isFeatured: form.isFeatured,
         status: form.status,
-        seo: { metaTitle: form.seoTitle || form.title, metaDescription: form.seoDescription || form.excerpt },
+        seo: { 
+          metaTitle: form.seoTitle || form.title, 
+          metaDescription: form.seoDescription || form.excerpt,
+          keywords: form.seoKeywords
+        },
+        keywords: form.seoKeywords.join(", "),
       };
 
       const url = isEdit ? `/api/articles/${initialData._id}` : "/api/articles";
@@ -1622,66 +1771,154 @@ export function ArticleForm({
               </div>
             </div>
 
-            {/* Category — improved grid select */}
+            {/* Step 1 & Step 2: Category & Subcategory Selection */}
             <div className={panelClass} style={{ background: "var(--bg-surface)" }}>
-              <label className={labelClass}>
-                Category <span className="text-red-500">*</span>
+              <label htmlFor="primaryCategory" className={labelClass}>
+                Step 1: Select Category <span className="text-red-500">*</span>
               </label>
-              <CategorySelect
-                categories={categories}
-                value={form.categoryId}
-                onChange={(val) => setForm((prev) => ({ ...prev, categoryId: val }))}
-                inputClass={inputClass}
-              />
+              <select
+                id="primaryCategory"
+                name="primaryCategory"
+                value={form.primaryCategory}
+                onChange={handleCategoryChange}
+                className={inputClass}
+              >
+                <option value="">Select Category…</option>
+                {Object.keys(CATEGORY_MAP).map((slug) => (
+                  <option key={slug} value={slug}>
+                    {CATEGORY_MAP[slug].name}
+                  </option>
+                ))}
+              </select>
+
+              <label htmlFor="subcategory" className={labelClass + " mt-4"}>
+                Step 2: Select Subcategory <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="subcategory"
+                name="subcategory"
+                value={form.subcategory}
+                onChange={handleChange}
+                className={inputClass}
+                disabled={!form.primaryCategory}
+              >
+                <option value="">Select Subcategory…</option>
+                {(CATEGORY_MAP[form.primaryCategory]?.subcategories || []).map((sub) => (
+                  <option key={slugify(sub)} value={slugify(sub)}>
+                    {sub}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            {/* Author */}
-            <div className={panelClass} style={{ background: "var(--bg-surface)" }}>
-              <label htmlFor="authorId" className={labelClass}>
-                Author <span className="text-red-500">*</span>
-              </label>
-              {authors.length === 0 ? (
-                <div className="flex items-start gap-2.5 p-3 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-800">
-                  <AlertCircle size={15} className="text-amber-500 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">No authors found</p>
-                    <p className="text-[11px] text-amber-600 dark:text-amber-500 mt-0.5">
-                      Run <code className="bg-amber-100 dark:bg-amber-900 px-1 py-0.5 rounded font-mono">npm run seed</code>
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <select id="authorId" name="authorId" value={form.authorId}
-                  onChange={handleChange} className={inputClass}>
-                  <option value="">Select author…</option>
-                  {authors.map((author) => (
-                    <option key={author._id} value={author._id}>{author.name}</option>
-                  ))}
-                </select>
-              )}
-            </div>
 
-            {/* Tags */}
-            {tags.length > 0 && (
-              <div className={panelClass} style={{ background: "var(--bg-surface)" }}>
-                <p className={labelClass}>Tags</p>
+            {/* Difficulty & Content Type (Auto Tags) */}
+            <div className={panelClass} style={{ background: "var(--bg-surface)" }}>
+              <label htmlFor="difficulty" className={labelClass}>
+                Difficulty <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="difficulty"
+                name="difficulty"
+                value={form.difficulty}
+                onChange={handleChange}
+                className={inputClass}
+              >
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+              </select>
+
+              <label htmlFor="contentType" className={labelClass + " mt-4"}>
+                Content Type <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="contentType"
+                name="contentType"
+                value={form.contentType}
+                onChange={handleChange}
+                className={inputClass}
+              >
+                <option value="Tutorial">Tutorial</option>
+                <option value="Interview Prep">Interview Prep</option>
+                <option value="Best Practices">Best Practices</option>
+                <option value="Roadmap">Roadmap</option>
+                <option value="Project">Project</option>
+                <option value="Cheat Sheet">Cheat Sheet</option>
+                <option value="Notes">Notes</option>
+              </select>
+
+              <div className="mt-4 p-3.5 rounded-xl border border-[var(--border-color)]/70 bg-[var(--bg-base)]/50">
+                <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
+                  Auto Generated Tags (Read-only Preview)
+                </p>
                 <div className="flex flex-wrap gap-1.5">
-                  {tags.map((tag) => {
-                    const selected = form.tagIds.includes(tag._id);
-                    return (
-                      <button key={tag._id} type="button" onClick={() => toggleTag(tag._id)}
-                        className="text-xs px-2.5 py-1 rounded-full border transition-all duration-150 font-medium"
-                        style={selected
-                          ? { background: "var(--link-color)", color: "#fff", borderColor: "var(--link-color)" }
-                          : { background: "transparent", color: "var(--text-secondary)", borderColor: "var(--border-color)" }
-                        }>
-                        #{tag.name}
-                      </button>
-                    );
-                  })}
+                  <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-[var(--link-color)]/10 text-[var(--link-color)] border border-[var(--link-color)]/20">
+                    #{form.difficulty}
+                  </span>
+                  <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-[var(--link-color)]/10 text-[var(--link-color)] border border-[var(--link-color)]/20">
+                    #{form.contentType.replace(/\s+/g, "")}
+                  </span>
                 </div>
               </div>
-            )}
+            </div>
+
+            {/* SEO Keywords manual entry Tag Input */}
+            <div className={panelClass} style={{ background: "var(--bg-surface)" }}>
+              <label htmlFor="keywordInput" className={labelClass}>
+                SEO Keywords (Manual Entry) <span className="text-red-500">*</span>
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="keywordInput"
+                  type="text"
+                  value={keywordInput}
+                  onChange={(e) => setKeywordInput(e.target.value)}
+                  onKeyDown={handleKeywordKeyDown}
+                  placeholder="Type keyword and press Enter or comma"
+                  className={inputClass + " flex-1"}
+                />
+                <button
+                  type="button"
+                  onClick={() => addKeyword(keywordInput)}
+                  className="px-3.5 py-2 rounded-lg bg-[var(--link-color)] text-white font-semibold text-sm hover:opacity-90 transition-opacity active:scale-95"
+                >
+                  Add
+                </button>
+              </div>
+              {keywordError && (
+                <p className="text-xs text-red-500 font-medium mt-1">{keywordError}</p>
+              )}
+              <p className="text-[10px] text-[var(--text-tertiary)] mt-1">
+                Enter between 3 and 15 unique keywords. Duplicates will be filtered out.
+              </p>
+
+              {form.seoKeywords.length > 0 && (
+                <div className="mt-3.5 pt-3 border-t border-[var(--border-color)]/50">
+                  <p className="text-xs font-semibold text-[var(--text-secondary)] mb-2">
+                    Current Keywords ({form.seoKeywords.length}/15)
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {form.seoKeywords.map((kw, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border border-[var(--border-color)] bg-[var(--bg-base)] text-[var(--text-primary)] font-medium"
+                      >
+                        {kw}
+                        <button
+                          type="button"
+                          onClick={() => removeKeyword(idx)}
+                          className="text-[var(--text-tertiary)] hover:text-red-500 font-bold ml-1 transition-colors"
+                          title="Remove keyword"
+                        >
+                          &times;
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </form>

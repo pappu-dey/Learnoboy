@@ -52,6 +52,7 @@ export default async function WriterNewArticlePage() {
         authors={serializeArray(authors as unknown as IAuthor[]) as unknown as IAuthor[]}
         tags={serializeArray(tags)}
         initialData={authorId ? { authorId } : undefined}
+        sessionRole={session.role}
       />
     </div>
   );

@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { Plus, X, Check, Loader2 } from "lucide-react";
+import { useState, useTransition, useEffect } from "react";
+import { Plus, X, Check, Loader2, Layers, Tag } from "lucide-react";
+import type { ICategory } from "@/types";
 
 interface AddCategoryModalProps {
   onSuccess: () => void;
+  defaultParentId?: string;
+  trigger?: React.ReactNode;
 }
 
 const PRESET_COLORS = [
@@ -13,7 +16,7 @@ const PRESET_COLORS = [
   "#6366f1", "#06b6d4",
 ];
 
-export function AddCategoryModal({ onSuccess }: AddCategoryModalProps) {
+export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCategoryModalProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +26,45 @@ export function AddCategoryModal({ onSuccess }: AddCategoryModalProps) {
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
   const [color, setColor] = useState(PRESET_COLORS[0]);
+
+  // Hierarchical categories states
+  const [type, setType] = useState<"top" | "sub">(defaultParentId ? "sub" : "top");
+  const [parentId, setParentId] = useState(defaultParentId || "");
+  const [parentCategories, setParentCategories] = useState<ICategory[]>([]);
+
+  // Fetch top-level categories dynamically when modal is opened
+  useEffect(() => {
+    if (open) {
+      fetch("/api/categories")
+        .then((res) => res.json())
+        .then((json) => {
+          if (json.success && Array.isArray(json.data)) {
+            // Filter to get only top-level categories (no parent field set)
+            const topLevels = json.data.filter((c: ICategory) => !c.parent);
+            setParentCategories(topLevels);
+          }
+        })
+        .catch((err) => console.error("Error fetching parent categories:", err));
+    }
+  }, [open]);
+
+  // Adjust modal values when defaultParentId changes (or when resetting)
+  useEffect(() => {
+    if (defaultParentId) {
+      setType("sub");
+      setParentId(defaultParentId);
+    }
+  }, [defaultParentId]);
+
+  // Auto-inherit parent color for subcategories
+  useEffect(() => {
+    if (type === "sub" && parentId && parentCategories.length > 0) {
+      const parent = parentCategories.find((c) => c._id === parentId);
+      if (parent) {
+        setColor(parent.color);
+      }
+    }
+  }, [parentId, type, parentCategories]);
 
   /** Auto-generate slug from name */
   function handleNameChange(value: string) {
@@ -42,6 +84,8 @@ export function AddCategoryModal({ onSuccess }: AddCategoryModalProps) {
     setSlug("");
     setDescription("");
     setColor(PRESET_COLORS[0]);
+    setType(defaultParentId ? "sub" : "top");
+    setParentId(defaultParentId || "");
     setError(null);
     setSuccess(false);
   }
@@ -54,14 +98,26 @@ export function AddCategoryModal({ onSuccess }: AddCategoryModalProps) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
+    if (type === "sub" && !parentId) {
+      setError("Please select a parent category.");
+      return;
+    }
 
     setError(null);
     startTransition(async () => {
       try {
+        const payload = {
+          name: name.trim(),
+          slug,
+          description,
+          color,
+          parent: type === "sub" ? parentId : null,
+        };
+
         const res = await fetch("/api/categories", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: name.trim(), slug, description, color }),
+          body: JSON.stringify(payload),
         });
         const json = await res.json();
 
@@ -84,18 +140,24 @@ export function AddCategoryModal({ onSuccess }: AddCategoryModalProps) {
   return (
     <>
       {/* ── Trigger button ── */}
-      <button
-        id="add-category-btn"
-        onClick={() => setOpen(true)}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:opacity-90 active:scale-95"
-        style={{
-          background: "var(--link-color)",
-          color: "#ffffff",
-        }}
-      >
-        <Plus size={15} strokeWidth={2.5} />
-        Add Category
-      </button>
+      {trigger ? (
+        <div onClick={() => setOpen(true)} className="inline-block cursor-pointer">
+          {trigger}
+        </div>
+      ) : (
+        <button
+          id="add-category-btn"
+          onClick={() => setOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:opacity-90 active:scale-95"
+          style={{
+            background: "var(--link-color)",
+            color: "#ffffff",
+          }}
+        >
+          <Plus size={15} strokeWidth={2.5} />
+          Add Category
+        </button>
+      )}
 
       {/* ── Backdrop ── */}
       {open && (
@@ -119,10 +181,14 @@ export function AddCategoryModal({ onSuccess }: AddCategoryModalProps) {
                   className="w-8 h-8 rounded-lg flex items-center justify-center"
                   style={{ background: `${color}22` }}
                 >
-                  <Plus size={16} style={{ color }} />
+                  {type === "top" ? (
+                    <Layers size={16} style={{ color }} />
+                  ) : (
+                    <Tag size={16} style={{ color }} />
+                  )}
                 </div>
                 <h2 className="font-bold text-[var(--text-primary)]">
-                  New Category
+                  {type === "top" ? "New Category" : "New Subcategory"}
                 </h2>
               </div>
               <button
@@ -135,7 +201,70 @@ export function AddCategoryModal({ onSuccess }: AddCategoryModalProps) {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[75vh]">
+              {/* Category Type Selection */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-[var(--text-primary)]">
+                  Category Type
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setType("top");
+                      setParentId("");
+                    }}
+                    className={`px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg border transition-all duration-200 ${
+                      type === "top"
+                        ? "border-[var(--link-color)] bg-[rgba(37,99,235,0.06)] text-[var(--link-color)]"
+                        : "border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]"
+                    }`}
+                  >
+                    Top-level Category
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setType("sub")}
+                    className={`px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg border transition-all duration-200 ${
+                      type === "sub"
+                        ? "border-[var(--link-color)] bg-[rgba(37,99,235,0.06)] text-[var(--link-color)]"
+                        : "border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]"
+                    }`}
+                  >
+                    Subcategory
+                  </button>
+                </div>
+              </div>
+
+              {/* Parent Category Dropdown (if Subcategory selected) */}
+              {type === "sub" && (
+                <div className="space-y-1.5 animate-fadeIn">
+                  <label
+                    htmlFor="parent-cat"
+                    className="text-sm font-medium text-[var(--text-primary)]"
+                  >
+                    Parent Category <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="parent-cat"
+                    value={parentId}
+                    onChange={(e) => setParentId(e.target.value)}
+                    required
+                    className="w-full px-3 py-2.5 rounded-lg text-sm border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus:outline-none focus:ring-2 transition-shadow"
+                    style={{ focusRingColor: color } as React.CSSProperties}
+                  >
+                    <option value="" disabled>
+                      Select a parent category...
+                    </option>
+                    {parentCategories.map((c) => (
+                      <option key={c._id} value={c._id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {/* Name */}
               <div className="space-y-1.5">
                 <label
@@ -149,7 +278,7 @@ export function AddCategoryModal({ onSuccess }: AddCategoryModalProps) {
                   type="text"
                   value={name}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  placeholder="e.g. Machine Learning"
+                  placeholder={type === "top" ? "e.g. Machine Learning" : "e.g. NumPy"}
                   required
                   className="w-full px-3 py-2.5 rounded-lg text-sm border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 transition-shadow"
                   style={{ focusRingColor: color } as React.CSSProperties}
@@ -189,62 +318,75 @@ export function AddCategoryModal({ onSuccess }: AddCategoryModalProps) {
                   id="cat-desc"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Short description of this category…"
+                  placeholder={
+                    type === "top"
+                      ? "Short description of this category…"
+                      : `Topics or details within this subcategory…`
+                  }
                   rows={2}
                   className="w-full px-3 py-2.5 rounded-lg text-sm border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 transition-shadow resize-none"
                 />
               </div>
 
-              {/* Color */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-[var(--text-primary)]">
-                  Accent Color
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {PRESET_COLORS.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setColor(c)}
-                      className="w-7 h-7 rounded-full border-2 transition-transform duration-150 hover:scale-110 flex items-center justify-center"
-                      style={{
-                        background: c,
-                        borderColor: color === c ? "#fff" : "transparent",
-                        boxShadow: color === c ? `0 0 0 2px ${c}` : "none",
-                      }}
-                      aria-label={`Select color ${c}`}
-                    >
-                      {color === c && (
-                        <Check size={11} color="#fff" strokeWidth={3} />
-                      )}
-                    </button>
-                  ))}
-                  {/* Custom color picker */}
-                  <label
-                    className="w-7 h-7 rounded-full border-2 border-dashed border-[var(--border-color)] flex items-center justify-center cursor-pointer hover:scale-110 transition-transform overflow-hidden"
-                    title="Custom color"
-                  >
-                    <input
-                      type="color"
-                      value={color}
-                      onChange={(e) => setColor(e.target.value)}
-                      className="opacity-0 absolute w-1 h-1"
-                    />
-                    <span className="text-[10px] text-[var(--text-tertiary)] font-bold">+</span>
+              {/* Color Selection (only shown for top-level, subcategories inherit parent color) */}
+              {type === "top" ? (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-[var(--text-primary)]">
+                    Accent Color
                   </label>
+                  <div className="flex flex-wrap gap-2">
+                    {PRESET_COLORS.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setColor(c)}
+                        className="w-7 h-7 rounded-full border-2 transition-transform duration-150 hover:scale-110 flex items-center justify-center"
+                        style={{
+                          background: c,
+                          borderColor: color === c ? "#fff" : "transparent",
+                          boxShadow: color === c ? `0 0 0 2px ${c}` : "none",
+                        }}
+                        aria-label={`Select color ${c}`}
+                      >
+                        {color === c && (
+                          <Check size={11} color="#fff" strokeWidth={3} />
+                        )}
+                      </button>
+                    ))}
+                    {/* Custom color picker */}
+                    <label
+                      className="w-7 h-7 rounded-full border-2 border-dashed border-[var(--border-color)] flex items-center justify-center cursor-pointer hover:scale-110 transition-transform overflow-hidden"
+                      title="Custom color"
+                    >
+                      <input
+                        type="color"
+                        value={color}
+                        onChange={(e) => setColor(e.target.value)}
+                        className="opacity-0 absolute w-1 h-1"
+                      />
+                      <span className="text-[10px] text-[var(--text-tertiary)] font-bold">+</span>
+                    </label>
+                  </div>
                 </div>
+              ) : (
+                type === "sub" && parentId && (
+                  <div className="space-y-1.5 text-xs text-[var(--text-secondary)] bg-[var(--bg-muted)] p-3 rounded-lg flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: color }} />
+                    Inheriting color theme from parent category.
+                  </div>
+                )
+              )}
 
-                {/* Color preview */}
+              {/* Color preview badge */}
+              <div
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium"
+                style={{ background: `${color}18`, color }}
+              >
                 <div
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium"
-                  style={{ background: `${color}18`, color }}
-                >
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ background: color }}
-                  />
-                  Preview badge · {name || "Category Name"}
-                </div>
+                  className="w-3 h-3 rounded-full"
+                  style={{ background: color }}
+                />
+                Preview: {name || "Name"}
               </div>
 
               {/* Error */}
@@ -286,7 +428,7 @@ export function AddCategoryModal({ onSuccess }: AddCategoryModalProps) {
                   ) : (
                     <>
                       <Plus size={14} strokeWidth={2.5} />
-                      Create Category
+                      {type === "top" ? "Create Category" : "Create Subcategory"}
                     </>
                   )}
                 </button>

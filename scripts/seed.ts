@@ -49,6 +49,11 @@ const ArticleSchema = new mongoose.Schema({
   title: String,
   slug: String,
   category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
+  categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
+  primaryCategory: String,
+  subcategory: String,
+  difficulty: String,
+  contentType: String,
   author: { type: mongoose.Schema.Types.ObjectId, ref: "Author" },
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag" }],
   content: String,
@@ -288,7 +293,11 @@ async function seed() {
       {
         title: "JavaScript Fundamentals: A Complete Beginner's Guide",
         slug: "javascript-fundamentals-complete-beginners-guide",
-        category: jsCategory?._id,
+        primaryCategory: "javascript",
+        subcategory: "javascript-fundamentals",
+        subcategoryName: "JavaScript Fundamentals",
+        difficulty: "Beginner",
+        contentType: "Tutorial",
         author: insertedAuthors[0]._id,
         tags: [insertedTags[0]._id, insertedTags[2]._id],
         content: ARTICLE_CONTENT,
@@ -307,7 +316,11 @@ async function seed() {
       {
         title: "Python for Data Science: Getting Started with NumPy",
         slug: "python-data-science-numpy-guide",
-        category: pyCategory?._id,
+        primaryCategory: "python",
+        subcategory: "numpy",
+        subcategoryName: "NumPy",
+        difficulty: "Beginner",
+        contentType: "Tutorial",
         author: insertedAuthors[1]?._id || insertedAuthors[0]._id,
         tags: [insertedTags[0]._id, insertedTags[2]._id, insertedTags[5]._id],
         content: ARTICLE_CONTENT.replace(/JavaScript/g, "Python").replace(/javascript/g, "python"),
@@ -326,7 +339,11 @@ async function seed() {
       {
         title: "Understanding Binary Trees: A Visual Guide",
         slug: "understanding-binary-trees-visual-guide",
-        category: dsCategory?._id,
+        primaryCategory: "data-structures",
+        subcategory: "tree",
+        subcategoryName: "Tree",
+        difficulty: "Intermediate",
+        contentType: "Tutorial",
         author: insertedAuthors[0]._id,
         tags: [insertedTags[3]._id, insertedTags[4]._id],
         content: ARTICLE_CONTENT.replace(/JavaScript/g, "Binary Trees").replace(/javascript/g, "trees"),
@@ -345,7 +362,11 @@ async function seed() {
       {
         title: "React Hooks Deep Dive: useState, useEffect, and Custom Hooks",
         slug: "react-hooks-deep-dive-usestate-useeffect-custom-hooks",
-        category: jsCategory?._id,
+        primaryCategory: "javascript",
+        subcategory: "react",
+        subcategoryName: "React",
+        difficulty: "Intermediate",
+        contentType: "Tutorial",
         author: insertedAuthors[1]?._id || insertedAuthors[0]._id,
         tags: [insertedTags[1]._id, insertedTags[4]._id],
         content: ARTICLE_CONTENT,
@@ -364,7 +385,11 @@ async function seed() {
       {
         title: "Dynamic Programming: Mastering the Core Patterns",
         slug: "dynamic-programming-mastering-core-patterns",
-        category: dsCategory?._id,
+        primaryCategory: "data-structures",
+        subcategory: "dynamic-programming",
+        subcategoryName: "Dynamic Programming",
+        difficulty: "Advanced",
+        contentType: "Tutorial",
         author: insertedAuthors[0]._id,
         tags: [insertedTags[1]._id, insertedTags[3]._id],
         content: ARTICLE_CONTENT.replace(/JavaScript/g, "Dynamic Programming").replace(/javascript/g, "dp"),
@@ -382,12 +407,53 @@ async function seed() {
       },
     ];
 
-    await Article.insertMany(articles);
-    console.log(`✅ Inserted ${articles.length} articles`);
+    async function resolveSubcategoryDocInSeed(primaryCategory: string, subcategoryName: string): Promise<string> {
+      const slug = slugify(subcategoryName);
+      let cat = await Category.findOne({ slug });
+      if (!cat) {
+        cat = await Category.create({
+          name: subcategoryName,
+          slug,
+          description: `${subcategoryName} subcategory under ${primaryCategory}`,
+          icon: "📚",
+          color: "#3b82f6",
+        });
+      }
+      return String(cat._id);
+    }
+
+    const processedArticles = [];
+    for (const art of articles) {
+      const subcatId = await resolveSubcategoryDocInSeed(art.primaryCategory, art.subcategoryName);
+      processedArticles.push({
+        title: art.title,
+        slug: art.slug,
+        primaryCategory: art.primaryCategory,
+        subcategory: art.subcategory,
+        difficulty: art.difficulty,
+        contentType: art.contentType,
+        category: subcatId,
+        categories: [subcatId],
+        author: art.author,
+        tags: art.tags,
+        content: art.content,
+        excerpt: art.excerpt,
+        coverImage: art.coverImage,
+        readingTime: art.readingTime,
+        isFeatured: art.isFeatured,
+        status: art.status,
+        views: art.views,
+        publishedAt: art.publishedAt,
+        seo: art.seo,
+      });
+    }
+
+    await Article.insertMany(processedArticles);
+    console.log(`✅ Inserted ${processedArticles.length} articles`);
 
     // Update article counts on categories
     for (const cat of insertedCategories) {
-      const count = articles.filter(
+      const count = processedArticles.filter(
         (a) => a.category?.toString() === cat._id.toString()
       ).length;
       await Category.findByIdAndUpdate(cat._id, { articleCount: count });
@@ -396,7 +462,7 @@ async function seed() {
 
     // Update author article counts
     for (const author of insertedAuthors) {
-      const count = articles.filter(
+      const count = processedArticles.filter(
         (a) => a.author?.toString() === author._id.toString()
       ).length;
       await Author.findByIdAndUpdate(author._id, { articleCount: count });

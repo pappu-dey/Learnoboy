@@ -19,7 +19,7 @@ export default async function AdminLayout({
 
       {/* Main content area */}
       <div className="flex-1 min-w-0 flex flex-col">
-        <main className="flex-1 p-5 lg:p-8">{children}</main>
+        <main className="flex-1 p-4 md:p-5 lg:p-8 pb-24 md:pb-8">{children}</main>
       </div>
     </div>
   );

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getArticles, createArticle } from "@/lib/services/articleService";
 import { calculateReadingTime } from "@/lib/utils/readingTime";
 import { slugify } from "@/lib/utils/slugify";
 import { getSession } from "@/lib/auth/session";
+import { Author } from "@/lib/models";
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,9 +47,34 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
+    // Secure Author Resolution
+    let finalAuthorId = body.authorId;
+    if (session.role === "writer") {
+      const authorDoc = await Author.findOne({ userId: session.userId });
+      if (!authorDoc) {
+        return NextResponse.json(
+          { success: false, error: "Writer profile not found for this account" },
+          { status: 400 }
+        );
+      }
+      finalAuthorId = String(authorDoc._id);
+    } else if (session.role === "superadmin" && !finalAuthorId) {
+      const authorDoc = await Author.findOne({ userId: session.userId });
+      if (authorDoc) {
+        finalAuthorId = String(authorDoc._id);
+      }
+    }
+
+    if (!finalAuthorId) {
+      return NextResponse.json(
+        { success: false, error: "Please specify a valid author" },
+        { status: 400 }
+      );
+    }
+
     // Validate required fields
-    const { title, content, excerpt, categoryId, authorId } = body;
-    if (!title || !content || !excerpt || !categoryId || !authorId) {
+    const { title, content, excerpt, categoryId } = body;
+    if (!title || !content || !excerpt || !categoryId) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 }
@@ -60,15 +87,34 @@ export async function POST(request: NextRequest) {
     // Auto-calculate reading time
     const readingTime = calculateReadingTime(content);
 
+    // Build categories array (multi-category support)
+    const categories = Array.isArray(body.categoryIds) && body.categoryIds.length > 0
+      ? body.categoryIds
+      : [categoryId];
+
     const article = await createArticle({
       ...body,
       slug,
       readingTime,
-      category: categoryId,
-      author: authorId,
-      tags: body.tagIds || [],
+      category: categoryId,     // primary (for URL routing)
+      categories,               // all selected
+      author: finalAuthorId,
       publishedAt: body.status === "published" ? new Date().toISOString() : undefined,
     });
+
+    if (article && article.status === "published") {
+      try {
+        const pCat = article.primaryCategory || "dsa";
+        const subcat = article.subcategory || "arrays";
+        revalidatePath("/");
+        revalidatePath(`/${pCat}`);
+        revalidatePath(`/${pCat}/${subcat}`);
+        revalidatePath(`/${pCat}/${subcat}/${article.slug}`);
+        console.log(`[Cache Revalidation] Triggered revalidation for newly created article "${article.title}"`);
+      } catch (revalError) {
+        console.error("[Cache Revalidation] Failed to revalidate paths:", revalError);
+      }
+    }
 
     return NextResponse.json({ success: true, data: article }, { status: 201 });
   } catch (error: unknown) {

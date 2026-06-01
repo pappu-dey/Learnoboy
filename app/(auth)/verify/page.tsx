@@ -69,6 +69,13 @@ function VerifyContent() {
           <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
             Verifying your email address. Please hold on...
           </p>
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1.5 text-sm font-medium py-1.5 px-4 rounded-lg transition-all hover:underline"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Do it later →
+          </Link>
         </div>
       )}
 
@@ -132,6 +139,18 @@ function VerifyContent() {
           >
             Proceed to Sign In
           </button>
+
+          <Link
+            href="/login"
+            className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-medium border transition-all hover:opacity-80"
+            style={{
+              color: "var(--text-secondary)",
+              borderColor: "var(--border-color, #e5e7eb)",
+              background: "transparent",
+            }}
+          >
+            Do it later
+          </Link>
         </div>
       )}
     </div>

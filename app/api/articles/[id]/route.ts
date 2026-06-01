@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import {
   getArticleById,
   updateArticle,
@@ -6,6 +7,7 @@ import {
 } from "@/lib/services/articleService";
 import { calculateReadingTime } from "@/lib/utils/readingTime";
 import { getSession } from "@/lib/auth/session";
+import { Author } from "@/lib/models";
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -46,9 +48,31 @@ export async function PUT(request: NextRequest, { params }: Params) {
     const { id } = await params;
     const body = await request.json();
 
+    // Secure Author ownership check for writer role
+    if (session.role === "writer") {
+      const authorDoc = await Author.findOne({ userId: session.userId });
+      if (!authorDoc) {
+        return NextResponse.json(
+          { success: false, error: "Writer profile not found for this account" },
+          { status: 400 }
+        );
+      }
+      body.author = String(authorDoc._id);
+      body.authorId = String(authorDoc._id);
+    }
+
     // Recalculate reading time if content changed
     if (body.content) {
       body.readingTime = calculateReadingTime(body.content);
+    }
+
+    // Sync multi-category fields
+    if (Array.isArray(body.categoryIds) && body.categoryIds.length > 0) {
+      body.categories = body.categoryIds;
+      body.category = body.categoryIds[0]; // primary for URL routing
+    } else if (body.categoryId) {
+      body.category = body.categoryId;
+      body.categories = [body.categoryId];
     }
 
     // Set publishedAt if publishing for the first time
@@ -63,6 +87,20 @@ export async function PUT(request: NextRequest, { params }: Params) {
         { success: false, error: "Article not found" },
         { status: 404 }
       );
+    }
+
+    if (article && article.status === "published") {
+      try {
+        const pCat = article.primaryCategory || "dsa";
+        const subcat = article.subcategory || "arrays";
+        revalidatePath("/");
+        revalidatePath(`/${pCat}`);
+        revalidatePath(`/${pCat}/${subcat}`);
+        revalidatePath(`/${pCat}/${subcat}/${article.slug}`);
+        console.log(`[Cache Revalidation] Triggered revalidation for updated article "${article.title}"`);
+      } catch (revalError) {
+        console.error("[Cache Revalidation] Failed to revalidate paths:", revalError);
+      }
     }
 
     return NextResponse.json({ success: true, data: article });
@@ -86,13 +124,27 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
     }
 
     const { id } = await params;
-    const deleted = await deleteArticle(id);
+    const article = await deleteArticle(id);
 
-    if (!deleted) {
+    if (!article) {
       return NextResponse.json(
         { success: false, error: "Article not found" },
         { status: 404 }
       );
+    }
+
+    if (article && article.status === "published") {
+      try {
+        const pCat = article.primaryCategory || "dsa";
+        const subcat = article.subcategory || "arrays";
+        revalidatePath("/");
+        revalidatePath(`/${pCat}`);
+        revalidatePath(`/${pCat}/${subcat}`);
+        revalidatePath(`/${pCat}/${subcat}/${article.slug}`);
+        console.log(`[Cache Revalidation] Triggered revalidation for deleted article "${article.title}"`);
+      } catch (revalError) {
+        console.error("[Cache Revalidation] Failed to revalidate paths:", revalError);
+      }
     }
 
     return NextResponse.json({

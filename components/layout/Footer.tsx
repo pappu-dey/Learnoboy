@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+
 
 const FOOTER_LINKS = {
   Learn: [
@@ -12,6 +16,7 @@ const FOOTER_LINKS = {
   Platform: [
     { href: "/", label: "Home" },
     { href: "/search", label: "Search Articles" },
+    { href: "/donors", label: "Donors Leaderboard" },
     { href: "/admin", label: "Admin" },
   ],
   Legal: [
@@ -50,90 +55,389 @@ const SOCIAL_LINKS = [
   },
 ];
 
-export function Footer() {
+const FEEDBACK_TYPES = ["Bug Report", "Feature Request", "Content Suggestion", "General Feedback"];
+
+const DONATE_AMOUNTS = [5, 10, 25, 50];
+
+// ── Feedback Modal ──────────────────────────────────────────────────────────
+function FeedbackModal({ onClose }: { onClose: () => void }) {
+  const [type, setType] = useState(FEEDBACK_TYPES[3]);
+  const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!message.trim() || isPending) return;
+
+    setError(null);
+    setIsPending(true);
+
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, message: message.trim(), email }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error ?? "Failed to send feedback.");
+      } else {
+        setSubmitted(true);
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setIsPending(false);
+    }
+  };
+
   return (
-    <footer
-      className="border-t border-[var(--border-color)] mt-20"
-      style={{ background: "var(--bg-surface)" }}
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-          {/* Brand */}
-          <div className="md:col-span-1">
-            <Link href="/" className="inline-flex mb-4">
-              <Image
-                src="/images/logo-gif.gif"
-                alt="LearnoBoy"
-                width={300}
-                height={300}
-                unoptimized
-                style={{ height: "200px", width: "auto", borderRadius: "30%" }}
-              />
-            </Link>
-            <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-4">
-              A premium educational platform for developers, students, and
-              technical readers.
-            </p>
-            <div className="flex items-center gap-2">
-              {SOCIAL_LINKS.map(({ href, label, icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  title={label}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--link-color)] hover:border-[var(--link-color)] hover:bg-[var(--link-color)]/5 transition-all duration-200"
-                >
-                  {icon}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Links */}
-          {Object.entries(FOOTER_LINKS).map(([title, links]) => (
-            <div key={title}>
-              <h3 className="font-semibold text-sm text-[var(--text-primary)] mb-3">
-                {title}
-              </h3>
-              <ul className="space-y-2">
-                {links.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-[var(--text-secondary)] hover:text-[var(--link-color)] transition-colors duration-200"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        <div className="pt-6 border-t border-[var(--border-color)] flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-sm text-[var(--text-tertiary)]">
-            © {new Date().getFullYear()} LearnoBoy. All rights reserved.
-          </p>
-          <div className="flex items-center gap-1.5 text-sm text-[var(--text-tertiary)]">
-            <span>Made with</span>
-            {/* Heart SVG */}
-            <svg
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              width="14"
-              height="14"
-              className="text-red-500"
-              aria-hidden="true"
+      <div
+        className="w-full max-w-md rounded-2xl p-6 shadow-2xl"
+        style={{
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-color)",
+          animation: "slideUp 0.25s ease",
+        }}
+      >
+        {submitted ? (
+          <div className="text-center py-6">
+            <div
+              className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
+              style={{ background: "color-mix(in srgb, var(--link-color) 15%, transparent)" }}
             >
-              <path d="M12 21.593c-.525-.327-3.695-2.366-5.865-4.55C3.915 14.788 2 12.41 2 9.5 2 6.462 4.462 4 7.5 4c1.59 0 3.09.748 4.5 2.25C13.41 4.748 14.91 4 16.5 4 19.538 4 22 6.462 22 9.5c0 2.91-1.916 5.288-4.135 7.543C15.695 19.227 12.525 21.266 12 21.593z" />
-            </svg>
-            <span>for learners everywhere</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--link-color)" strokeWidth="2.5" width="28" height="28">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+              Thank you!
+            </h3>
+            <p className="text-sm mb-5" style={{ color: "var(--text-secondary)" }}>
+              Your feedback helps us improve LearnoBoy for everyone.
+            </p>
+            <button
+              onClick={onClose}
+              className="px-5 py-2 rounded-lg text-sm font-medium transition-all"
+              style={{
+                background: "var(--link-color)",
+                color: "#fff",
+              }}
+            >
+              Close
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">💬</span>
+                <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>
+                  Share Feedback
+                </h2>
+              </div>
+              <button
+                onClick={onClose}
+                className="w-7 h-7 rounded-md flex items-center justify-center transition-colors"
+                style={{ color: "var(--text-tertiary)", background: "transparent" }}
+                aria-label="Close"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Type selector */}
+              <div className="flex flex-wrap gap-2">
+                {FEEDBACK_TYPES.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setType(t)}
+                    className="px-3 py-1 rounded-full text-xs font-medium transition-all border"
+                    style={
+                      type === t
+                        ? {
+                          background: "var(--link-color)",
+                          color: "#fff",
+                          borderColor: "var(--link-color)",
+                        }
+                        : {
+                          background: "transparent",
+                          color: "var(--text-secondary)",
+                          borderColor: "var(--border-color)",
+                        }
+                    }
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+
+              {/* Message */}
+              <div>
+                <label
+                  className="block text-xs font-medium mb-1.5"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Your message <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Tell us what's on your mind…"
+                  className="w-full rounded-lg px-3 py-2.5 text-sm resize-none outline-none transition-all"
+                  style={{
+                    background: "var(--bg-base)",
+                    border: "1px solid var(--border-color)",
+                    color: "var(--text-primary)",
+                  }}
+                />
+              </div>
+
+              {/* Email (optional) */}
+              <div>
+                <label
+                  className="block text-xs font-medium mb-1.5"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Email{" "}
+                  <span style={{ color: "var(--text-tertiary)" }}>(optional, for follow-up)</span>
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition-all"
+                  style={{
+                    background: "var(--bg-base)",
+                    border: "1px solid var(--border-color)",
+                    color: "var(--text-primary)",
+                  }}
+                />
+              </div>
+
+              {/* Error message */}
+              {error && (
+                <div className="text-xs text-red-500 font-semibold bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 p-2.5 rounded-lg">
+                  ⚠️ {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isPending || !message.trim()}
+                className="w-full py-2.5 rounded-lg text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                style={{ background: "var(--link-color)", color: "#fff" }}
+              >
+                {isPending ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" width="16" height="16">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Sending…
+                  </>
+                ) : (
+                  "Send Feedback"
+                )}
+              </button>
+            </form>
+          </>
+        )}
+      </div>
+      <style>{`@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }`}</style>
+    </div>
+  );
+}
+
+// ── Footer ──────────────────────────────────────────────────────────────────
+export function Footer() {
+  const [showFeedback, setShowFeedback] = useState(false);
+
+  return (
+    <>
+      {showFeedback && <FeedbackModal onClose={() => setShowFeedback(false)} />}
+
+      <footer
+        className="border-t border-[var(--border-color)] mt-20"
+        style={{ background: "var(--bg-surface)" }}
+      >
+        {/* ── Support banner ─────────────────────────────────────────────── */}
+        <div
+          className="border-b border-[var(--border-color)]"
+          style={{
+            background:
+              "linear-gradient(135deg, color-mix(in srgb, var(--link-color) 6%, transparent), color-mix(in srgb, #f59e0b 5%, transparent))",
+          }}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                Help us keep LearnoBoy free & growing 🚀
+              </p>
+              <p className="text-xs mt-0.5" style={{ color: "var(--text-secondary)" }}>
+                No ads, no paywalls — just great learning content.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={() => setShowFeedback(true)}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium border transition-all hover:scale-[1.02]"
+                style={{
+                  borderColor: "var(--border-color)",
+                  color: "var(--text-primary)",
+                  background: "var(--bg-surface)",
+                }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Feedback
+              </button>
+              <Link
+                href="/donors"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-[1.02] hover:opacity-90"
+                style={{
+                  background: "linear-gradient(135deg, #f59e0b, #ef4444)",
+                  color: "#fff",
+                }}
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                  <path d="M12 21.593c-.525-.327-3.695-2.366-5.865-4.55C3.915 14.788 2 12.41 2 9.5 2 6.462 4.462 4 7.5 4c1.59 0 3.09.748 4.5 2.25C13.41 4.748 14.91 4 16.5 4 19.538 4 22 6.462 22 9.5c0 2.91-1.916 5.288-4.135 7.543C15.695 19.227 12.525 21.266 12 21.593z" />
+                </svg>
+                Donate
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
-    </footer>
+
+        {/* ── Main footer grid ────────────────────────────────────────────── */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+            {/* Brand */}
+            <div className="md:col-span-1">
+              <Link href="/" className="inline-flex mb-4">
+                <Image
+                  src="/images/logo-gif.gif"
+                  alt="LearnoBoy"
+                  width={300}
+                  height={300}
+                  unoptimized
+                  style={{ height: "200px", width: "auto", borderRadius: "30%" }}
+                />
+              </Link>
+              <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--text-secondary)" }}>
+                A premium educational platform for developers, students, and technical readers.
+              </p>
+              <div className="flex items-center gap-2">
+                {SOCIAL_LINKS.map(({ href, label, icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    title={label}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg border transition-all duration-200"
+                    style={{
+                      borderColor: "var(--border-color)",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    {icon}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Nav link columns */}
+            {Object.entries(FOOTER_LINKS).map(([title, links]) => (
+              <div key={title}>
+                <h3
+                  className="font-semibold text-sm mb-3"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  {title}
+                </h3>
+                <ul className="space-y-2">
+                  {links.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="text-sm transition-colors duration-200"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Bottom bar ───────────────────────────────────────────────── */}
+          <div
+            className="pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-3"
+            style={{ borderColor: "var(--border-color)" }}
+          >
+            <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
+              © {new Date().getFullYear()} LearnoBoy. All rights reserved.
+            </p>
+
+            {/* Inline actions in bottom bar */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowFeedback(true)}
+                className="text-xs flex items-center gap-1 transition-colors"
+                style={{ color: "var(--text-tertiary)" }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Feedback
+              </button>
+              <span style={{ color: "var(--border-color)" }}>·</span>
+              <Link
+                href="/donors"
+                className="text-xs flex items-center gap-1 transition-colors"
+                style={{ color: "var(--text-tertiary)" }}
+              >
+                ☕ Support us
+              </Link>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-sm" style={{ color: "var(--text-tertiary)" }}>
+              <span>Made with</span>
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                width="14"
+                height="14"
+                className="text-red-500"
+                aria-hidden="true"
+              >
+                <path d="M12 21.593c-.525-.327-3.695-2.366-5.865-4.55C3.915 14.788 2 12.41 2 9.5 2 6.462 4.462 4 7.5 4c1.59 0 3.09.748 4.5 2.25C13.41 4.748 14.91 4 16.5 4 19.538 4 22 6.462 22 9.5c0 2.91-1.916 5.288-4.135 7.543C15.695 19.227 12.525 21.266 12 21.593z" />
+              </svg>
+              <span>for learners everywhere</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </>
   );
 }

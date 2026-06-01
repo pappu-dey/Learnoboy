@@ -67,7 +67,9 @@ export function getArticleMetadata(article: IArticle): Metadata {
   const ogImage = article.seo?.ogImage || article.coverImage || DEFAULT_OG_IMAGE;
   const canonicalUrl =
     article.seo?.canonicalUrl ||
-    `${BASE_URL}/${category?.slug || "articles"}/${article.slug}`;
+    (article.primaryCategory && article.subcategory
+      ? `${BASE_URL}/${article.primaryCategory}/${article.subcategory}/${article.slug}`
+      : `${BASE_URL}/${category?.slug || "articles"}/${article.slug}`);
 
   return {
     title,
@@ -137,7 +139,9 @@ export function getArticleJsonLd(article: IArticle): object {
 
   const canonicalUrl =
     article.seo?.canonicalUrl ||
-    `${BASE_URL}/${category?.slug || "articles"}/${article.slug}`;
+    (article.primaryCategory && article.subcategory
+      ? `${BASE_URL}/${article.primaryCategory}/${article.subcategory}/${article.slug}`
+      : `${BASE_URL}/${category?.slug || "articles"}/${article.slug}`);
 
   return {
     "@context": "https://schema.org",

@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/lib/models/User";
 import bcrypt from "bcryptjs";
-import crypto from "crypto";
-import { sendVerificationEmail } from "@/lib/mail";
+import { createSession } from "@/lib/auth/session";
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,35 +24,26 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await bcrypt.hash(password, 12);
     const isSuperAdmin = email.toLowerCase() === (process.env.SUPERADMIN_EMAIL ?? "ikkapd@gmail.com").toLowerCase();
-
-    const verificationToken = crypto.randomBytes(32).toString("hex");
-    const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const role = isSuperAdmin ? "superadmin" : "reader";
 
     const user = await User.create({
       name: name.trim(),
       email: email.toLowerCase().trim(),
       passwordHash,
-      role: isSuperAdmin ? "superadmin" : "reader",
-      isVerified: false,
-      verificationToken,
-      verificationTokenExpiry,
+      role,
+      isVerified: true,
     });
 
-    // Send verification email
-    const emailSent = await sendVerificationEmail(user.email, user.name, verificationToken);
-    if (!emailSent) {
-      console.error("[register] Verification email failed to send.");
-      if (process.env.NODE_ENV !== "production") {
-        return NextResponse.json({
-          error: "Resend failed to deliver the verification email. Please check your terminal console for the exact error. (If using Resend Sandbox, make sure this recipient email is verified in your Resend dashboard).",
-        }, { status: 500 });
-      }
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: "Registration successful! Please check your email to verify your account.",
+    // Auto sign-in after registration
+    await createSession({
+      userId: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      role,
+      avatar: user.avatar || null,
     });
+
+    return NextResponse.json({ success: true, role });
   } catch (err) {
     console.error("[register]", err);
     return NextResponse.json({ error: "Server error. Please try again." }, { status: 500 });

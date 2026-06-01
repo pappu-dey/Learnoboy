@@ -377,3 +377,12 @@ pre code {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* ===================== SEARCH HIGHLIGHTS ===================== */
+.search-highlight {
+  background-color: color-mix(in srgb, var(--link-color) 15%, transparent);
+  color: var(--link-color);
+  padding: 0.1rem 0.25rem;
+  border-radius: 6px;
+  font-weight: 700;
+}

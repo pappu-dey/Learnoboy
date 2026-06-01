@@ -1,19 +1,20 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { getArticleBySlug, getRelatedArticles, getAllArticleSlugs } from "@/lib/services/articleService";
+import connectDB from "@/lib/mongodb";
+import { Article } from "@/lib/models";
+import { getArticleBySubcategoryAndSlug, getRelatedArticles, getAllArticleSlugs } from "@/lib/services/articleService";
 import { ArticleHeader } from "@/components/article/ArticleHeader";
 import { ArticleBody } from "@/components/article/ArticleBody";
-import { AuthorBox } from "@/components/article/AuthorBox";
 import { TableOfContents } from "@/components/article/TableOfContents";
 import { extractTableOfContents } from "@/lib/utils/toc";
 import { RelatedArticles } from "@/components/article/RelatedArticles";
 import { ReadingProgress } from "@/components/article/ReadingProgress";
 import { getArticleMetadata, getArticleJsonLd, getBreadcrumbJsonLd, BASE_URL } from "@/lib/utils/seo";
-import type { ICategory, IAuthor } from "@/types";
+import type { ICategory } from "@/types";
 import { stripFirstH1 } from "@/lib/utils/stripFirstHeading";
 
 interface PageParams {
-  params: Promise<{ category: string; slug: string }>;
+  params: Promise<{ category: string; slug: string[] }>;
 }
 
 // ISR: revalidate every 5 minutes
@@ -23,7 +24,10 @@ export const revalidate = 300;
 export async function generateStaticParams() {
   try {
     const slugs = await getAllArticleSlugs();
-    return slugs.map(({ category, slug }) => ({ category, slug }));
+    return slugs.map(({ category, subcategory, slug }) => ({
+      category,
+      slug: [subcategory, slug],
+    }));
   } catch {
     return [];
   }
@@ -32,7 +36,11 @@ export async function generateStaticParams() {
 // Dynamic SEO metadata
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const { category, slug } = await params;
-  const article = await getArticleBySlug(category, slug).catch(() => null);
+  if (!slug || slug.length < 2) {
+    return { title: "Redirecting..." };
+  }
+  const [subcategorySlug, articleSlug] = slug;
+  const article = await getArticleBySubcategoryAndSlug(category, subcategorySlug, articleSlug).catch(() => null);
   if (!article) return { title: "Article Not Found" };
   return getArticleMetadata(article);
 }
@@ -40,7 +48,26 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 export default async function ArticlePage({ params }: PageParams) {
   const { category: categorySlug, slug } = await params;
 
-  const article = await getArticleBySlug(categorySlug, slug).catch(() => null);
+  if (!slug || slug.length === 0) {
+    notFound();
+  }
+
+  // Case 1: Legacy redirect (e.g. /[category]/[slug])
+  if (slug.length === 1) {
+    const articleSlug = slug[0];
+    await connectDB();
+    const article = await Article.findOne({ slug: articleSlug, status: "published" }).lean();
+    if (!article) {
+      notFound();
+    }
+    const primaryCategory = article.primaryCategory || "dsa";
+    const subcategory = article.subcategory || "arrays";
+    redirect(`/${primaryCategory}/${subcategory}/${articleSlug}`);
+  }
+
+  // Case 2: Render article page (e.g. /[category]/[subcategory]/[slug])
+  const [subcategorySlug, articleSlug] = slug;
+  const article = await getArticleBySubcategoryAndSlug(categorySlug, subcategorySlug, articleSlug).catch(() => null);
   if (!article) notFound();
 
   const category =
@@ -55,12 +82,15 @@ export default async function ArticlePage({ params }: PageParams) {
   ).catch(() => []);
 
   const strippedContent = stripFirstH1(article.content);
-  const tocItems = extractTableOfContents(strippedContent);
+  const tocItems = extractTableOfContents(strippedContent).filter((item) => item.level === 2);
   const jsonLd = getArticleJsonLd(article);
+
+  // Generate dynamic breadcrumbs: Home > Primary Category > Subcategory > Article Title
   const breadcrumbLd = getBreadcrumbJsonLd([
     { name: "Home", url: BASE_URL },
-    ...(category ? [{ name: category.name, url: `${BASE_URL}/${category.slug}` }] : []),
-    { name: article.title, url: `${BASE_URL}/${categorySlug}/${slug}` },
+    { name: article.primaryCategory.toUpperCase(), url: `${BASE_URL}/${article.primaryCategory}` },
+    { name: category ? category.name : subcategorySlug, url: `${BASE_URL}/${article.primaryCategory}/${article.subcategory}` },
+    { name: article.title, url: `${BASE_URL}/${article.primaryCategory}/${article.subcategory}/${articleSlug}` },
   ]);
 
   return (
@@ -97,19 +127,14 @@ export default async function ArticlePage({ params }: PageParams) {
               </div>
             )}
 
+            {/* Article Body */}
+            <ArticleBody content={strippedContent} />
+
             {/* Mobile ToC */}
             {tocItems.length > 0 && (
               <div className="xl:hidden mb-8">
                 <TableOfContents items={tocItems} />
               </div>
-            )}
-
-            {/* Article Body */}
-            <ArticleBody content={strippedContent} />
-
-            {/* Author Box */}
-            {typeof article.author === "object" && (
-              <AuthorBox author={article.author as IAuthor} />
             )}
 
             {/* Related Articles */}

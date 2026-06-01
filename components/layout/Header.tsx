@@ -11,16 +11,106 @@ import {
   LogOut,
   User as UserIcon,
   PenLine,
+  Terminal,
+  Database,
+  Braces,
+  Code2,
+  Sparkles,
+  Layers,
 } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { SearchBar } from "@/components/search/SearchBar";
 
-const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/javascript", label: "JavaScript" },
-  { href: "/python", label: "Python" },
-  { href: "/web-development", label: "Web Dev" },
-  { href: "/data-structures", label: "DSA" },
+// ── Navigation Sections Data (Similar to GeeksforGeeks and MDN) ─────────────
+interface SubCategoryItem {
+  name: string;
+  slug: string;
+  desc: string;
+}
+
+interface NavSection {
+  label: string;
+  slug: string;
+  color: string;
+  icon: React.ReactNode;
+  items: SubCategoryItem[];
+}
+
+const NAVIGATION_ITEMS: NavSection[] = [
+  {
+    label: "Coding",
+    slug: "coding",
+    color: "#2563eb", // Blue
+    icon: <Terminal size={14} />,
+    items: [
+      { name: "C", slug: "c", desc: "Low-level system programming & compiled logic" },
+      { name: "C++", slug: "cpp", desc: "High-performance OOPs & STL structure" },
+      { name: "Java", slug: "java", desc: "Enterprise robust cross-platform JVM apps" },
+      { name: "Python", slug: "python", desc: "Clean scientific coding & scripting" },
+      { name: "JavaScript", slug: "javascript", desc: "Interactive web logic & dynamic scripting" },
+    ]
+  },
+  {
+    label: "DSA",
+    slug: "dsa",
+    color: "#f97316", // Orange
+    icon: <Braces size={14} />,
+    items: [
+      { name: "Arrays", slug: "arrays", desc: "Linear static & dynamic arrays traversals" },
+      { name: "Linked List", slug: "linked-list", desc: "Sequential node chain representations" },
+      { name: "Stack", slug: "stack", desc: "LIFO structured call stack tracer algorithms" },
+      { name: "Queue", slug: "queue", desc: "FIFO sequential item queue operations" },
+      { name: "Tree", slug: "tree", desc: "Binary, BST, AVL & Segment trees" },
+      { name: "Graph", slug: "graph", desc: "BFS, DFS, Dijkstra, & MST algorithms" },
+      { name: "Dynamic Programming", slug: "dynamic-programming", desc: "Optimal sub-problem memoization" },
+      { name: "Two Pointers", slug: "two-pointers", desc: "Optimal multi-pointer array searches" },
+      { name: "Sliding Window", slug: "sliding-window", desc: "Sub-array sliding scanner patterns" },
+    ]
+  },
+  {
+    label: "Web Dev",
+    slug: "web-development",
+    color: "#06b6d4", // Cyan
+    icon: <Code2 size={14} />,
+    items: [
+      { name: "HTML", slug: "html", desc: "Semantic page structure & markup tags" },
+      { name: "CSS", slug: "css", desc: "Flexbox, CSS Grid, and responsive animation" },
+      { name: "JavaScript", slug: "javascript", desc: "Dynamic interactive client browser events" },
+      { name: "React", slug: "react", desc: "Declarative UI rendering hook states" },
+      { name: "Next.js", slug: "nextjs", desc: "App Router SSR & statically optimized route pages" },
+      { name: "Node.js", slug: "nodejs", desc: "Asynchronous backend runtime event loop" },
+      { name: "Express.js", slug: "expressjs", desc: "Lightweight middleware REST API routing" },
+    ]
+  },
+  {
+    label: "Database",
+    slug: "database",
+    color: "#ef4444", // Red
+    icon: <Database size={14} />,
+    items: [
+      { name: "SQL", slug: "sql", desc: "Structured queries, join clauses & aggregates" },
+      { name: "MySQL", slug: "mysql", desc: "Open-source RDBMS queries & performance" },
+      { name: "MongoDB", slug: "mongodb", desc: "NoSQL document storage & aggregate pipelines" },
+      { name: "PostgreSQL", slug: "postgresql", desc: "Enterprise relational database procedures" },
+      { name: "DBMS", slug: "dbms", desc: "Normalization, transactions, & ACID properties" },
+    ]
+  },
+  {
+    label: "More",
+    slug: "more",
+    color: "#d946ef", // Pink
+    icon: <Sparkles size={14} />,
+    items: [
+      { name: "Operating Systems", slug: "operating-systems", desc: "Processes, threads, memory, & scheduling" },
+      { name: "Computer Networks", slug: "computer-networks", desc: "TCP/IP layers, routing, & sockets" },
+      { name: "Software Engineering", slug: "software-engineering", desc: "Systems engineering, Agile & patterns" },
+      { name: "Machine Learning", slug: "machine-learning", desc: "Supervised and unsupervised classifiers" },
+      { name: "Cyber Security", slug: "cyber-security", desc: "Secure encryption, pen testing, & defense" },
+      { name: "Interview Preparation", slug: "interview-preparation", desc: "Step-by-step coding and system design prep" },
+      { name: "Roadmaps", slug: "roadmaps", desc: "Visual developer learning pathways" },
+      { name: "Projects", slug: "projects", desc: "Portfolio-worthy step-by-step developer projects" }
+    ]
+  }
 ];
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -36,7 +126,7 @@ function Logo() {
   return (
     <Link
       href="/"
-      className="flex items-center gap-2.5 flex-shrink-0 group"
+      className="flex items-center gap-2.5 flex-shrink-0 group focus-visible:ring-2 focus-visible:ring-[var(--link-color)] rounded-xl"
       aria-label="LearnoBoy home"
     >
       {/* Logo image — always visible */}
@@ -179,7 +269,7 @@ function UserProfileButton({ user }: { user: UserInfo }) {
     <div className="relative hidden md:block">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-2 py-1.5 rounded-xl transition-all duration-200 hover:bg-[var(--bg-surface)] group"
+        className="flex items-center gap-2 px-2 py-1.5 rounded-xl transition-all duration-200 hover:bg-[var(--bg-surface)] group cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--link-color)]"
         aria-label="User profile"
         aria-expanded={open}
       >
@@ -205,14 +295,13 @@ function UserProfileButton({ user }: { user: UserInfo }) {
               boxShadow: "0 12px 40px rgba(0,0,0,0.18)",
             }}
           >
-            {/* User card header — deep navy blue matching logo */}
+            {/* User card header */}
             <div
               className="px-4 py-4 relative overflow-hidden"
               style={{
                 background: "linear-gradient(135deg, #0f1e4a 0%, #1a3070 60%, #1e3a8a 100%)",
               }}
             >
-              {/* Subtle radial glow top-right */}
               <div
                 aria-hidden
                 style={{
@@ -228,7 +317,6 @@ function UserProfileButton({ user }: { user: UserInfo }) {
               />
 
               <div className="flex items-center gap-3 relative">
-                {/* Avatar with ring */}
                 <div
                   className="rounded-full flex-shrink-0"
                   style={{
@@ -259,15 +347,13 @@ function UserProfileButton({ user }: { user: UserInfo }) {
               </div>
             </div>
 
-            {/* Thin accent line */}
             <div style={{ height: 1, background: "linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%)", opacity: 0.5 }} />
 
             <div className="py-1.5">
               <Link
                 href="/profile"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--bg-base)]"
-                style={{ color: "var(--text-primary)" }}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--bg-base)] text-[var(--text-primary)]"
               >
                 <UserIcon size={15} style={{ color: "var(--link-color)" }} />
                 My Profile
@@ -277,10 +363,9 @@ function UserProfileButton({ user }: { user: UserInfo }) {
                 <Link
                   href="/writer"
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--bg-base)]"
-                  style={{ color: "var(--text-primary)" }}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--bg-base)] text-[var(--text-primary)]"
                 >
-                  <PenLine size={15} style={{ color: "#059669" }} />
+                  <PenLine size={15} style={{ color: "#10b981" }} />
                   Writer Panel
                 </Link>
               )}
@@ -289,8 +374,7 @@ function UserProfileButton({ user }: { user: UserInfo }) {
                 <Link
                   href="/admin"
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--bg-base)]"
-                  style={{ color: "var(--text-primary)" }}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--bg-base)] text-[var(--text-primary)]"
                 >
                   <LayoutDashboard size={15} style={{ color: "#7c3aed" }} />
                   Admin Dashboard
@@ -301,7 +385,7 @@ function UserProfileButton({ user }: { user: UserInfo }) {
 
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-left font-medium"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-left font-medium cursor-pointer"
               >
                 <LogOut size={15} />
                 Sign out
@@ -318,14 +402,15 @@ function UserProfileButton({ user }: { user: UserInfo }) {
 export function Header({ session }: { session: any }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [openMobileSection, setOpenMobileSection] = useState<string | null>(null);
   const [user, setUser] = useState<UserInfo | null>(
     session
       ? {
-        name: session.name,
-        email: session.email,
-        role: session.role,
-        avatar: session.avatar || undefined,
-      }
+          name: session.name,
+          email: session.email,
+          role: session.role,
+          avatar: session.avatar || undefined,
+        }
       : null
   );
 
@@ -382,34 +467,99 @@ export function Header({ session }: { session: any }) {
         borderBottom: `1px solid ${isScrolled ? "var(--border-color)" : "transparent"}`,
         backdropFilter: isScrolled ? "blur(16px) saturate(180%)" : "none",
         WebkitBackdropFilter: isScrolled ? "blur(16px) saturate(180%)" : "none",
-        boxShadow: isScrolled ? "0 1px 12px rgba(0,0,0,0.06)" : "none",
+        boxShadow: isScrolled ? "0 4px 20px -2px rgba(0,0,0,0.08)" : "none",
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
+        <div className="flex items-center justify-between h-16">
 
           {/* Logo + Wordmark */}
           <Logo />
 
-          {/* Desktop Nav */}
+          {/* Desktop Nav: Dropdown Mega Menu Group */}
           <nav
-            className="hidden md:flex items-center gap-0.5"
+            className="hidden lg:flex items-center gap-1.5 h-full"
             aria-label="Main navigation"
           >
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all duration-200"
+            {/* Home link */}
+            <Link
+              href="/"
+              className="px-3.5 py-2 rounded-xl text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[var(--link-color)]"
+            >
+              Home
+            </Link>
+
+            {NAVIGATION_ITEMS.map((section) => (
+              <div
+                key={section.label}
+                className="group relative h-full flex items-center"
               >
-                {link.label}
-              </Link>
+                <button
+                  className="flex items-center gap-1 px-3.5 py-2 rounded-xl text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all duration-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--link-color)]"
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                >
+                  {section.label}
+                  <ChevronDown
+                    size={13}
+                    className="transition-transform duration-250 group-hover:rotate-180 group-focus-within:rotate-180"
+                  />
+                </button>
+
+                {/* Mega Menu Dropdown */}
+                <div
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[560px] opacity-0 translate-y-3 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto transition-all duration-250 z-50 p-5 rounded-2xl shadow-2xl border"
+                  style={{
+                    background: "var(--bg-surface)",
+                    borderColor: "var(--border-color)",
+                    boxShadow: "var(--shadow-elevated)",
+                  }}
+                >
+                  {/* Accent bar colored matching role/category */}
+                  <div
+                    className="absolute top-0 left-0 right-0 h-1.5 rounded-t-2xl"
+                    style={{ background: section.color }}
+                  />
+
+                  {/* Header Title with Icon */}
+                  <div className="flex items-center gap-2 mb-4 pb-2.5 border-b border-[var(--border-color)]">
+                    <span style={{ color: section.color }}>{section.icon}</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                      {section.label}
+                    </span>
+                  </div>
+
+                  {/* Multi-Column Grid */}
+                  <div className="grid grid-cols-2 gap-2.5 max-h-[380px] overflow-y-auto pr-1">
+                    {section.items.map((item) => (
+                      <Link
+                        key={item.slug}
+                        href={`/${item.slug}`}
+                        className="flex flex-col p-3 rounded-xl border border-transparent hover:border-[var(--border-color)] transition-all hover:bg-[var(--bg-base)] group/item focus-visible:ring-2 focus-visible:ring-[var(--link-color)]"
+                      >
+                        <span
+                          className="text-xs font-bold text-[var(--text-primary)] group-hover/item:text-[var(--link-color)] transition-colors flex items-center gap-1.5"
+                        >
+                          <span
+                            className="w-1.5 h-1.5 rounded-full inline-block shrink-0"
+                            style={{ backgroundColor: section.color }}
+                          />
+                          {item.name}
+                        </span>
+                        <span className="text-[10px] text-[var(--text-tertiary)] mt-1.5 leading-normal font-medium">
+                          {item.desc}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
             ))}
           </nav>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-1.5">
-            <div className="hidden sm:block w-52">
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:block w-48 lg:w-56">
               <SearchBar compact />
             </div>
             <ThemeToggle />
@@ -420,18 +570,17 @@ export function Header({ session }: { session: any }) {
               <div className="hidden md:flex items-center gap-2">
                 <Link
                   href="/login"
-                  className="px-4 py-1.5 rounded-xl text-sm font-medium transition-all hover:bg-[var(--bg-surface)]"
-                  style={{ color: "var(--text-secondary)" }}
+                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--link-color)]"
                 >
                   Sign in
                 </Link>
               </div>
             )}
 
-            {/* Mobile menu button */}
+            {/* Mobile menu toggle button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] transition-colors"
+              className="lg:hidden p-2.5 rounded-xl text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--link-color)]"
               aria-label="Toggle menu"
               aria-expanded={isMenuOpen}
             >
@@ -440,48 +589,85 @@ export function Header({ session }: { session: any }) {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu Accordion Dropdown */}
         {isMenuOpen && (
           <div
-            className="md:hidden border-t py-3 space-y-1"
+            className="lg:hidden border-t py-4 space-y-2 max-h-[calc(100vh-80px)] overflow-y-auto"
             style={{ borderColor: "var(--border-color)" }}
           >
-            <div className="pb-3">
+            <div className="pb-3 px-1 sm:hidden">
               <SearchBar compact />
             </div>
 
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {/* Home Link on Mobile */}
+            <Link
+              href="/"
+              onClick={() => setIsMenuOpen(false)}
+              className="block px-3 py-2.5 rounded-xl text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all"
+            >
+              Home
+            </Link>
 
-            {/* Mobile user section */}
+            {NAVIGATION_ITEMS.map((section) => {
+              const isSectionOpen = openMobileSection === section.slug;
+              return (
+                <div key={section.slug} className="border-b border-[var(--border-color)] last:border-0 pb-1">
+                  <button
+                    onClick={() => setOpenMobileSection(isSectionOpen ? null : section.slug)}
+                    className="w-full flex items-center justify-between px-3 py-3 rounded-xl text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span style={{ color: section.color }}>{section.icon}</span>
+                      <span>{section.label}</span>
+                    </div>
+                    <ChevronDown
+                      size={15}
+                      className="text-[var(--text-secondary)] transition-transform duration-200"
+                      style={{ transform: isSectionOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                    />
+                  </button>
+
+                  {isSectionOpen && (
+                    <div className="pl-8 pr-3 pb-3 pt-1 space-y-1 animate-fade-in">
+                      {section.items.map((item) => (
+                        <Link
+                          key={item.slug}
+                          href={`/${item.slug}`}
+                          onClick={() => setIsMenuOpen(false)}
+                          className="block py-2.5 px-3.5 rounded-xl text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all"
+                        >
+                          {item.name}
+                          <span className="block text-[10px] text-[var(--text-tertiary)] font-normal mt-1 leading-normal">
+                            {item.desc}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* Mobile user profile panel */}
             {user ? (
               <div
-                className="mt-2 pt-2 border-t space-y-1"
+                className="mt-3 pt-3 border-t space-y-2 px-1"
                 style={{ borderColor: "var(--border-color)" }}
               >
                 <Link
                   href="/profile"
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all hover:bg-[var(--bg-surface)]"
+                  className="flex items-center gap-3 px-3 py-3 rounded-xl transition-all hover:bg-[var(--bg-surface)]"
                 >
                   <AvatarCircle user={user} size={9} />
                   <div className="min-w-0 flex-1">
                     <p
-                      className="text-sm font-semibold truncate"
-                      style={{ color: "var(--text-primary)" }}
+                      className="text-sm font-bold truncate text-[var(--text-primary)]"
                     >
                       {user.name}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <p className="text-xs truncate" style={{ color: "var(--text-secondary)" }}>
+                      <p className="text-xs truncate text-[var(--text-secondary)]">
                         {user.email}
                       </p>
                       <RoleBadge role={user.role} />
@@ -493,8 +679,8 @@ export function Header({ session }: { session: any }) {
                   <Link
                     href="/writer"
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-lg transition-all hover:bg-[var(--bg-surface)] text-sm font-medium"
-                    style={{ color: "#059669" }}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all hover:bg-[var(--bg-surface)] text-sm font-semibold"
+                    style={{ color: "#10b981" }}
                   >
                     <PenLine size={15} />
                     Writer Panel
@@ -505,7 +691,7 @@ export function Header({ session }: { session: any }) {
                   <Link
                     href="/admin"
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-lg transition-all hover:bg-[var(--bg-surface)] text-sm font-medium"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all hover:bg-[var(--bg-surface)] text-sm font-semibold"
                     style={{ color: "#7c3aed" }}
                   >
                     <LayoutDashboard size={15} />
@@ -515,7 +701,7 @@ export function Header({ session }: { session: any }) {
 
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all hover:bg-red-50 dark:hover:bg-red-950/20 text-sm font-semibold text-red-500 text-left"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all hover:bg-red-50 dark:hover:bg-red-950/20 text-sm font-semibold text-red-500 text-left cursor-pointer"
                 >
                   <LogOut size={15} />
                   Sign out
@@ -523,13 +709,14 @@ export function Header({ session }: { session: any }) {
               </div>
             ) : (
               <div
-                className="mt-2 pt-2 border-t"
+                className="mt-3 pt-3 border-t px-1"
                 style={{ borderColor: "var(--border-color)" }}
               >
                 <Link
                   href="/login"
                   onClick={() => setIsMenuOpen(false)}
-                  className="block px-3 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] transition-all"
+                  className="block px-4 py-2.5 rounded-xl text-sm font-bold text-center text-white transition-all hover:opacity-95"
+                  style={{ background: "var(--link-color)" }}
                 >
                   Sign in
                 </Link>

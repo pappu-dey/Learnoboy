@@ -19,7 +19,9 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
   const author =
     typeof article.author === "object" ? (article.author as IAuthor) : null;
 
-  const href = `/${category?.slug || "articles"}/${article.slug}`;
+  const href = article.primaryCategory && article.subcategory
+    ? `/${article.primaryCategory}/${article.subcategory}/${article.slug}`
+    : `/${category?.slug || "articles"}/${article.slug}`;
 
   if (variant === "compact") {
     return (

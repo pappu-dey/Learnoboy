@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
 export interface ICategoryDocument extends Document {
   name: string;
@@ -7,6 +7,7 @@ export interface ICategoryDocument extends Document {
   icon: string;
   color: string;
   articleCount: number;
+  parent?: Types.ObjectId | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,6 +20,7 @@ const CategorySchema = new Schema<ICategoryDocument>(
     icon: { type: String, default: "📚" },
     color: { type: String, default: "#3b82f6" },
     articleCount: { type: Number, default: 0 },
+    parent: { type: Schema.Types.ObjectId, ref: "Category", default: null },
   },
   {
     timestamps: true,

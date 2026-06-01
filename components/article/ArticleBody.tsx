@@ -218,6 +218,11 @@ export function ArticleBody({ content }: ArticleBodyProps) {
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSlug, rehypeHighlight]}
         components={{
+          // Paragraph to prevent hydration errors (e.g. figure inside p)
+          p: ({ children, ...props }) => (
+            <div style={{ margin: "0 0 1.4rem 0" }}>{children}</div>
+          ),
+
           // Code block
           pre: ({ children, ...props }) => (
             <CodeBlock {...props}>{children}</CodeBlock>

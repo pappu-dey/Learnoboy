@@ -72,6 +72,7 @@ export default async function NewArticlePage() {
         categories={serializeArray(categories as unknown as import("@/types").ICategory[])}
         authors={serializeArray(authors as unknown as IAuthor[]) as unknown as IAuthor[]}
         tags={serializeArray(tags)}
+        sessionRole={session.role}
       />
     </div>
   );

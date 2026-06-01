@@ -134,19 +134,30 @@ export function SearchBar({
             return (
               <a
                 key={article._id}
-                href={`/${category?.slug || "articles"}/${article.slug}`}
+                href={article.primaryCategory && article.subcategory
+                  ? `/${article.primaryCategory}/${article.subcategory}/${article.slug}`
+                  : `/${category?.slug || "articles"}/${article.slug}`}
                 onClick={() => setIsOpen(false)}
-                className="flex flex-col px-4 py-3 hover:bg-[var(--bg-surface)] transition-colors border-b border-[var(--border-color)] last:border-0"
+                className="flex flex-col px-4 py-2.5 hover:bg-[var(--bg-surface)] transition-colors border-b border-[var(--border-color)] last:border-0"
               >
-                <span className="text-xs font-medium mb-0.5" style={{ color: category?.color || "var(--link-color)" }}>
-                  {category?.name || "Article"}
-                </span>
-                <span className="text-sm font-medium text-[var(--text-primary)] line-clamp-1">
-                  {article.title}
-                </span>
-                <span className="text-xs text-[var(--text-tertiary)] mt-0.5">
-                  {article.readingTime} min read
-                </span>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: category?.color || "var(--link-color)" }}>
+                    {category?.name || "Article"}
+                  </span>
+                  <span className="text-[10px] text-[var(--text-tertiary)] flex-shrink-0">
+                    {article.readingTime} min read
+                  </span>
+                </div>
+                <h4 
+                  className="text-sm font-semibold text-[var(--text-primary)] line-clamp-1 mt-0.5 leading-snug"
+                  dangerouslySetInnerHTML={{ __html: article.title }}
+                />
+                {article.snippet && (
+                  <p 
+                    className="text-xs text-[var(--text-secondary)] line-clamp-1 mt-0.5 font-normal"
+                    dangerouslySetInnerHTML={{ __html: article.snippet }}
+                  />
+                )}
               </a>
             );
           })}

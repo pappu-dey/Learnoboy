@@ -531,7 +531,9 @@ export function HeroSection() {
                   return (
                     <a
                       key={article._id}
-                      href={`/${category?.slug || "articles"}/${article.slug}`}
+                      href={article.primaryCategory && article.subcategory
+                        ? `/${article.primaryCategory}/${article.subcategory}/${article.slug}`
+                        : `/${category?.slug || "articles"}/${article.slug}`}
                       className="hero-dropdown-item"
                     >
                       <span style={{ fontSize: 11, fontWeight: 600, marginBottom: 2, color: category?.color || "#2563eb" }}>

@@ -50,6 +50,7 @@ export interface ICategory {
   icon: string;
   color: string;
   articleCount: number;
+  parent?: string | ICategory | null;
   createdAt: string;
 }
 
@@ -65,6 +66,7 @@ export interface IArticleSEO {
   metaDescription?: string;
   canonicalUrl?: string;
   ogImage?: string;
+  keywords?: string[];
 }
 
 export interface IAuthorSnapshot {
@@ -78,11 +80,20 @@ export interface IArticle {
   _id: string;
   title: string;
   slug: string;
+  /** Primary category (used for URL routing) */
   category: ICategory | string;
+  /** All categories (multi-category support) */
+  categories?: ICategory[] | string[];
+  primaryCategory: string;
+  subcategory: string;
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  contentType: "Tutorial" | "Interview Prep" | "Best Practices" | "Roadmap" | "Project" | "Cheat Sheet" | "Notes";
   author: IAuthor | string;
   tags: ITag[] | string[];
   content: string; // Markdown
   excerpt: string;
+  snippet?: string;
+  keywords?: string;
   coverImage?: string;
   readingTime: number;
   isFeatured: boolean;
@@ -165,3 +176,23 @@ export const EXPERTISE_OPTIONS = [
 ] as const;
 
 export type ExpertiseOption = (typeof EXPERTISE_OPTIONS)[number];
+
+export interface IFeedback {
+  _id: string;
+  type: "Bug Report" | "Feature Request" | "Content Suggestion" | "General Feedback";
+  message: string;
+  email?: string;
+  status: "pending" | "reviewed" | "resolved";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IDonor {
+  _id: string;
+  name: string;
+  email: string;
+  amount: number;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string;
+  updatedAt: string;
+}

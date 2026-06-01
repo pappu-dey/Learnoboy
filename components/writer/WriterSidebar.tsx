@@ -10,17 +10,20 @@ import {
   User,
   ExternalLink,
   LogOut,
+  Menu,
 } from "lucide-react";
+import { useState } from "react";
 
 const WRITER_NAV = [
   { href: "/writer", icon: LayoutDashboard, label: "Dashboard", exact: true },
-  { href: "/writer/articles", icon: BookOpen, label: "My Articles", exact: false },
-  { href: "/writer/articles/new", icon: PlusCircle, label: "New Article", exact: true },
-  { href: "/writer/profile", icon: User, label: "Author Profile", exact: false },
+  { href: "/writer/articles", icon: BookOpen, label: "Articles", exact: false },
+  { href: "/writer/articles/new", icon: PlusCircle, label: "New", exact: true },
+  { href: "/writer/profile", icon: User, label: "Profile", exact: false },
 ];
 
 export function WriterSidebar() {
   const pathname = usePathname();
+  const [moreOpen, setMoreOpen] = useState(false);
 
   const isActive = (href: string, exact: boolean) => {
     if (exact) return pathname === href;
@@ -148,51 +151,134 @@ export function WriterSidebar() {
         </div>
       </aside>
 
-      {/* ─── Mobile top nav ─── */}
+      {/* ─── Mobile top header ─── */}
       <div
-        className="md:hidden flex items-center gap-1 px-3 py-2.5 border-b border-[var(--border-color)] overflow-x-auto"
+        className="md:hidden flex items-center justify-between px-4 py-3 border-b border-[var(--border-color)] sticky top-0 z-30"
         style={{ background: "var(--bg-surface)" }}
       >
-        <div className="flex items-center gap-2 pr-3 border-r border-[var(--border-color)] mr-1 flex-shrink-0">
-          <div className="w-6 h-6 flex items-center justify-center overflow-hidden flex-shrink-0">
-            <Image
-              src="/images/logo-gif.gif"
-              alt="LearnoBoy"
-              width={22}
-              height={22}
-              unoptimized
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <span className="text-xs font-bold text-[var(--text-primary)]">Writer</span>
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/images/logo-gif.gif"
+            alt="LearnoBoy"
+            width={26}
+            height={26}
+            unoptimized
+            className="object-contain"
+          />
+          <span className="text-sm font-bold text-[var(--text-primary)]">Writer</span>
+        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/"
+            target="_blank"
+            className="p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] transition-colors"
+          >
+            <ExternalLink size={16} />
+          </Link>
+          <button
+            onClick={() => setMoreOpen(true)}
+            className="p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] transition-colors"
+          >
+            <Menu size={18} />
+          </button>
         </div>
+      </div>
 
+      {/* ─── Mobile bottom tab bar ─── */}
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-stretch border-t border-[var(--border-color)]"
+        style={{
+          background: "var(--bg-surface)",
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
+      >
         {WRITER_NAV.map(({ href, icon: Icon, label, exact }) => {
           const active = isActive(href, exact);
           return (
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-200 flex-shrink-0"
-              style={
-                active
-                  ? { background: "#059669", color: "#fff" }
-                  : { color: "var(--text-secondary)" }
-              }
+              className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 transition-all duration-200 relative"
+              style={{ color: active ? "#059669" : "var(--text-tertiary)" }}
             >
-              <Icon size={12} />
-              {label}
+              {active && (
+                <span
+                  className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full"
+                  style={{ background: "#059669" }}
+                />
+              )}
+              <Icon size={18} strokeWidth={active ? 2.5 : 1.75} />
+              <span className="text-[10px] font-medium">{label}</span>
             </Link>
           );
         })}
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all duration-200 flex-shrink-0"
-        >
-          <LogOut size={12} />
-          Sign out
-        </button>
-      </div>
+      </nav>
+
+      {/* ─── Mobile More sheet / overlay ─── */}
+      {moreOpen && (
+        <>
+          <div
+            className="md:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+            onClick={() => setMoreOpen(false)}
+          />
+          <div
+            className="md:hidden fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl border-t border-[var(--border-color)] p-5 space-y-2"
+            style={{ background: "var(--bg-surface)" }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-tertiary)]">Writer Menu</p>
+              <button
+                onClick={() => setMoreOpen(false)}
+                className="text-xs px-2.5 py-1 rounded-lg border border-[var(--border-color)] text-[var(--text-secondary)]"
+              >
+                Close
+              </button>
+            </div>
+            {WRITER_NAV.map(({ href, icon: Icon, label, exact }) => {
+              const active = isActive(href, exact);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setMoreOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
+                  style={
+                    active
+                      ? {
+                          background: "linear-gradient(135deg, rgba(16,185,129,0.12), rgba(5,150,105,0.08))",
+                          color: "#059669",
+                        }
+                      : { color: "var(--text-secondary)" }
+                  }
+                >
+                  <span
+                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={
+                      active
+                        ? { background: "#059669" }
+                        : { background: "var(--bg-muted)" }
+                    }
+                  >
+                    <Icon size={15} className={active ? "text-white" : "text-[var(--text-tertiary)]"} />
+                  </span>
+                  {label}
+                </Link>
+              );
+            })}
+            <div className="pt-2 border-t border-[var(--border-color)] space-y-1">
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all"
+              >
+                <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 dark:bg-red-950/20">
+                  <LogOut size={15} className="text-red-500" />
+                </span>
+                Sign out
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
