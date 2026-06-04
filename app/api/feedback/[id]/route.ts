@@ -9,7 +9,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getSession();
-  if (!session || session.role !== "superadmin") {
+  if (!session || (session.role !== "superadmin" && session.role !== "writer")) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   }
 
@@ -26,6 +26,25 @@ export async function PATCH(
     }
 
     await connectDB();
+
+    // If role is writer, verify they own the article suggestion
+    if (session.role === "writer") {
+      const { Author } = await import("@/lib/models");
+      const authorDoc = await Author.findOne({ email: session.email }).lean();
+      if (!authorDoc) {
+        return NextResponse.json({ error: "Forbidden. Author profile not found." }, { status: 403 });
+      }
+
+      const fb = await Feedback.findById(id).lean();
+      if (!fb) {
+        return NextResponse.json({ success: false, error: "Feedback not found" }, { status: 404 });
+      }
+
+      if (String(fb.author) !== String(authorDoc._id)) {
+        return NextResponse.json({ error: "Forbidden. You can only manage suggestions for your own articles." }, { status: 403 });
+      }
+    }
+
     const updated = await Feedback.findByIdAndUpdate(
       id,
       { status },

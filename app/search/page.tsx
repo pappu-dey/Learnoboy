@@ -6,6 +6,7 @@ import { SearchBar } from "@/components/search/SearchBar";
 import { Search, Clock, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import type { ICategory, IAuthor } from "@/types";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 interface SearchPageProps {
   searchParams: Promise<{ q?: string }>;
@@ -180,16 +181,17 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           fallback={
             <div className="flex flex-col gap-6">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="flex flex-col md:flex-row gap-6 p-6 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] animate-pulse">
-                  <div className="w-full md:w-52 h-36 bg-[var(--bg-muted)] rounded-xl flex-shrink-0" />
-                  <div className="flex-1 flex flex-col justify-between py-1">
-                    <div>
-                      <div className="h-4 bg-[var(--bg-muted)] rounded w-1/4 mb-3" />
-                      <div className="h-6 bg-[var(--bg-muted)] rounded w-3/4 mb-3" />
-                      <div className="h-4 bg-[var(--bg-muted)] rounded w-full mb-2" />
-                      <div className="h-4 bg-[var(--bg-muted)] rounded w-5/6 mb-4" />
-                    </div>
-                    <div className="h-5 bg-[var(--bg-muted)] rounded w-1/3 mt-2" />
+                <div
+                  key={i}
+                  className="flex flex-col md:flex-row gap-6 p-6 rounded-2xl border border-[var(--border-color)]"
+                  style={{ background: "var(--bg-surface)" }}
+                >
+                  <Skeleton className="w-full md:w-52 h-36 rounded-xl flex-shrink-0" />
+                  <div className="flex-1 flex flex-col justify-between py-1 gap-3">
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton lines={2} />
+                    <Skeleton className="h-5 w-1/3" />
                   </div>
                 </div>
               ))}

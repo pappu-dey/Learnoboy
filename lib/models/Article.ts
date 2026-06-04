@@ -20,6 +20,7 @@ export interface IArticleDocument extends Document {
   isFeatured: boolean;
   status: "draft" | "published";
   views: number;
+  likes: number;
   publishedAt?: Date;
   seo?: {
     metaTitle?: string;
@@ -81,6 +82,7 @@ const ArticleSchema = new Schema<IArticleDocument>(
       default: "draft",
     },
     views: { type: Number, default: 0 },
+    likes: { type: Number, default: 0 },
     publishedAt: { type: Date },
     seo: {
       metaTitle: { type: String, default: "" },

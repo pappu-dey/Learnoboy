@@ -26,6 +26,7 @@ export interface IAuthor {
   verifiedAt?: string;
   articleCount: number;
   totalViews: number;
+  followers: number;
   userId?: string;
   createdAt: string;
 }
@@ -99,6 +100,7 @@ export interface IArticle {
   isFeatured: boolean;
   status: "draft" | "published";
   views: number;
+  likes: number;
   publishedAt: string;
   createdAt: string;
   updatedAt: string;

@@ -14,49 +14,66 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <div
-      className="min-h-screen flex"
-      style={{ background: "var(--bg-base)" }}
-    >
-      {/* Left panel — branding (hidden on mobile) */}
+    <div className="min-h-screen flex" style={{ background: "var(--bg-base)" }}>
+      {/* ── Left panel – branding ── */}
       <div
         className="hidden lg:flex lg:w-[45%] flex-col justify-between p-12 relative overflow-hidden"
         style={{
-          background: "linear-gradient(135deg, #1e40af 0%, #4f46e5 50%, #7c3aed 100%)",
+          background: "linear-gradient(150deg, #1e3a8a 0%, #4338ca 55%, #6d28d9 100%)",
         }}
       >
         {/* Decorative blobs */}
         <div
-          className="absolute top-[-80px] right-[-80px] w-96 h-96 rounded-full opacity-20"
-          style={{ background: "radial-gradient(circle, #fff 0%, transparent 70%)" }}
+          className="absolute top-[-80px] right-[-80px] w-96 h-96 rounded-full pointer-events-none"
+          style={{
+            background: "radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%)",
+          }}
         />
         <div
-          className="absolute bottom-[-60px] left-[-60px] w-72 h-72 rounded-full opacity-15"
-          style={{ background: "radial-gradient(circle, #a5b4fc 0%, transparent 70%)" }}
+          className="absolute bottom-[-60px] left-[-60px] w-72 h-72 rounded-full pointer-events-none"
+          style={{
+            background: "radial-gradient(circle, rgba(165,180,252,0.15) 0%, transparent 70%)",
+          }}
+        />
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{
+            background: "radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 65%)",
+          }}
         />
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 z-10">
           <div
             className="rounded-xl overflow-hidden flex items-center justify-center"
-            style={{ background: "#fff", padding: "6px 12px", height: "40px" }}
+            style={{ background: "#fff", padding: "6px 14px", height: "40px" }}
           >
-            <Image src="/images/logo.png" alt="LearnoBoy" width={120} height={22} unoptimized style={{ height: "auto" }} />
+            <Image
+              src="/images/logo.png"
+              alt="LearnoBoy"
+              width={120}
+              height={22}
+              unoptimized
+              style={{ height: "auto" }}
+            />
           </div>
         </Link>
 
-        {/* Center tagline */}
-        <div className="z-10">
-          <h1 className="text-4xl font-extrabold text-white leading-tight mb-4">
-            Learn, Write,<br />
-            <span style={{ opacity: 0.85 }}>Inspire.</span>
-          </h1>
-          <p className="text-white/75 text-lg leading-relaxed max-w-sm">
-            Join a community of developers and students sharing knowledge that matters.
-          </p>
+        {/* Centre tagline */}
+        <div className="z-10 space-y-8">
+          <div>
+            <h1 className="text-4xl font-extrabold text-white leading-tight mb-3">
+              Learn, Write,
+              <br />
+              <span style={{ opacity: 0.82 }}>Inspire.</span>
+            </h1>
+            <p className="text-white/70 text-base leading-relaxed max-w-xs">
+              A community of developers and students sharing knowledge that matters.
+            </p>
+          </div>
 
-          {/* Stats */}
-          <div className="mt-10 flex gap-8">
+          {/* Stats row */}
+          <div className="flex gap-6">
             {[
               { value: "10K+", label: "Readers" },
               { value: "500+", label: "Articles" },
@@ -64,19 +81,19 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
             ].map((s) => (
               <div key={s.label}>
                 <p className="text-2xl font-bold text-white">{s.value}</p>
-                <p className="text-white/60 text-sm">{s.label}</p>
+                <p className="text-white/55 text-xs mt-0.5">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Footer quote */}
-        <p className="text-white/40 text-xs z-10">
+        {/* Footer */}
+        <p className="text-white/35 text-xs z-10">
           © {new Date().getFullYear()} LearnoBoy. All rights reserved.
         </p>
       </div>
 
-      {/* Right panel — form */}
+      {/* ── Right panel – form ── */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">{children}</div>
       </div>

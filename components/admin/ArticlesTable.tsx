@@ -23,9 +23,15 @@ interface Props {
   articles: Article[];
   status: string;
   newArticleHref?: string;
+  editArticleHrefPrefix?: string;
 }
 
-export function ArticlesTable({ articles, status, newArticleHref }: Props) {
+export function ArticlesTable({ 
+  articles, 
+  status, 
+  newArticleHref,
+  editArticleHrefPrefix = "/admin/articles"
+}: Props) {
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -153,7 +159,7 @@ export function ArticlesTable({ articles, status, newArticleHref }: Props) {
                       </div>
                       <div className="flex items-center gap-2 mt-2">
                         <Link
-                          href={`/admin/articles/${article._id}/edit`}
+                          href={`${editArticleHrefPrefix}/${article._id}/edit`}
                           className="flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] transition-colors"
                         >
                           <Pencil size={10} /> Edit
@@ -266,7 +272,7 @@ export function ArticlesTable({ articles, status, newArticleHref }: Props) {
                         <td className="px-4 py-3.5">
                           <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                             <Link
-                              href={`/admin/articles/${article._id}/edit`}
+                              href={`${editArticleHrefPrefix}/${article._id}/edit`}
                               className="flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] transition-colors"
                             >
                               <Pencil size={11} /> Edit

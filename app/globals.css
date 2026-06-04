@@ -101,96 +101,98 @@
     0 2px 4px -2px rgb(0 0 0 / 0.2);
 }
 
-/* ===================== BASE STYLES ===================== */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+@layer base {
+  /* ===================== BASE STYLES ===================== */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-html {
-  scroll-behavior: smooth;
-  font-size: 16px;
-}
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
 
-body {
-  font-family: var(--font-sans);
-  background-color: var(--bg-base);
-  color: var(--text-primary);
-  line-height: 1.8;
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    line-height: 1.8;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-/* ===================== TYPOGRAPHY ===================== */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-sans);
-  color: var(--text-primary);
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.025em;
-}
+  /* ===================== TYPOGRAPHY ===================== */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-sans);
+    color: var(--text-primary);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.025em;
+  }
 
-h1 {
-  font-size: clamp(28px, 5vw, 40px);
-}
-h2 {
-  font-size: clamp(22px, 4vw, 32px);
-}
-h3 {
-  font-size: clamp(18px, 3vw, 24px);
-}
-h4 {
-  font-size: clamp(16px, 2.5vw, 20px);
-}
+  h1 {
+    font-size: clamp(28px, 5vw, 40px);
+  }
+  h2 {
+    font-size: clamp(22px, 4vw, 32px);
+  }
+  h3 {
+    font-size: clamp(18px, 3vw, 24px);
+  }
+  h4 {
+    font-size: clamp(16px, 2.5vw, 20px);
+  }
 
-p {
-  font-size: 18px;
-  color: var(--text-secondary);
-  margin-bottom: 1.25rem;
-}
+  p {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+  }
 
-a {
-  color: var(--link-color);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
+  a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
 
-a:hover {
-  color: var(--link-hover);
-}
+  a:hover {
+    color: var(--link-hover);
+  }
 
-code {
-  font-family: var(--font-mono);
-  font-size: 0.875em;
-  background-color: var(--code-bg);
-  color: var(--code-text);
-  padding: 0.2em 0.4em;
-  border-radius: 4px;
-}
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background-color: var(--code-bg);
+    color: var(--code-text);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+  }
 
-pre {
-  font-family: var(--font-mono);
-  background-color: var(--code-bg);
-  border-radius: 12px;
-  padding: 1.5rem;
-  overflow-x: auto;
-  margin: 1.5rem 0;
-  border: 1px solid var(--border-color);
-}
+  pre {
+    font-family: var(--font-mono);
+    background-color: var(--code-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border: 1px solid var(--border-color);
+  }
 
-pre code {
-  background: transparent;
-  padding: 0;
-  font-size: 0.9rem;
+  pre code {
+    background: transparent;
+    padding: 0;
+    font-size: 0.9rem;
+  }
 }
 
 /* ===================== SCROLLBAR ===================== */
@@ -332,6 +334,28 @@ pre code {
   50% {
     opacity: 0.5;
   }
+}
+
+/* ── Shimmer for skeleton loaders ── */
+@keyframes shimmer {
+  0% {
+    background-position: -600px 0;
+  }
+  100% {
+    background-position: 600px 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-muted) 25%,
+    color-mix(in srgb, var(--bg-muted) 60%, var(--bg-base)) 50%,
+    var(--bg-muted) 75%
+  );
+  background-size: 1200px 100%;
+  animation: shimmer 1.6s infinite linear;
+  border-radius: 6px;
 }
 
 .animate-fade-in-up {

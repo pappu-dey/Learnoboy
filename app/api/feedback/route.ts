@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   try {
     await connectDB();
     const body = await req.json();
-    const { type, message, email } = body;
+    const { type, message, email, articleId } = body;
 
     if (!type || !message) {
       return NextResponse.json(
@@ -37,11 +37,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    let authorId = null;
+    let validArticleId = null;
+
+    if (articleId) {
+      try {
+        const { Article } = await import("@/lib/models");
+        const art = await Article.findById(articleId).select("author").lean();
+        if (art) {
+          validArticleId = articleId;
+          authorId = (art as any).author;
+        }
+      } catch (err) {
+        console.error("Error looking up article author for suggestion:", err);
+      }
+    }
+
     const feedback = await Feedback.create({
       type,
       message,
       email: email || "",
       status: "pending",
+      article: validArticleId,
+      author: authorId,
     });
 
     return NextResponse.json({ success: true, data: feedback }, { status: 201 });

@@ -40,15 +40,31 @@ export async function getArticles(
   if (options.category) {
     const categoryDoc = await Category.findOne({ slug: options.category });
     if (categoryDoc) {
-      filter.category = categoryDoc._id;
+      if (!categoryDoc.parent) {
+        // This is a parent category (e.g. dsa, coding, web-development, database, more)
+        const subcategories = await Category.find({ parent: categoryDoc._id }).select("_id").lean();
+        const subcategoryIds = subcategories.map(s => s._id);
+        filter.$or = [
+          { primaryCategory: options.category.toLowerCase() },
+          { category: categoryDoc._id },
+          { category: { $in: subcategoryIds } },
+          { categories: categoryDoc._id },
+          { categories: { $in: subcategoryIds } }
+        ];
+      } else {
+        // This is a subcategory (e.g. tree, numpy)
+        filter.$or = [
+          { subcategory: options.category.toLowerCase() },
+          { category: categoryDoc._id },
+          { categories: categoryDoc._id }
+        ];
+      }
     } else {
-      return {
-        data: [],
-        total: 0,
-        page,
-        limit,
-        totalPages: 0,
-      };
+      // Fallback
+      filter.$or = [
+        { primaryCategory: options.category.toLowerCase() },
+        { subcategory: options.category.toLowerCase() }
+      ];
     }
   }
 

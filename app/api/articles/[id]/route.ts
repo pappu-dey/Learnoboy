@@ -50,7 +50,15 @@ export async function PUT(request: NextRequest, { params }: Params) {
 
     // Secure Author ownership check for writer role
     if (session.role === "writer") {
-      const authorDoc = await Author.findOne({ userId: session.userId });
+      let authorDoc = await Author.findOne({ userId: session.userId });
+      if (!authorDoc) {
+        // Fallback: search by email to self-heal missing userId links from seeding
+        authorDoc = await Author.findOne({ email: session.email });
+        if (authorDoc) {
+          authorDoc.userId = session.userId as any;
+          await authorDoc.save();
+        }
+      }
       if (!authorDoc) {
         return NextResponse.json(
           { success: false, error: "Writer profile not found for this account" },

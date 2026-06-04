@@ -5,6 +5,8 @@ export interface IFeedbackDocument extends Document {
   message: string;
   email?: string;
   status: "pending" | "reviewed" | "resolved";
+  article?: mongoose.Types.ObjectId | string | null;
+  author?: mongoose.Types.ObjectId | string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,6 +26,8 @@ const FeedbackSchema = new Schema<IFeedbackDocument>(
       enum: ["pending", "reviewed", "resolved"],
       default: "pending",
     },
+    article: { type: Schema.Types.ObjectId, ref: "Article", default: null },
+    author: { type: Schema.Types.ObjectId, ref: "Author", default: null },
   },
   {
     timestamps: true,

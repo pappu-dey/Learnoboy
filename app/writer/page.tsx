@@ -217,7 +217,7 @@ export default async function WriterDashboard() {
                     </div>
                   </div>
                   <Link
-                    href={`/admin/articles/${article._id}/edit`}
+                    href={`/writer/articles/${article._id}/edit`}
                     className="flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] transition-colors shrink-0"
                   >
                     <Pencil size={10} /> Edit
@@ -260,7 +260,7 @@ export default async function WriterDashboard() {
                     </div>
                   </div>
                   <Link
-                    href={`/admin/articles/${article._id}/edit`}
+                    href={`/writer/articles/${article._id}/edit`}
                     className="flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] transition-colors shrink-0"
                   >
                     <Pencil size={10} /> Edit

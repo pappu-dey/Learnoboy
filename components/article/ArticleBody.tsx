@@ -41,9 +41,12 @@ function CopyButton({ text }: { text: string }) {
           : "var(--bg-base)",
         color: copied ? "var(--link-color)" : "var(--text-secondary)",
         border: "1px solid var(--border-color)",
+        zIndex: 10,
       }}
     >
-      {copied ? "✓ Copied" : "Copy"}
+      <span role="status" aria-live="polite">
+        {copied ? "✓ Copied" : "Copy"}
+      </span>
     </button>
   );
 }
@@ -70,19 +73,18 @@ function CodeBlock({
   const rawText = getTextContent(children);
 
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative", margin: "1.75rem 0" }}>
       <pre
         {...props}
         style={{
           background: "var(--code-bg)",
           borderRadius: "12px",
           border: "1px solid var(--border-color)",
-          padding: "1.25rem 1.25rem 1.25rem 1.25rem",
+          padding: "1.25rem 3.5rem 1.25rem 1.25rem",
           overflowX: "auto",
-          margin: "1.75rem 0",
+          margin: 0,
           fontSize: "0.875rem",
           lineHeight: 1.7,
-          position: "relative",
         }}
       >
         {children}
@@ -95,40 +97,39 @@ function CodeBlock({
 export function ArticleBody({ content }: ArticleBodyProps) {
   return (
     <div
-      id="article-body"
       className="article-content"
       style={{
         // Optimal reading line length
         maxWidth: "72ch",
         // Base reading typography
-        fontSize: "1.0625rem",
-        lineHeight: 1.85,
+        fontSize: "1rem",
+        lineHeight: 1.75,
         color: "var(--text-primary)",
       }}
     >
       <style>{`
         /* Paragraph spacing */
-        #article-body p {
-          margin: 0 0 1.4rem 0;
+        .article-content p {
+          margin: 0 0 0.9rem 0;
         }
         /* List spacing */
-        #article-body ul,
-        #article-body ol {
-          margin: 0.25rem 0 1.4rem 0;
+        .article-content ul,
+        .article-content ol {
+          margin: 0.25rem 0 0.9rem 0;
           padding-left: 1.5rem;
         }
-        #article-body li {
-          margin-bottom: 0.5rem;
-          line-height: 1.75;
+        .article-content li {
+          margin-bottom: 0.35rem;
+          line-height: 1.7;
           color: var(--text-secondary);
         }
         /* Custom bullets */
-        #article-body ul > li {
+        .article-content ul > li {
           list-style: none;
           position: relative;
           padding-left: 1.1rem;
         }
-        #article-body ul > li::before {
+        .article-content ul > li::before {
           content: "";
           position: absolute;
           left: 0;
@@ -140,22 +141,22 @@ export function ArticleBody({ content }: ArticleBodyProps) {
           opacity: 0.7;
         }
         /* Ordered list */
-        #article-body ol > li {
+        .article-content ol > li {
           list-style: decimal;
           color: var(--text-secondary);
         }
-        #article-body ol > li::marker {
+        .article-content ol > li::marker {
           color: var(--link-color);
           font-weight: 600;
         }
         /* Nested lists */
-        #article-body li ul,
-        #article-body li ol {
+        .article-content li ul,
+        .article-content li ol {
           margin-top: 0.4rem;
           margin-bottom: 0;
         }
         /* Heading spacing and styles */
-        #article-body h1 {
+        .article-content h1 {
           font-size: 1.875rem;
           font-weight: 800;
           line-height: 1.25;
@@ -163,7 +164,7 @@ export function ArticleBody({ content }: ArticleBodyProps) {
           color: var(--text-primary);
           letter-spacing: -0.02em;
         }
-        #article-body h2 {
+        .article-content h2 {
           font-size: 1.4rem;
           font-weight: 700;
           line-height: 1.3;
@@ -173,14 +174,14 @@ export function ArticleBody({ content }: ArticleBodyProps) {
           padding-bottom: 0.5rem;
           border-bottom: 1px solid var(--border-color);
         }
-        #article-body h3 {
+        .article-content h3 {
           font-size: 1.15rem;
           font-weight: 700;
           line-height: 1.4;
           margin: 2rem 0 0.6rem 0;
           color: var(--text-primary);
         }
-        #article-body h4 {
+        .article-content h4 {
           font-size: 1rem;
           font-weight: 700;
           margin: 1.5rem 0 0.5rem 0;
@@ -190,26 +191,26 @@ export function ArticleBody({ content }: ArticleBodyProps) {
           font-size: 0.8rem;
         }
         /* First heading no top margin */
-        #article-body > :first-child {
+        .article-content > :first-child {
           margin-top: 0;
         }
         /* HR */
-        #article-body hr {
+        .article-content hr {
           border: none;
           border-top: 1px solid var(--border-color);
           margin: 2rem 0;
         }
         /* Strong & em */
-        #article-body strong {
+        .article-content strong {
           font-weight: 700;
           color: var(--text-primary);
         }
-        #article-body em {
+        .article-content em {
           font-style: italic;
           color: var(--text-secondary);
         }
         /* highlight.js theme fix for light/dark */
-        #article-body .hljs {
+        .article-content .hljs {
           background: transparent !important;
         }
       `}</style>
@@ -218,10 +219,24 @@ export function ArticleBody({ content }: ArticleBodyProps) {
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSlug, rehypeHighlight]}
         components={{
-          // Paragraph to prevent hydration errors (e.g. figure inside p)
-          p: ({ children, ...props }) => (
-            <div style={{ margin: "0 0 1.4rem 0" }}>{children}</div>
-          ),
+          p: (props) => {
+            const { children, node, ...rest } = props as any;
+            const hasImage = node?.children?.some(
+              (child: any) => child.type === "element" && child.tagName === "img"
+            );
+            if (hasImage) {
+              return (
+                <div {...rest} suppressHydrationWarning style={{ display: "block", margin: "0 0 0.9rem 0" }}>
+                  {children}
+                </div>
+              );
+            }
+            return (
+              <p {...rest} suppressHydrationWarning style={{ display: "block", margin: "0 0 0.9rem 0" }}>
+                {children}
+              </p>
+            );
+          },
 
           // Code block
           pre: ({ children, ...props }) => (
@@ -238,13 +253,13 @@ export function ArticleBody({ content }: ArticleBodyProps) {
                   {...(rest as React.HTMLAttributes<HTMLElement>)}
                   className={className}
                   style={{
-                    background: "var(--code-bg)",
+                    background: "color-mix(in srgb, var(--link-color) 6%, var(--bg-muted))",
                     color: "var(--link-color)",
                     border: "1px solid var(--border-color)",
                     padding: "0.15em 0.45em",
                     borderRadius: "5px",
                     fontSize: "0.855em",
-                    fontWeight: 500,
+                    fontWeight: 600,
                   }}
                 >
                   {children}

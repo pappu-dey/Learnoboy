@@ -9,7 +9,11 @@ export function ReadingProgress() {
     <div
       id="reading-progress-bar"
       style={{ width: `${progress}%` }}
-      aria-hidden="true"
+      role="progressbar"
+      aria-label="Reading progress"
+      aria-valuenow={Math.round(progress)}
+      aria-valuemin={0}
+      aria-valuemax={100}
     />
   );
 }

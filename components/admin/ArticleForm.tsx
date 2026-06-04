@@ -822,10 +822,23 @@ export function ArticleForm({
     keywords: initialData.keywords || "",
     primaryCategory: initialData.primaryCategory || "dsa",
     subcategory: initialData.subcategory || "arrays",
-    difficulty: (initialData.difficulty as "Beginner" | "Intermediate" | "Advanced") || "Beginner",
-    contentType: (initialData.contentType as any) || "Tutorial",
+    contentType: (initialData.contentType as string) || "Tutorial",
     seoKeywords: initialData.seoKeywords || [] as string[],
   });
+
+  // ── FAQ structured editor ──
+  const [faqItems, setFaqItems] = useState<{ q: string; a: string }[]>([
+    { q: "", a: "" },
+  ]);
+  const addFaq = () => setFaqItems((prev) => [...prev, { q: "", a: "" }]);
+  const removeFaq = (i: number) => setFaqItems((prev) => prev.filter((_, idx) => idx !== i));
+  const updateFaq = (i: number, field: "q" | "a", val: string) =>
+    setFaqItems((prev) => prev.map((item, idx) => idx === i ? { ...item, [field]: val } : item));
+
+  // ── Next Up structured editor ──
+  const [nextUpTitle, setNextUpTitle] = useState("");
+  const [nextUpUrl, setNextUpUrl] = useState("");
+  const [nextUpDesc, setNextUpDesc] = useState("");
 
   const [keywordInput, setKeywordInput] = useState("");
   const [keywordError, setKeywordError] = useState("");
@@ -1354,19 +1367,47 @@ export function ArticleForm({
       return;
     }
 
+    // ── Build auto tags from selections ──
+    const autoTagParts: string[] = [];
+    if (form.primaryCategory) autoTagParts.push(CATEGORY_MAP[form.primaryCategory]?.name || form.primaryCategory);
+    if (form.subcategory) autoTagParts.push(form.subcategory.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()));
+    if (form.contentType) autoTagParts.push(form.contentType.replace(/\s+/g, ""));
+
+    // ── Append FAQ markdown block ──
+    const validFaqs = faqItems.filter((f) => f.q.trim() && f.a.trim());
+    let finalContent = form.content;
+    if (validFaqs.length > 0) {
+      const faqMd = [
+        "\n\n## Frequently Asked Questions\n",
+        ...validFaqs.map((f) => `**Q: ${f.q.trim()}**\n\n${f.a.trim()}\n`),
+      ].join("\n");
+      finalContent += faqMd;
+    }
+
+    // ── Append Next Up markdown block ──
+    if (nextUpTitle.trim()) {
+      const nextMd = [
+        "\n\n## Next Up\n",
+        nextUpDesc.trim() ? `${nextUpDesc.trim()}\n\n` : "",
+        nextUpUrl.trim()
+          ? `👉 [${nextUpTitle.trim()}](${nextUpUrl.trim()})`
+          : `👉 ${nextUpTitle.trim()}`,
+      ].join("");
+      finalContent += nextMd;
+    }
+
     try {
       // Find dynamic category mapping matching client subcategory selection
       const matchedCat = categories.find(c => c.slug === form.subcategory.toLowerCase());
       const resolvedCatId = matchedCat ? matchedCat._id : "";
 
       const payload = {
-        title: form.title, slug: form.slug, content: form.content,
+        title: form.title, slug: form.slug, content: finalContent,
         excerpt: form.excerpt,
         categoryId: resolvedCatId,
         categoryIds: resolvedCatId ? [resolvedCatId] : [],
         primaryCategory: form.primaryCategory,
         subcategory: form.subcategory,
-        difficulty: form.difficulty,
         contentType: form.contentType,
         authorId: form.authorId,
         coverImage: form.coverImage, isFeatured: form.isFeatured,
@@ -1374,9 +1415,9 @@ export function ArticleForm({
         seo: { 
           metaTitle: form.seoTitle || form.title, 
           metaDescription: form.seoDescription || form.excerpt,
-          keywords: form.seoKeywords
+          keywords: [...form.seoKeywords, ...autoTagParts]
         },
-        keywords: form.seoKeywords.join(", "),
+        keywords: [...form.seoKeywords, ...autoTagParts].join(", "),
       };
 
       const url = isEdit ? `/api/articles/${initialData._id}` : "/api/articles";
@@ -1393,6 +1434,7 @@ export function ArticleForm({
       setIsLoading(false);
     }
   };
+
 
   /* ── Style helpers ── */
   const inputClass =
@@ -1519,6 +1561,41 @@ export function ArticleForm({
 
             {/* ── Content editor ── */}
             <div>
+              {/* 💡 Writing & SEO Guidelines */}
+              <div 
+                className="mb-4.5 p-4 rounded-xl border border-[var(--border-color)] text-xs transition-all duration-200"
+                style={{ background: "rgba(37,99,235,0.03)" }}
+              >
+                <div className="flex items-center gap-2 font-bold text-[var(--text-primary)] mb-2.5">
+                  <span className="text-blue-500">💡</span> Content Writing & SEO Guidelines
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <span className="font-bold text-[var(--text-secondary)] block">🔗 How to Add Links (href)</span>
+                    <p className="text-[var(--text-tertiary)] leading-relaxed">
+                      Use the Markdown syntax <code className="bg-[var(--border-color)]/30 px-1 py-0.5 rounded text-[var(--link-color)] font-mono text-[11px]">[Link Text](URL)</code> to insert a link.
+                    </p>
+                    <p className="text-[var(--text-tertiary)]">
+                      Example: <code className="bg-[var(--border-color)]/30 px-1 py-0.5 rounded text-xs font-mono text-[11px]">[learn binary trees](/dsa/tree/understanding-binary-trees)</code>
+                    </p>
+                  </div>
+                  <div className="space-y-1.5 border-t md:border-t-0 md:border-l border-[var(--border-color)] pt-3 md:pt-0 md:pl-4">
+                    <span className="font-bold text-[var(--text-secondary)] block">🚀 SEO Best Practices</span>
+                    <ul className="list-disc pl-4 space-y-1 text-[var(--text-tertiary)] leading-relaxed">
+                      <li>
+                        <strong>Anchor Text:</strong> Avoid generic phrases like "click here" or "read more". Instead, use descriptive keywords like <code className="bg-[var(--border-color)]/30 px-1 py-0.5 rounded font-mono text-[10px]">learn binary trees</code>.
+                      </li>
+                      <li>
+                        <strong>Structure with Headings:</strong> Break your article down using headings hierarchically (e.g. <code className="bg-[var(--border-color)]/30 px-1 py-0.5 rounded font-mono text-[10px]">## Heading 2</code> for main sections, <code className="bg-[var(--border-color)]/30 px-1 py-0.5 rounded font-mono text-[10px]">### Heading 3</code> for sub-sections).
+                      </li>
+                      <li>
+                        <strong>Image Alt Text:</strong> Always fill out custom alt descriptions in your Image Dock for uploaded images to ensure they rank in image search.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
               <div className="flex items-center justify-between mb-1.5">
                 <label htmlFor="content" className={labelClass + " mb-0"}>
                   Content (Markdown) <span className="text-red-500">*</span>
@@ -1627,10 +1704,13 @@ export function ArticleForm({
                 )}
               </div>
 
-              <p className="text-xs text-[var(--text-tertiary)] mt-1">
-                {form.content.split(/\s+/).filter(Boolean).length} words ·{" "}
-                {Math.ceil(form.content.split(/\s+/).filter(Boolean).length / 200)} min read
-              </p>
+              <div className="flex items-center justify-between text-xs text-[var(--text-tertiary)] mt-1">
+                <span>
+                  {form.content.split(/\s+/).filter(Boolean).length} words ·{" "}
+                  {Math.ceil(form.content.split(/\s+/).filter(Boolean).length / 200)} min read
+                </span>
+              </div>
+
             </div>
 
             {/* ════════ IMAGE DOCK ════════ */}
@@ -1699,6 +1779,114 @@ export function ArticleForm({
                 </div>
               </div>
             )}
+
+            {/* ════ NEXT UP panel ════ */}
+            <div className="rounded-xl border border-[var(--border-color)] overflow-hidden" style={{ background: "var(--bg-surface)" }}>
+              <div className="px-4 py-3 border-b border-[var(--border-color)] flex items-center gap-2" style={{ background: "linear-gradient(135deg,rgba(37,99,235,0.06),rgba(124,58,237,0.04))" }}>
+                <span className="text-base">👉</span>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">Next Up</span>
+                <span className="ml-auto text-[10px] text-[var(--text-tertiary)]">optional — appended to article</span>
+              </div>
+              <div className="p-4 space-y-3">
+                <div>
+                  <label className={labelClass}>Article / Topic Title</label>
+                  <input
+                    type="text"
+                    value={nextUpTitle}
+                    onChange={(e) => setNextUpTitle(e.target.value)}
+                    placeholder="e.g. Understanding CSS Flexbox"
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>URL (optional)</label>
+                  <input
+                    type="text"
+                    value={nextUpUrl}
+                    onChange={(e) => setNextUpUrl(e.target.value)}
+                    placeholder="https://learnoboy.com/…"
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Short description (optional)</label>
+                  <textarea
+                    rows={2}
+                    value={nextUpDesc}
+                    onChange={(e) => setNextUpDesc(e.target.value)}
+                    placeholder="What the reader will learn in the next article…"
+                    className={inputClass}
+                  />
+                </div>
+                {nextUpTitle.trim() && (
+                  <div className="rounded-lg border border-[var(--border-color)] p-3 bg-[var(--bg-base)] text-xs font-mono text-[var(--text-secondary)] leading-relaxed">
+                    <p className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Preview</p>
+                    <p className="font-bold text-[var(--text-primary)]">## Next Up</p>
+                    {nextUpDesc.trim() && <p className="mt-1">{nextUpDesc}</p>}
+                    <p className="mt-1">
+                      👉{" "}
+                      {nextUpUrl.trim()
+                        ? <span className="text-[var(--link-color)] underline">[{nextUpTitle}]({nextUpUrl})</span>
+                        : nextUpTitle}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ════ FAQ panel ════ */}
+            <div className="rounded-xl border border-[var(--border-color)] overflow-hidden" style={{ background: "var(--bg-surface)" }}>
+              <div className="px-4 py-3 border-b border-[var(--border-color)] flex items-center gap-2" style={{ background: "linear-gradient(135deg,rgba(37,99,235,0.06),rgba(124,58,237,0.04))" }}>
+                <span className="text-base">❓</span>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">FAQ Section</span>
+                <span className="ml-auto text-[10px] text-[var(--text-tertiary)]">optional — appended to article</span>
+              </div>
+              <div className="p-4 space-y-4">
+                {faqItems.map((faq, i) => (
+                  <div key={i} className="relative rounded-lg border border-[var(--border-color)] p-3 space-y-2" style={{ background: "var(--bg-base)" }}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Q&amp;A {i + 1}</span>
+                      {faqItems.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeFaq(i)}
+                          className="text-[var(--text-tertiary)] hover:text-red-500 transition-colors text-xs font-bold"
+                          title="Remove this FAQ"
+                        >
+                          <X size={13} />
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={faq.q}
+                      onChange={(e) => updateFaq(i, "q", e.target.value)}
+                      placeholder={`Question ${i + 1}…`}
+                      className={inputClass}
+                    />
+                    <textarea
+                      rows={2}
+                      value={faq.a}
+                      onChange={(e) => updateFaq(i, "a", e.target.value)}
+                      placeholder="Answer…"
+                      className={inputClass}
+                    />
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addFaq}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-[var(--link-color)] hover:opacity-80 transition-opacity"
+                >
+                  <span className="text-base leading-none">+</span> Add another Q&amp;A
+                </button>
+                {faqItems.some(f => f.q.trim() && f.a.trim()) && (
+                  <p className="text-[10px] text-[var(--text-tertiary)] border-t border-[var(--border-color)] pt-2">
+                    {faqItems.filter(f => f.q.trim() && f.a.trim()).length} FAQ{faqItems.filter(f => f.q.trim() && f.a.trim()).length !== 1 ? "s" : ""} will be appended as a ## Frequently Asked Questions section.
+                  </p>
+                )}
+              </div>
+            </div>
 
             {/* SEO */}
             <details
@@ -1812,54 +2000,55 @@ export function ArticleForm({
             </div>
 
 
-            {/* Difficulty & Content Type (Auto Tags) */}
+            {/* Content Type (no Difficulty) + Auto-tag Preview */}
             <div className={panelClass} style={{ background: "var(--bg-surface)" }}>
-              <label htmlFor="difficulty" className={labelClass}>
-                Difficulty <span className="text-red-500">*</span>
-              </label>
-              <select
-                id="difficulty"
-                name="difficulty"
-                value={form.difficulty}
-                onChange={handleChange}
-                className={inputClass}
-              >
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-              </select>
+              <h3 className="font-semibold text-sm text-[var(--text-primary)]">Content Type</h3>
+              <div>
+                <label htmlFor="contentType" className={labelClass}>
+                  Content Type <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="contentType"
+                  name="contentType"
+                  value={form.contentType}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  <option value="Tutorial">Tutorial</option>
+                  <option value="Interview Prep">Interview Prep</option>
+                  <option value="Best Practices">Best Practices</option>
+                  <option value="Roadmap">Roadmap</option>
+                  <option value="Project">Project</option>
+                  <option value="Cheat Sheet">Cheat Sheet</option>
+                  <option value="Notes">Notes</option>
+                </select>
+              </div>
 
-              <label htmlFor="contentType" className={labelClass + " mt-4"}>
-                Content Type <span className="text-red-500">*</span>
-              </label>
-              <select
-                id="contentType"
-                name="contentType"
-                value={form.contentType}
-                onChange={handleChange}
-                className={inputClass}
-              >
-                <option value="Tutorial">Tutorial</option>
-                <option value="Interview Prep">Interview Prep</option>
-                <option value="Best Practices">Best Practices</option>
-                <option value="Roadmap">Roadmap</option>
-                <option value="Project">Project</option>
-                <option value="Cheat Sheet">Cheat Sheet</option>
-                <option value="Notes">Notes</option>
-              </select>
-
-              <div className="mt-4 p-3.5 rounded-xl border border-[var(--border-color)]/70 bg-[var(--bg-base)]/50">
-                <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
-                  Auto Generated Tags (Read-only Preview)
+              {/* Auto-generated SEO tag preview */}
+              <div className="mt-2 p-3.5 rounded-xl border border-[var(--border-color)]/70 bg-[var(--bg-base)]/50">
+                <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2.5">
+                  Auto-generated SEO Tags
                 </p>
                 <div className="flex flex-wrap gap-1.5">
-                  <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-[var(--link-color)]/10 text-[var(--link-color)] border border-[var(--link-color)]/20">
-                    #{form.difficulty}
-                  </span>
-                  <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-[var(--link-color)]/10 text-[var(--link-color)] border border-[var(--link-color)]/20">
-                    #{form.contentType.replace(/\s+/g, "")}
-                  </span>
+                  {([
+                    form.primaryCategory && (CATEGORY_MAP[form.primaryCategory]?.name || form.primaryCategory),
+                    form.subcategory && form.subcategory.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+                    form.contentType && form.contentType.replace(/\s+/g, ""),
+                    form.primaryCategory === "web-development" && "WebDev",
+                    form.primaryCategory === "dsa" && "CodingInterview",
+                    form.primaryCategory === "machine-learning" && "AI",
+                  ].filter(Boolean) as string[]).map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2.5 py-1 text-xs font-semibold rounded-full bg-[var(--link-color)]/10 text-[var(--link-color)] border border-[var(--link-color)]/20 select-none"
+                    >
+                      #{tag.replace(/\s+/g, "")}
+                    </span>
+                  ))}
                 </div>
+                <p className="text-[10px] text-[var(--text-tertiary)] mt-2">
+                  These are included in SEO keywords automatically — no manual entry needed.
+                </p>
               </div>
             </div>
 

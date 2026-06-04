@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, BookOpen, Globe, Calendar, FileText, MapPin, Briefcase, GraduationCap, Building2, Eye } from "lucide-react";
+import { ArrowLeft, BookOpen, Globe, Calendar, FileText, MapPin, Briefcase, GraduationCap, Building2, Eye, UserPlus } from "lucide-react";
 import connectDB from "@/lib/mongodb";
 import { Author, Article } from "@/lib/models";
 import { getArticles } from "@/lib/services/articleService";
@@ -10,6 +10,8 @@ import { ArticleCard } from "@/components/article/ArticleCard";
 import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import { getBreadcrumbJsonLd, BASE_URL } from "@/lib/utils/seo";
 import { format } from "date-fns";
+import { AuthorFollowButton } from "@/components/author/AuthorFollowButton";
+import { getSession } from "@/lib/auth/session";
 
 const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -80,6 +82,8 @@ export async function generateMetadata({ params }: AuthorPageProps): Promise<Met
 
 export default async function AuthorPage({ params }: AuthorPageProps) {
   const { slug } = await params;
+  const session = await getSession();
+  const isLoggedIn = !!session;
 
   await connectDB();
   const author = await Author.findOne({ slug }).lean();
@@ -189,6 +193,12 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                       <FileText size={12} className="text-[var(--link-color)]" />
                       {paginatedResult.total} {paginatedResult.total === 1 ? "Article" : "Articles"}
                     </span>
+                    {(author.followers ?? 0) > 0 && (
+                      <span className="flex items-center gap-1 text-xs font-semibold text-[var(--text-tertiary)]">
+                        <UserPlus size={12} className="text-[var(--link-color)]" />
+                        {(author.followers ?? 0).toLocaleString()} {(author.followers ?? 0) === 1 ? "follower" : "followers"}
+                      </span>
+                    )}
                     {author.totalViews > 0 && (
                       <span className="flex items-center gap-1 text-xs font-semibold text-[var(--text-tertiary)]">
                         <Eye size={12} className="text-[var(--link-color)]" />
@@ -253,10 +263,13 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                 </div>
               )}
 
-              {/* Joined date */}
-              <div className="flex items-center gap-1.5 text-xs text-[var(--text-tertiary)]">
-                <Calendar size={13} />
-                <span>Member since {format(new Date(author.createdAt || Date.now()), "MMMM yyyy")}</span>
+              {/* Joined date + Follow button */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-1">
+                <div className="flex items-center gap-1.5 text-xs text-[var(--text-tertiary)]">
+                  <Calendar size={13} />
+                  <span>Member since {format(new Date(author.createdAt || Date.now()), "MMMM yyyy")}</span>
+                </div>
+                <AuthorFollowButton slug={author.slug} initialFollowers={author.followers ?? 0} isLoggedIn={isLoggedIn} />
               </div>
             </div>
           </div>

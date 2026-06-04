@@ -11,6 +11,7 @@ import {
   ExternalLink,
   LogOut,
   Menu,
+  MessageSquare,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -18,6 +19,7 @@ const WRITER_NAV = [
   { href: "/writer", icon: LayoutDashboard, label: "Dashboard", exact: true },
   { href: "/writer/articles", icon: BookOpen, label: "Articles", exact: false },
   { href: "/writer/articles/new", icon: PlusCircle, label: "New", exact: true },
+  { href: "/writer/suggestions", icon: MessageSquare, label: "Suggestions", exact: false },
   { href: "/writer/profile", icon: User, label: "Profile", exact: false },
 ];
 

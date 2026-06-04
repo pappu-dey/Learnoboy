@@ -50,7 +50,15 @@ export async function POST(request: NextRequest) {
     // Secure Author Resolution
     let finalAuthorId = body.authorId;
     if (session.role === "writer") {
-      const authorDoc = await Author.findOne({ userId: session.userId });
+      let authorDoc = await Author.findOne({ userId: session.userId });
+      if (!authorDoc) {
+        // Fallback: search by email to self-heal missing userId links from seeding
+        authorDoc = await Author.findOne({ email: session.email });
+        if (authorDoc) {
+          authorDoc.userId = session.userId as any;
+          await authorDoc.save();
+        }
+      }
       if (!authorDoc) {
         return NextResponse.json(
           { success: false, error: "Writer profile not found for this account" },
@@ -59,7 +67,15 @@ export async function POST(request: NextRequest) {
       }
       finalAuthorId = String(authorDoc._id);
     } else if (session.role === "superadmin" && !finalAuthorId) {
-      const authorDoc = await Author.findOne({ userId: session.userId });
+      let authorDoc = await Author.findOne({ userId: session.userId });
+      if (!authorDoc) {
+        // Fallback: search by email to self-heal missing userId links from seeding
+        authorDoc = await Author.findOne({ email: session.email });
+        if (authorDoc) {
+          authorDoc.userId = session.userId as any;
+          await authorDoc.save();
+        }
+      }
       if (authorDoc) {
         finalAuthorId = String(authorDoc._id);
       }

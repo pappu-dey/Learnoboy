@@ -78,9 +78,12 @@ export default async function WriterArticlesPage({ searchParams }: Props) {
         ))}
       </div>
 
-      {/* Articles table */}
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      <ArticlesTable articles={articles as any} status={status} newArticleHref="/writer/articles/new" />
+      <ArticlesTable 
+        articles={articles as any} 
+        status={status} 
+        newArticleHref="/writer/articles/new" 
+        editArticleHrefPrefix="/writer/articles" 
+      />
 
       {/* Pagination */}
       {totalPages > 1 && (

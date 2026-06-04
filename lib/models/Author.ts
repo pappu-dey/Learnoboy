@@ -23,6 +23,7 @@ export interface IAuthorDocument extends Document {
   verifiedAt?: Date;
   articleCount: number;
   totalViews: number;
+  followers: number;
   /** Reference back to the User document */
   userId?: Types.ObjectId;
   createdAt: Date;
@@ -53,6 +54,7 @@ const AuthorSchema = new Schema<IAuthorDocument>(
     verifiedAt: { type: Date },
     articleCount: { type: Number, default: 0 },
     totalViews: { type: Number, default: 0 },
+    followers: { type: Number, default: 0 },
     userId: { type: Schema.Types.ObjectId, ref: "User" },
   },
   {

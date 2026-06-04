@@ -46,9 +46,16 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
           <h3 className="text-sm font-semibold text-[var(--text-primary)] group-hover:text-[var(--link-color)] transition-colors line-clamp-2 leading-snug">
             {article.title}
           </h3>
-          <span className="text-xs text-[var(--text-tertiary)]">
-            {article.readingTime} min read
-          </span>
+          <div className="flex flex-col mt-0.5">
+            <span className="text-[11px] text-[var(--text-tertiary)]">
+              {article.readingTime} min read
+            </span>
+            <span className="text-[10px] text-[var(--text-tertiary)] opacity-85 mt-0.5">
+              {article.publishedAt
+                ? format(new Date(article.publishedAt), "MMM d, yyyy")
+                : "Draft"}
+            </span>
+          </div>
         </div>
       </Link>
     );
@@ -99,7 +106,7 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
                     className="object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--link-color), #60a5fa)" }}>
+                  <div className="w-full h-full flex items-center justify-center" aria-label={author?.name || "Unknown"} style={{ background: "linear-gradient(135deg, var(--link-color), #60a5fa)" }}>
                     <svg viewBox="0 0 24 24" style={{ width: "55%", height: "55%", fill: "#fff", opacity: 0.9 }}>
                       <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                     </svg>
@@ -167,7 +174,7 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
                   className="object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center" style={{ background: "var(--link-color)" }}>
+                <div className="w-full h-full flex items-center justify-center" aria-label={author?.name || "Unknown"} style={{ background: "var(--link-color)" }}>
                   <svg viewBox="0 0 24 24" style={{ width: "55%", height: "55%", fill: "#fff", opacity: 0.9 }}>
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                   </svg>
