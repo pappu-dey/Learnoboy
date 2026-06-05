@@ -23,35 +23,48 @@ import { ArticleMetrics } from "@/components/article/ArticleMetrics";
 import { ArticleComments } from "@/components/article/ArticleComments";
 import { getSession } from "@/lib/auth/session";
 
-const htmlFAQs = [
-  {
-    question: "What is the difference between an HTML tag and an HTML element?",
-    answer: "An HTML tag is the markup container (e.g., `<p>` or `</p>`) that tells the browser where an element starts and ends. An HTML element consists of the start tag, the content, and the end tag combined (e.g., `<p>Hello World</p>`)."
-  },
-  {
-    question: "Why is semantic markup important in modern web design?",
-    answer: "Semantic elements (like `<article>`, `<header>`, and `<section>`) describe the meaning of their content to both the browser and the developer. This significantly improves search engine optimization (SEO), web accessibility for screen readers, and code readability."
-  },
-  {
-    question: "Is the DOCTYPE declaration mandatory in HTML5?",
-    answer: "Yes, the `<!DOCTYPE html>` declaration is required at the very top of every HTML document. It specifies to the browser that it is an HTML5 document, ensuring the browser renders the page in standard compliance mode rather than quirks mode."
-  },
-  {
-    question: "Are HTML tags case-sensitive?",
-    answer: "No, HTML tags are case-insensitive. For example, `<DIV>` is treated the same as `<div>`. However, the W3C standard and clean coding conventions strongly recommend using lowercase for all tag names."
-  }
-];
+/* ─── Parse FAQ items from article content markdown ────────── */
+function parseFaqsFromContent(content: string): { question: string; answer: string }[] {
+  const faqHeading = /\n*##\s+Frequently Asked Questions\s*\n/i;
+  const idx = content.search(faqHeading);
+  if (idx === -1) return [];
 
-const defaultFAQs = [
-  {
-    question: "How long does it take to learn this topic?",
-    answer: "Mastering the fundamentals usually takes a few days of active reading and coding. Becoming proficient in building responsive and accessible layouts takes a few weeks of consistent practice."
-  },
-  {
-    question: "Where can I practice my skills?",
-    answer: "We recommend practicing directly inside a local text editor (like VS Code) or using online sandboxes like CodePen, StackBlitz, or JSFiddle to see your code compile in real-time."
+  const faqBlock = content.slice(idx);
+  // Stop at the next ## heading (e.g. ## Next Up)
+  const nextHeading = faqBlock.search(/\n##\s+(?!Frequently)/m);
+  const block = nextHeading === -1 ? faqBlock : faqBlock.slice(0, nextHeading);
+
+  const entryRegex = /\*\*Q:\s*(.+?)\*\*\s*\n+([\s\S]+?)(?=\n\*\*Q:|$)/g;
+  const faqs: { question: string; answer: string }[] = [];
+  let match;
+  while ((match = entryRegex.exec(block)) !== null) {
+    const q = match[1].trim();
+    const a = match[2].trim();
+    if (q && a) faqs.push({ question: q, answer: a });
   }
-];
+  return faqs;
+}
+
+/* ─── Remove FAQ block from article content markdown ──────── */
+function removeFaqFromContent(content: string): string {
+  const faqHeading = /\n*##\s+Frequently Asked Questions\s*\n/i;
+  const idx = content.search(faqHeading);
+  if (idx === -1) return content;
+
+  const contentPart = content.slice(0, idx).trimEnd();
+  const faqPart = content.slice(idx);
+
+  // Find where the next section (like ## Next Up or another header) starts within faqPart
+  // We search for a newline followed by ## (not including Frequently Asked Questions)
+  const nextHeadingIdx = faqPart.search(/\n##\s+(?!Frequently Asked Questions)/i);
+  if (nextHeadingIdx === -1) {
+    return contentPart;
+  }
+
+  // Combine the content before the FAQ and the content after the FAQ section
+  return (contentPart + "\n\n" + faqPart.slice(nextHeadingIdx).trim()).trim();
+}
+
 
 function splitMarkdown(markdown: string) {
   if (!markdown) {
@@ -315,10 +328,18 @@ export default async function ArticlePage({ params }: PageParams) {
   const relatedArticles = JSON.parse(JSON.stringify(rawRelatedArticles)) as IArticle[];
 
   const strippedContent = stripFirstH1(article.content);
-  const { introduction, mainContent, conclusion } = splitMarkdown(strippedContent);
-  const tocItems = extractTableOfContents(strippedContent).filter((item) => item.level === 2);
+  // Parse article-specific FAQs from saved markdown content
+  const articleFaqs = parseFaqsFromContent(strippedContent);
+  // Remove FAQ section from content to avoid rendering it twice in MDX/markdown body
+  const contentWithoutFaq = removeFaqFromContent(strippedContent);
+
+  const { introduction, mainContent, conclusion } = splitMarkdown(contentWithoutFaq);
+  const tocItems = extractTableOfContents(contentWithoutFaq).filter((item) => item.level === 2);
   const jsonLd = getArticleJsonLd(article);
   const tags = article.tags?.filter((t) => typeof t === "object") as ITag[] | undefined;
+  // Fallback: if no Tag documents, show the writer's manually entered SEO keywords as tags
+  const seoKeywords: string[] = article.seo?.keywords ?? [];
+
 
   // Generate dynamic breadcrumbs: Home > Primary Category > Subcategory > Article Title
   const breadcrumbLd = getBreadcrumbJsonLd([
@@ -348,7 +369,7 @@ export default async function ArticlePage({ params }: PageParams) {
           {/* Main content */}
           <article className="flex-1 min-w-0 max-w-4xl">
             {/* 1. Title, 2. Date/Action Row, 3. Short Definition */}
-            <ArticleHeader article={article} content={strippedContent} />
+            <ArticleHeader article={article} content={contentWithoutFaq} />
 
             {/* 4. Cover image */}
             {article.coverImage && (
@@ -387,8 +408,35 @@ export default async function ArticlePage({ params }: PageParams) {
               )}
             </div>
 
-            {/* Tags section with custom SVG Tag Icon */}
-            {tags && tags.length > 0 && (
+            {/* Tags: writer's manual SEO keywords take priority over Tag documents */}
+            {seoKeywords.length > 0 ? (
+              <div className="flex flex-wrap items-center gap-2 mt-8 pt-6 border-t border-[var(--border-color)]">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-4 h-4 text-[var(--link-color)] animate-pulse"
+                >
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                  <line x1="7" y1="7" x2="7.01" y2="7" />
+                </svg>
+                <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mr-1">Tags:</span>
+                <div className="flex flex-wrap gap-2">
+                  {seoKeywords.map((kw, i) => (
+                    <span
+                      key={i}
+                      className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--link-color)] hover:border-[var(--link-color)] transition-all hover:scale-105"
+                    >
+                      #{kw}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : tags && tags.length > 0 ? (
               <div className="flex flex-wrap items-center gap-2 mt-8 pt-6 border-t border-[var(--border-color)]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -416,7 +464,7 @@ export default async function ArticlePage({ params }: PageParams) {
                   ))}
                 </div>
               </div>
-            )}
+            ) : null}
 
             {/* 8. Table of Contents (Show all headings user has read) — Mobile Stack Only */}
             {tocItems.length > 0 && (
@@ -425,8 +473,8 @@ export default async function ArticlePage({ params }: PageParams) {
               </div>
             )}
 
-            {/* 9. FAQ */}
-            <FAQSection faqs={(article.subcategory === "html" || article.primaryCategory === "web-development") ? htmlFAQs : defaultFAQs} />
+            {/* 9. FAQ — rendered from article's own saved content */}
+            <FAQSection faqs={articleFaqs} />
 
             {/* 10. Read Next */}
             <ReadNext nextArticle={relatedArticles.length > 0 ? relatedArticles[0] : null} />

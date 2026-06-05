@@ -760,6 +760,25 @@ function useUndoHistory(initial: string) {
   return { push, undo, redo, canUndo, canRedo };
 }
 
+/* ─── Helper: parse & strip FAQ block from raw markdown ─────── */
+function parseFaqFromContent(raw: string): { content: string; faqs: { q: string; a: string }[] } {
+  const faqHeading = /\n*##\s+Frequently Asked Questions\s*\n/i;
+  const idx = raw.search(faqHeading);
+  if (idx === -1) return { content: raw, faqs: [] };
+
+  const contentPart = raw.slice(0, idx).trimEnd();
+  const faqPart = raw.slice(idx);
+
+  // Each FAQ entry is: **Q: <question>**\n\n<answer>\n
+  const entryRegex = /\*\*Q:\s*(.+?)\*\*\s*\n+([\s\S]+?)(?=\n\*\*Q:|$)/g;
+  const faqs: { q: string; a: string }[] = [];
+  let match;
+  while ((match = entryRegex.exec(faqPart)) !== null) {
+    faqs.push({ q: match[1].trim(), a: match[2].trim() });
+  }
+  return { content: contentPart, faqs };
+}
+
 /* ─── Main ArticleForm ────────────────────────────────────── */
 
 export function ArticleForm({
@@ -770,6 +789,10 @@ export function ArticleForm({
   isEdit = false,
   sessionRole = "writer",
 }: ArticleFormProps) {
+  // Pre-compute FAQ-stripped content and parsed FAQ items from props
+  // (must happen before hooks so we can seed useUndoHistory correctly)
+  const { content: initialContent, faqs: parsedFaqs } = parseFaqFromContent(initialData.content || "");
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -782,12 +805,11 @@ export function ArticleForm({
   const formRef = useRef<HTMLFormElement>(null);
   const dragCounter = useRef(0);
 
-  // Track undo/redo for content field
-  const { push: pushHistory, undo: undoHistory, redo: redoHistory } = useUndoHistory(
-    initialData.content || ""
-  );
+  // Track undo/redo for content field — seeded with FAQ-stripped content
+  const { push: pushHistory, undo: undoHistory, redo: redoHistory } = useUndoHistory(initialContent);
   // Debounce timer for history push on plain typing
   const historyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   // Document-level Ctrl+S → save from any field
   useEffect(() => {
@@ -801,10 +823,11 @@ export function ArticleForm({
     return () => document.removeEventListener("keydown", handler);
   }, []);
 
+
   const [form, setForm] = useState({
     title: initialData.title || "",
     slug: initialData.slug || "",
-    content: initialData.content || "",
+    content: initialContent,
     excerpt: initialData.excerpt || "",
     // Multi-category: categoryIds holds all; categoryId = first (for URL routing)
     categoryIds: initialData.categoryIds?.length
@@ -827,9 +850,9 @@ export function ArticleForm({
   });
 
   // ── FAQ structured editor ──
-  const [faqItems, setFaqItems] = useState<{ q: string; a: string }[]>([
-    { q: "", a: "" },
-  ]);
+  const [faqItems, setFaqItems] = useState<{ q: string; a: string }[]>(
+    parsedFaqs.length > 0 ? parsedFaqs : [{ q: "", a: "" }]
+  );
   const addFaq = () => setFaqItems((prev) => [...prev, { q: "", a: "" }]);
   const removeFaq = (i: number) => setFaqItems((prev) => prev.filter((_, idx) => idx !== i));
   const updateFaq = (i: number, field: "q" | "a", val: string) =>
@@ -1374,8 +1397,12 @@ export function ArticleForm({
     if (form.contentType) autoTagParts.push(form.contentType.replace(/\s+/g, ""));
 
     // ── Append FAQ markdown block ──
+    // Strip any pre-existing FAQ section first to avoid duplication on re-saves
+    const faqStripRegex = /\n*##\s+Frequently Asked Questions[\s\S]*/i;
+    const strippedContent = form.content.replace(faqStripRegex, "").trimEnd();
+
     const validFaqs = faqItems.filter((f) => f.q.trim() && f.a.trim());
-    let finalContent = form.content;
+    let finalContent = strippedContent;
     if (validFaqs.length > 0) {
       const faqMd = [
         "\n\n## Frequently Asked Questions\n",
@@ -1415,8 +1442,10 @@ export function ArticleForm({
         seo: { 
           metaTitle: form.seoTitle || form.title, 
           metaDescription: form.seoDescription || form.excerpt,
-          keywords: [...form.seoKeywords, ...autoTagParts]
+          // Store ONLY the writer's manual keywords here (used for tag display on article page)
+          keywords: form.seoKeywords
         },
+        // keywords string field includes auto parts for SEO meta only (not shown as tags)
         keywords: [...form.seoKeywords, ...autoTagParts].join(", "),
       };
 
