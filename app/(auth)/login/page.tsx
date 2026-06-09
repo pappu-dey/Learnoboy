@@ -30,7 +30,7 @@ export default function LoginPage() {
 
       // Redirect based on role
       window.location.href =
-        data.role === "superadmin" || data.role === "writer" ? "/admin" : "/";
+        data.role === "superadmin" || data.role === "writer" ? "/admin" : "/home";
     } catch {
       setError("Network error. Please try again.");
     } finally {

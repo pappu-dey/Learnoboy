@@ -26,6 +26,7 @@ interface Reply {
   content: string;
   createdAt: string;
   likes: number;
+  likedByUser?: boolean;
 }
 
 interface Comment {
@@ -42,6 +43,7 @@ interface Comment {
 }
 
 interface ArticleCommentsProps {
+  articleId: string;
   author: IAuthor;
   readingTime: number;
   views: number;
@@ -84,6 +86,7 @@ function Avatar({ name, avatar, size = 8 }: { name: string; avatar?: string; siz
 
 /* ─── Main Component ─── */
 export function ArticleComments({
+  articleId,
   author,
   readingTime,
   views,
@@ -124,31 +127,40 @@ export function ArticleComments({
 
   /* Fetch real comments when panel opens */
   useEffect(() => {
-    if (!showComments || comments.length > 0) return;
+    if (!showComments || !articleId || comments.length > 0) return;
     setLoadingComments(true);
-    // TODO: replace with your real comments API endpoint
-    // fetch(`/api/articles/${articleId}/comments`)
-    //   .then(r => r.json())
-    //   .then(data => setComments(data.comments ?? []))
-    //   .finally(() => setLoadingComments(false));
-
-    // For now just clear loading — no fake data
-    setTimeout(() => setLoadingComments(false), 400);
-  }, [showComments, comments.length]);
+    fetch(`/api/articles/${articleId}/comments`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success) {
+          setComments(data.comments ?? []);
+        }
+      })
+      .catch((err) => console.error("Error loading comments:", err))
+      .finally(() => setLoadingComments(false));
+  }, [showComments, articleId, comments.length]);
 
   /* Like a comment (only when logged in) */
-  const handleLikeComment = (commentId: string, parentId?: string) => {
+  const handleLikeComment = async (commentId: string, parentId?: string) => {
     if (!isLoggedIn) {
       window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
       return;
     }
+
+    // Optimistic local update
     setComments((prev) =>
       prev.map((c) => {
         if (parentId && c._id === parentId) {
           return {
             ...c,
             replies: c.replies?.map((r) =>
-              r._id === commentId ? { ...r, likes: r.likes + 1 } : r
+              r._id === commentId
+                ? {
+                    ...r,
+                    likes: r.likedByUser ? r.likes - 1 : r.likes + 1,
+                    likedByUser: !r.likedByUser,
+                  }
+                : r
             ),
           };
         }
@@ -162,36 +174,109 @@ export function ArticleComments({
         return c;
       })
     );
+
+    try {
+      const res = await fetch(`/api/comments/${commentId}/like`, {
+        method: "PATCH",
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to toggle like");
+      }
+      // Sync actual values from database response
+      setComments((prev) =>
+        prev.map((c) => {
+          if (parentId && c._id === parentId) {
+            return {
+              ...c,
+              replies: c.replies?.map((r) =>
+                r._id === commentId
+                  ? { ...r, likes: data.likes, likedByUser: data.likedByUser }
+                  : r
+              ),
+            };
+          }
+          if (!parentId && c._id === commentId) {
+            return {
+              ...c,
+              likes: data.likes,
+              likedByUser: data.likedByUser,
+            };
+          }
+          return c;
+        })
+      );
+    } catch (err) {
+      console.error("Failed to like comment:", err);
+      // Revert optimistic update on error
+      setComments((prev) =>
+        prev.map((c) => {
+          if (parentId && c._id === parentId) {
+            return {
+              ...c,
+              replies: c.replies?.map((r) =>
+                r._id === commentId
+                  ? {
+                      ...r,
+                      likes: r.likedByUser ? r.likes + 1 : r.likes - 1,
+                      likedByUser: !r.likedByUser,
+                    }
+                  : r
+              ),
+            };
+          }
+          if (!parentId && c._id === commentId) {
+            return {
+              ...c,
+              likes: c.likedByUser ? c.likes + 1 : c.likes - 1,
+              likedByUser: !c.likedByUser,
+            };
+          }
+          return c;
+        })
+      );
+    }
   };
 
   /* Post new comment */
   const handlePostComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCommentText.trim() || !isLoggedIn) return;
+    if (!newCommentText.trim() || !isLoggedIn || !articleId) return;
 
     setSubmitting(true);
     setSubmitError("");
     try {
-      // TODO: replace with real API call
-      // const res = await fetch(`/api/articles/${articleId}/comments`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ content: newCommentText.trim(), replyTo: replyingTo }),
-      // });
-      // const data = await res.json();
-      // if (!res.ok) throw new Error(data.error || "Failed to post");
-      // setComments((prev) => [data.comment, ...prev]);
+      const res = await fetch(`/api/articles/${articleId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: newCommentText.trim(),
+          parentId: replyingTo,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to post comment");
+      }
 
-      // Optimistic local insert (remove once API is wired up)
-      const newComment: Comment = {
-        _id: `local-${Date.now()}`,
-        authorName: "You",
-        content: newCommentText.trim(),
-        createdAt: new Date().toISOString(),
-        likes: 0,
-        likedByUser: false,
-      };
-      setComments((prev) => [newComment, ...prev]);
+      const postedComment = data.comment;
+
+      if (replyingTo) {
+        setComments((prev) =>
+          prev.map((c) => {
+            if (c._id === replyingTo) {
+              return {
+                ...c,
+                replies: [...(c.replies ?? []), postedComment],
+              };
+            }
+            return c;
+          })
+        );
+      } else {
+        setComments((prev) => [postedComment, ...prev]);
+      }
+
       setNewCommentText("");
       setReplyingTo(null);
     } catch (err: unknown) {
@@ -499,10 +584,12 @@ function ReplyRow({
         <div className="flex items-center gap-3.5 mt-2.5">
           <button
             onClick={onLike}
-            className="flex items-center gap-1 text-[10px] font-semibold text-[var(--text-tertiary)] hover:text-red-500 transition-colors cursor-pointer"
+            className={`flex items-center gap-1 text-[10px] font-semibold transition-colors cursor-pointer ${
+              reply.likedByUser ? "text-red-500" : "text-[var(--text-tertiary)] hover:text-red-500"
+            }`}
             title={isLoggedIn ? "Like" : "Sign in to like"}
           >
-            <Heart size={10} />
+            <Heart size={10} fill={reply.likedByUser ? "currentColor" : "none"} />
             <span>{reply.likes} {reply.likes === 1 ? "Like" : "Likes"}</span>
           </button>
         </div>

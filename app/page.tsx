@@ -1,6 +1,7 @@
 import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturedArticles } from "@/components/home/FeaturedArticles";
 import { LatestArticles } from "@/components/home/LatestArticles";
+import { AllArticlesInfinite } from "@/components/home/AllArticlesInfinite";
 import { CategoryCards } from "@/components/home/CategoryCards";
 import {
   getFeaturedArticles,
@@ -31,6 +32,9 @@ export default async function HomePage() {
 
         {/* Latest Articles */}
         <LatestArticles articles={latestArticles} />
+
+        {/* Infinite Scroll / Lazy Loaded Articles */}
+        <AllArticlesInfinite />
 
         {/* Empty state when DB has no data yet */}
         {featuredArticles.length === 0 && latestArticles.length === 0 && (

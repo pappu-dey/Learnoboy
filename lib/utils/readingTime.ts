@@ -3,12 +3,15 @@
  * Based on average adult reading speed of 200-238 words per minute.
  */
 export function calculateReadingTime(content: string): number {
+  if (!content || typeof content !== "string" || !content.trim()) return 1;
+
   const wordsPerMinute = 220;
   // Strip markdown syntax for accurate word count
   const plainText = content
+    .replace(/```[\s\S]*?```/g, "") // code blocks
+    .replace(/`[^`]*`/g, "") // inline code
     .replace(/#{1,6}\s/g, "") // headers
     .replace(/\*\*|__|~~|\*/g, "") // bold, italic, strikethrough
-    .replace(/`{1,3}[^`]*`{1,3}/g, "") // inline code and code blocks
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // links
     .replace(/!\[[^\]]*\]\([^)]+\)/g, "") // images
     .replace(/^\s*[-*+]\s/gm, "") // list items

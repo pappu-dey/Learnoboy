@@ -489,6 +489,7 @@ export default async function ArticlePage({ params }: PageParams) {
                   isLoggedIn={isLoggedIn}
                 />
                 <ArticleComments
+                  articleId={article._id}
                   author={JSON.parse(JSON.stringify(article.author)) as IAuthor}
                   readingTime={article.readingTime}
                   views={article.views}

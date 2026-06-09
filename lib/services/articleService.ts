@@ -13,6 +13,7 @@ export interface GetArticlesOptions {
   featured?: boolean;
   sort?: "newest" | "oldest" | "popular";
   authorId?: string; // filter by author _id
+  search?: string;
 }
 
 /**
@@ -36,6 +37,16 @@ export async function getArticles(
   // Build filter
   const filter: Record<string, unknown> = { status };
   if (featured !== undefined) filter.isFeatured = featured;
+
+  if (options.search) {
+    const escapedQuery = options.search.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+    const regex = new RegExp(escapedQuery, "i");
+    filter.$or = [
+      { title: { $regex: regex } },
+      { excerpt: { $regex: regex } },
+      { content: { $regex: regex } },
+    ];
+  }
 
   if (options.category) {
     const categoryDoc = await Category.findOne({ slug: options.category });

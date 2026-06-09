@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
     const featured = searchParams.get("featured");
     const sort =
       (searchParams.get("sort") as "newest" | "oldest" | "popular") || "newest";
+    const search = searchParams.get("search") || undefined;
 
     const result = await getArticles({
       page,
@@ -23,6 +24,7 @@ export async function GET(request: NextRequest) {
       status,
       featured: featured !== null ? featured === "true" : undefined,
       sort,
+      search,
     });
 
     return NextResponse.json({ success: true, ...result });

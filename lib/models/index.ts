@@ -10,7 +10,9 @@ import Tag from "./Tag";
 import User from "./User";
 import Feedback from "./Feedback";
 import Donor from "./Donor";
+import Comment from "./Comment";
 
 // Re-export for convenience
-export { Article, Author, Category, Tag, User, Feedback, Donor };
+export { Article, Author, Category, Tag, User, Feedback, Donor, Comment };
+
 

@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { ArticleCard } from "@/components/article/ArticleCard";
 import type { IArticle } from "@/types";
-import { Clock, ArrowRight } from "lucide-react";
+import { Clock } from "lucide-react";
 
 interface LatestArticlesProps {
   articles: IArticle[];
@@ -19,13 +18,6 @@ export function LatestArticles({ articles }: LatestArticlesProps) {
             Latest Articles
           </h2>
         </div>
-        <Link
-          href="/search"
-          className="flex items-center gap-1 text-sm font-medium transition-colors hover:gap-2"
-          style={{ color: "var(--link-color)" }}
-        >
-          View all <ArrowRight size={14} />
-        </Link>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
