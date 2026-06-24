@@ -29,8 +29,13 @@ export default function LoginPage() {
       }
 
       // Redirect based on role
-      window.location.href =
-        data.role === "superadmin" || data.role === "writer" ? "/admin" : "/home";
+      if (data.role === "superadmin") {
+        window.location.href = "/admin";
+      } else if (data.role === "writer") {
+        window.location.href = "/writer";
+      } else {
+        window.location.href = "/home";
+      }
     } catch {
       setError("Network error. Please try again.");
     } finally {

@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { getDefaultMetadata } from "@/lib/utils/seo";
 import { getSession } from "@/lib/auth/session";
 import { ThemeScript } from "@/components/layout/ThemeScript";
+import { CookieConsent } from "@/components/layout/CookieConsent";
 import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
@@ -45,6 +46,7 @@ export default async function RootLayout({
           {children}
         </main>
         <Footer />
+        <CookieConsent />
         <Analytics />
       </body>
     </html>

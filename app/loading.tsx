@@ -1,10 +1,34 @@
-import { HomePageSkeleton } from "@/components/ui/Skeleton";
-
 /**
- * Next.js App Router loading.tsx
- * Automatically shown by the framework while the home page (page.tsx)
- * is fetching data from the server (MongoDB cold start, ISR revalidation, etc.)
+ * Global loading state — shown during ISR revalidation / cold starts.
  */
 export default function HomeLoading() {
-  return <HomePageSkeleton />;
+  return <PageLoader />;
+}
+
+function PageLoader() {
+  const path =
+    "M29.760000000000005 18.72 c0 7.28 -3.9200000000000004 13.600000000000001 -9.840000000000002 16.96 c -2.8800000000000003 1.6800000000000002 -6.24 2.64 -9.840000000000002 2.64 c -3.6 0 -6.88 -0.96 -9.76 -2.64 c0 -7.28 3.9200000000000004 -13.52 9.840000000000002 -16.96 c2.8800000000000003 -1.6800000000000002 6.24 -2.64 9.76 -2.64 S26.880000000000003 17.040000000000003 29.760000000000005 18.72 c5.84 3.3600000000000003 9.76 9.68 9.840000000000002 16.96 c -2.8800000000000003 1.6800000000000002 -6.24 2.64 -9.76 2.64 c -3.6 0 -6.88 -0.96 -9.840000000000002 -2.64 c -5.84 -3.3600000000000003 -9.76 -9.68 -9.76 -16.96 c0 -7.28 3.9200000000000004 -13.600000000000001 9.76 -16.96 C25.84 5.120000000000001 29.760000000000005 11.440000000000001 29.760000000000005 18.72z";
+  return (
+    <div
+      aria-label="Loading"
+      style={{
+        minHeight: "60vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <svg
+        className="uiverse-loader"
+        viewBox="0 0 40 40"
+        height="60"
+        width="60"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+      >
+        <path className="uiverse-track" fill="none" strokeWidth="4" pathLength="100" d={path} />
+        <path className="uiverse-car"   fill="none" strokeWidth="4" pathLength="100" d={path} />
+      </svg>
+    </div>
+  );
 }

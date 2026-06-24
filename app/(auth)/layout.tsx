@@ -6,10 +6,12 @@ import { redirect } from "next/navigation";
 export default async function AuthLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
   if (session) {
-    if (session.role === "superadmin" || session.role === "writer") {
+    if (session.role === "superadmin") {
       redirect("/admin");
+    } else if (session.role === "writer") {
+      redirect("/writer");
     } else {
-      redirect("/");
+      redirect("/home");
     }
   }
 

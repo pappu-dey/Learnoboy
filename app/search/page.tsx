@@ -6,7 +6,18 @@ import { SearchBar } from "@/components/search/SearchBar";
 import { Search, Clock, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import type { ICategory, IAuthor } from "@/types";
-import { Skeleton } from "@/components/ui/Skeleton";
+
+const UIVERSE_PATH =
+  "M29.760000000000005 18.72 c0 7.28 -3.9200000000000004 13.600000000000001 -9.840000000000002 16.96 c -2.8800000000000003 1.6800000000000002 -6.24 2.64 -9.840000000000002 2.64 c -3.6 0 -6.88 -0.96 -9.76 -2.64 c0 -7.28 3.9200000000000004 -13.52 9.840000000000002 -16.96 c2.8800000000000003 -1.6800000000000002 6.24 -2.64 9.76 -2.64 S26.880000000000003 17.040000000000003 29.760000000000005 18.72 c5.84 3.3600000000000003 9.76 9.68 9.840000000000002 16.96 c -2.8800000000000003 1.6800000000000002 -6.24 2.64 -9.76 2.64 c -3.6 0 -6.88 -0.96 -9.840000000000002 -2.64 c -5.84 -3.3600000000000003 -9.76 -9.68 -9.76 -16.96 c0 -7.28 3.9200000000000004 -13.600000000000001 9.76 -16.96 C25.84 5.120000000000001 29.760000000000005 11.440000000000001 29.760000000000005 18.72z";
+
+function UiverseLoader() {
+  return (
+    <svg className="uiverse-loader" viewBox="0 0 40 40" height="60" width="60" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <path className="uiverse-track" fill="none" strokeWidth="4" pathLength="100" d={UIVERSE_PATH} />
+      <path className="uiverse-car"   fill="none" strokeWidth="4" pathLength="100" d={UIVERSE_PATH} />
+    </svg>
+  );
+}
 
 interface SearchPageProps {
   searchParams: Promise<{ q?: string }>;
@@ -179,22 +190,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       {q && q.trim().length >= 1 ? (
         <Suspense
           fallback={
-            <div className="flex flex-col gap-6">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="flex flex-col md:flex-row gap-6 p-6 rounded-2xl border border-[var(--border-color)]"
-                  style={{ background: "var(--bg-surface)" }}
-                >
-                  <Skeleton className="w-full md:w-52 h-36 rounded-xl flex-shrink-0" />
-                  <div className="flex-1 flex flex-col justify-between py-1 gap-3">
-                    <Skeleton className="h-4 w-1/4" />
-                    <Skeleton className="h-6 w-3/4" />
-                    <Skeleton lines={2} />
-                    <Skeleton className="h-5 w-1/3" />
-                  </div>
-                </div>
-              ))}
+            <div style={{ minHeight: "40vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <UiverseLoader />
             </div>
           }
         >
