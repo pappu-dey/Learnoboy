@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Feedback } from "@/lib/models";
 import { getSession } from "@/lib/auth/session";
 
-// GET /api/feedback — superadmin only
+
 export async function GET() {
   const session = await getSession();
   if (!session || session.role !== "superadmin") {
@@ -23,7 +23,7 @@ export async function GET() {
   }
 }
 
-// POST /api/feedback — public
+
 export async function POST(req: NextRequest) {
   try {
     await connectDB();

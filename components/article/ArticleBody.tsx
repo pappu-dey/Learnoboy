@@ -11,7 +11,7 @@ interface ArticleBodyProps {
   content: string;
 }
 
-// Copy button for code blocks
+
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -51,7 +51,7 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
-// Wrapper to extract text for copy
+
 function CodeBlock({
   children,
   ...props
@@ -99,9 +99,9 @@ export function ArticleBody({ content }: ArticleBodyProps) {
     <div
       className="article-content"
       style={{
-        // Optimal reading line length
+        
         maxWidth: "72ch",
-        // Base reading typography
+        
         fontSize: "1rem",
         lineHeight: 1.75,
         color: "var(--text-primary)",
@@ -238,12 +238,12 @@ export function ArticleBody({ content }: ArticleBodyProps) {
             );
           },
 
-          // Code block
+          
           pre: ({ children, ...props }) => (
             <CodeBlock {...props}>{children}</CodeBlock>
           ),
 
-          // Inline code
+          
           code: (props) => {
             const { children, className, ...rest } = props;
             const isBlock = className?.includes("language-");
@@ -276,7 +276,7 @@ export function ArticleBody({ content }: ArticleBodyProps) {
             );
           },
 
-          // h2 with anchor
+          
           h2: ({ children, id, ...props }) => (
             <h2 id={id} {...props} className="scroll-mt-24 group flex items-center gap-2">
               {children}
@@ -293,7 +293,7 @@ export function ArticleBody({ content }: ArticleBodyProps) {
             </h2>
           ),
 
-          // h3 with anchor
+          
           h3: ({ children, id, ...props }) => (
             <h3 id={id} {...props} className="scroll-mt-24 group flex items-center gap-2">
               {children}
@@ -310,7 +310,7 @@ export function ArticleBody({ content }: ArticleBodyProps) {
             </h3>
           ),
 
-          // Callout blockquote
+          
           blockquote: ({ children, ...props }) => (
             <blockquote
               {...props}
@@ -328,7 +328,7 @@ export function ArticleBody({ content }: ArticleBodyProps) {
             </blockquote>
           ),
 
-          // Links
+          
           a: ({ href, children, ...props }) => (
             <a
               href={href}
@@ -353,7 +353,7 @@ export function ArticleBody({ content }: ArticleBodyProps) {
             </a>
           ),
 
-          // Responsive images with caption
+          
           img: ({ src, alt, ...props }) => (
             <figure style={{ margin: "2rem 0" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -385,7 +385,7 @@ export function ArticleBody({ content }: ArticleBodyProps) {
             </figure>
           ),
 
-          // Table
+          
           table: ({ children, ...props }) => (
             <div
               style={{

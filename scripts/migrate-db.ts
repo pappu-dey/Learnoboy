@@ -1,8 +1,4 @@
-/**
- * Database Migration Script
- * Fixes seeded articles missing primaryCategory and subcategory fields.
- * Run with: npx tsx scripts/migrate-db.ts
- */
+
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
@@ -15,7 +11,7 @@ if (!MONGODB_URI) {
   process.exit(1);
 }
 
-// Inline schemas for robust execution
+
 const CategorySchema = new mongoose.Schema({
   name: String,
   slug: String,

@@ -13,23 +13,19 @@ async function run() {
     const categories = await getAllCategories();
     console.log(`🔍 Retrieved ${categories.length} categories from service.`);
     
-    const topLevels = categories.filter(c => !c.parent);
-    const subCategories = categories.filter(c => c.parent);
+    const topLevels = categories;
+    const subCategoriesCount = categories.reduce((sum, c) => sum + (c.subcategories?.length || 0), 0);
     
     console.log(`   - Top-level count: ${topLevels.length}`);
-    console.log(`   - Subcategory count: ${subCategories.length}`);
+    console.log(`   - Subcategory count: ${subCategoriesCount}`);
     
     if (topLevels.length > 0) {
       console.log("\nTop 5 Top-Level Categories:");
       topLevels.slice(0, 5).forEach(c => {
         console.log(`     * "${c.name}" (slug: ${c.slug}, color: ${c.color})`);
-      });
-    }
-    
-    if (subCategories.length > 0) {
-      console.log("\nTop 5 Subcategories:");
-      subCategories.slice(0, 5).forEach(c => {
-        console.log(`     * "${c.name}" (slug: ${c.slug}, color: ${c.color}) -> parent:`, c.parent);
+        if (c.subcategories && c.subcategories.length > 0) {
+          console.log(`       Subcategories: ${c.subcategories.map(sub => sub.name).join(", ")}`);
+        }
       });
     }
   } catch (err) {

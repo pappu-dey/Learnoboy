@@ -47,7 +47,7 @@ export function ArticlesTable({
 
   return (
     <div>
-      {/* Search bar */}
+      {}
       <div className="relative mb-5">
         <Search
           size={14}
@@ -70,7 +70,7 @@ export function ArticlesTable({
         )}
       </div>
 
-      {/* Results count */}
+      {}
       {search && (
         <p className="text-xs text-[var(--text-tertiary)] mb-3">
           {filtered.length === 0
@@ -79,7 +79,7 @@ export function ArticlesTable({
         </p>
       )}
 
-      {/* Table */}
+      {}
       <div
         className="rounded-2xl border border-[var(--border-color)] overflow-hidden"
         style={{ background: "var(--bg-surface)" }}
@@ -102,7 +102,7 @@ export function ArticlesTable({
           </div>
         ) : (
           <>
-            {/* ── Mobile card list ── */}
+            {}
             <div className="md:hidden divide-y divide-[var(--border-color)]">
               {filtered.map((article) => {
                 const category = typeof article.category === "object" ? article.category : null;
@@ -182,7 +182,7 @@ export function ArticlesTable({
               })}
             </div>
 
-            {/* ── Desktop table ── */}
+            {}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
                 <thead>

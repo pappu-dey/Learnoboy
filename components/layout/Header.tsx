@@ -21,7 +21,7 @@ import {
 import { ThemeToggle } from "./ThemeToggle";
 import { SearchBar } from "@/components/search/SearchBar";
 
-// ── Navigation Sections Data (Similar to GeeksforGeeks and MDN) ─────────────
+
 interface SubCategoryItem {
   name: string;
   slug: string;
@@ -40,7 +40,7 @@ const NAVIGATION_ITEMS: NavSection[] = [
   {
     label: "Coding",
     slug: "coding",
-    color: "#2563eb", // Blue
+    color: "#2563eb", 
     icon: <Terminal size={14} />,
     items: [
       { name: "C", slug: "c", desc: "Low-level system programming & compiled logic" },
@@ -53,7 +53,7 @@ const NAVIGATION_ITEMS: NavSection[] = [
   {
     label: "DSA",
     slug: "dsa",
-    color: "#f97316", // Orange
+    color: "#f97316", 
     icon: <Braces size={14} />,
     items: [
       { name: "Arrays", slug: "arrays", desc: "Linear static & dynamic arrays traversals" },
@@ -70,7 +70,7 @@ const NAVIGATION_ITEMS: NavSection[] = [
   {
     label: "Web Dev",
     slug: "web-development",
-    color: "#06b6d4", // Cyan
+    color: "#06b6d4", 
     icon: <Code2 size={14} />,
     items: [
       { name: "HTML", slug: "html", desc: "Semantic page structure & markup tags" },
@@ -80,12 +80,13 @@ const NAVIGATION_ITEMS: NavSection[] = [
       { name: "Next.js", slug: "nextjs", desc: "App Router SSR & statically optimized route pages" },
       { name: "Node.js", slug: "nodejs", desc: "Asynchronous backend runtime event loop" },
       { name: "Express.js", slug: "expressjs", desc: "Lightweight middleware REST API routing" },
+      { name: "HTML Compiler", slug: "compiler/html", desc: "Live preview playground for HTML, CSS, JS" },
     ]
   },
   {
     label: "Database",
     slug: "database",
-    color: "#ef4444", // Red
+    color: "#ef4444", 
     icon: <Database size={14} />,
     items: [
       { name: "SQL", slug: "sql", desc: "Structured queries, join clauses & aggregates" },
@@ -98,7 +99,7 @@ const NAVIGATION_ITEMS: NavSection[] = [
   {
     label: "More",
     slug: "more",
-    color: "#d946ef", // Pink
+    color: "#d946ef", 
     icon: <Sparkles size={14} />,
     items: [
       { name: "Operating Systems", slug: "operating-systems", desc: "Processes, threads, memory, & scheduling" },
@@ -113,7 +114,7 @@ const NAVIGATION_ITEMS: NavSection[] = [
   }
 ];
 
-// ── Types ──────────────────────────────────────────────────────────────────
+
 interface UserInfo {
   name: string;
   email: string;
@@ -121,7 +122,7 @@ interface UserInfo {
   avatar?: string;
 }
 
-// ── Logo + Wordmark ────────────────────────────────────────────────────────
+
 function Logo() {
   return (
     <Link
@@ -129,7 +130,7 @@ function Logo() {
       className="flex items-center gap-2.5 flex-shrink-0 group focus-visible:ring-2 focus-visible:ring-[var(--link-color)] rounded-xl"
       aria-label="LearnoBoy home"
     >
-      {/* Logo image — always visible */}
+      {}
       <div
         className="relative flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
         style={{ width: 40, height: 40 }}
@@ -151,7 +152,7 @@ function Logo() {
         />
       </div>
 
-      {/* Wordmark — hidden on mobile, visible on sm+ */}
+      {}
       <div className="hidden sm:flex flex-col leading-none select-none">
         <span
           className="font-extrabold tracking-tight"
@@ -189,7 +190,7 @@ function Logo() {
   );
 }
 
-// ── Avatar circle ──────────────────────────────────────────────────────────
+
 function AvatarCircle({
   user,
   size = 8,
@@ -234,7 +235,7 @@ function AvatarCircle({
   );
 }
 
-// ── Role badge ─────────────────────────────────────────────────────────────
+
 function RoleBadge({ role }: { role: UserInfo["role"] }) {
   const config = {
     superadmin: { label: "Super Admin", bg: "rgba(124,58,237,0.12)", color: "#7c3aed" },
@@ -252,7 +253,7 @@ function RoleBadge({ role }: { role: UserInfo["role"] }) {
   );
 }
 
-// ── Desktop profile dropdown ───────────────────────────────────────────────
+
 function UserProfileButton({ user }: { user: UserInfo }) {
   const [open, setOpen] = useState(false);
 
@@ -295,7 +296,7 @@ function UserProfileButton({ user }: { user: UserInfo }) {
               boxShadow: "0 12px 40px rgba(0,0,0,0.18)",
             }}
           >
-            {/* User card header */}
+            {}
             <div
               className="px-4 py-4 relative overflow-hidden"
               style={{
@@ -398,7 +399,7 @@ function UserProfileButton({ user }: { user: UserInfo }) {
   );
 }
 
-// ── Main Header ────────────────────────────────────────────────────────────
+
 export function Header({ session }: { session: any }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -473,15 +474,15 @@ export function Header({ session }: { session: any }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
-          {/* Logo + Wordmark */}
+          {}
           <Logo />
 
-          {/* Desktop Nav: Dropdown Mega Menu Group */}
+          {}
           <nav
             className="hidden lg:flex items-center gap-1.5 h-full"
             aria-label="Main navigation"
           >
-            {/* Home link */}
+            {}
             <Link
               href="/"
               className="px-3.5 py-2 rounded-xl text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[var(--link-color)]"
@@ -506,7 +507,7 @@ export function Header({ session }: { session: any }) {
                   />
                 </button>
 
-                {/* Mega Menu Dropdown */}
+                {}
                 <div
                   className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[560px] opacity-0 translate-y-3 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto transition-all duration-250 z-50 p-5 rounded-2xl shadow-2xl border"
                   style={{
@@ -515,13 +516,13 @@ export function Header({ session }: { session: any }) {
                     boxShadow: "var(--shadow-elevated)",
                   }}
                 >
-                  {/* Accent bar colored matching role/category */}
+                  {}
                   <div
                     className="absolute top-0 left-0 right-0 h-1.5 rounded-t-2xl"
                     style={{ background: section.color }}
                   />
 
-                  {/* Header Title with Icon */}
+                  {}
                   <div className="flex items-center gap-2 mb-4 pb-2.5 border-b border-[var(--border-color)]">
                     <span style={{ color: section.color }}>{section.icon}</span>
                     <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
@@ -529,7 +530,7 @@ export function Header({ session }: { session: any }) {
                     </span>
                   </div>
 
-                  {/* Multi-Column Grid */}
+                  {}
                   <div className="grid grid-cols-2 gap-2.5 max-h-[380px] overflow-y-auto pr-1">
                     {section.items.map((item) => (
                       <Link
@@ -557,7 +558,7 @@ export function Header({ session }: { session: any }) {
             ))}
           </nav>
 
-          {/* Right Actions */}
+          {}
           <div className="flex items-center gap-2">
             <div className="hidden sm:block w-48 lg:w-56">
               <SearchBar compact />
@@ -577,7 +578,7 @@ export function Header({ session }: { session: any }) {
               </div>
             )}
 
-            {/* Mobile menu toggle button */}
+            {}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="lg:hidden p-2.5 rounded-xl text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--link-color)]"
@@ -589,7 +590,7 @@ export function Header({ session }: { session: any }) {
           </div>
         </div>
 
-        {/* Mobile Menu Accordion Dropdown */}
+        {}
         {isMenuOpen && (
           <div
             className="lg:hidden border-t py-4 space-y-2 max-h-[calc(100vh-80px)] overflow-y-auto"
@@ -599,7 +600,7 @@ export function Header({ session }: { session: any }) {
               <SearchBar compact />
             </div>
 
-            {/* Home Link on Mobile */}
+            {}
             <Link
               href="/"
               onClick={() => setIsMenuOpen(false)}
@@ -648,7 +649,7 @@ export function Header({ session }: { session: any }) {
               );
             })}
 
-            {/* Mobile user profile panel */}
+            {}
             {user ? (
               <div
                 className="mt-3 pt-3 border-t space-y-2 px-1"

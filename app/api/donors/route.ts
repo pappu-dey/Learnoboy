@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Donor } from "@/lib/models";
 
-// GET /api/donors — Get all approved donors sorted by amount descending, then by date descending
+
 export async function GET() {
   try {
     await connectDB();
@@ -20,14 +20,14 @@ export async function GET() {
   }
 }
 
-// POST /api/donors — Add a new donor record (publicly accessible, pending admin verification)
+
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
     const body = await req.json();
     const { name, email, amount } = body;
 
-    // Validation
+    
     if (!name || !email || amount === undefined || amount === null) {
       return NextResponse.json(
         { success: false, error: "Name, email, and amount are required" },

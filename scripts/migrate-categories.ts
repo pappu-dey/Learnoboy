@@ -1,7 +1,4 @@
-/**
- * One-time category migration script:
- * Links existing subcategory documents to their parent top-level category documents using the parent field.
- */
+
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
@@ -14,7 +11,7 @@ if (!MONGODB_URI) {
   process.exit(1);
 }
 
-// Inline schema for safety
+
 const CategorySchema = new mongoose.Schema({
   name: String,
   slug: String,
@@ -41,7 +38,7 @@ async function runMigration() {
   let updatedCount = 0;
 
   for (const [parentSlug, childSlugs] of Object.entries(PARENT_CHILD_MAPPING)) {
-    // Find parent category
+    
     const parentDoc = await Category.findOne({ slug: parentSlug });
     if (!parentDoc) {
       console.warn(`⚠️ Parent category with slug "${parentSlug}" not found. Skipping its children.`);
@@ -57,7 +54,7 @@ async function runMigration() {
         continue;
       }
 
-      // Update the parent field
+      
       if (childDoc.parent && String(childDoc.parent) === String(parentDoc._id)) {
         console.log(`   ℹ️ "${childDoc.name}" is already linked to "${parentDoc.name}".`);
       } else {
@@ -69,7 +66,7 @@ async function runMigration() {
     }
   }
 
-  // Also clean up top-level categories to ensure their parent field is null if not set
+  
   const topLevels = ["javascript", "python", "data-structures", "web-development", "databases", "algorithms"];
   for (const slug of topLevels) {
     const doc = await Category.findOne({ slug });

@@ -48,11 +48,11 @@ export async function PUT(request: NextRequest, { params }: Params) {
     const { id } = await params;
     const body = await request.json();
 
-    // Secure Author ownership check for writer role
+    
     if (session.role === "writer") {
       let authorDoc = await Author.findOne({ userId: session.userId });
       if (!authorDoc) {
-        // Fallback: search by email to self-heal missing userId links from seeding
+        
         authorDoc = await Author.findOne({ email: session.email });
         if (authorDoc) {
           authorDoc.userId = session.userId as any;
@@ -69,21 +69,21 @@ export async function PUT(request: NextRequest, { params }: Params) {
       body.authorId = String(authorDoc._id);
     }
 
-    // Recalculate reading time if content changed
+    
     if (body.content) {
       body.readingTime = calculateReadingTime(body.content);
     }
 
-    // Sync multi-category fields
+    
     if (Array.isArray(body.categoryIds) && body.categoryIds.length > 0) {
       body.categories = body.categoryIds;
-      body.category = body.categoryIds[0]; // primary for URL routing
+      body.category = body.categoryIds[0]; 
     } else if (body.categoryId) {
       body.category = body.categoryId;
       body.categories = [body.categoryId];
     }
 
-    // Set publishedAt if publishing for the first time
+    
     if (body.status === "published" && !body.publishedAt) {
       body.publishedAt = new Date().toISOString();
     }

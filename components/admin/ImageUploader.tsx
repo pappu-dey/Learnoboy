@@ -4,13 +4,13 @@ import { useState, useCallback, useRef } from "react";
 import { Upload, X, ImageIcon, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 
 interface ImageUploaderProps {
-  /** Called with the Cloudinary URL after a successful upload */
+  
   onUpload: (url: string) => void;
-  /** Current URL (for displaying existing cover image) */
+  
   currentUrl?: string;
-  /** Label shown inside the drop zone */
+  
   label?: string;
-  /** Compact mode — smaller drop zone for inline use */
+  
   compact?: boolean;
 }
 
@@ -30,7 +30,7 @@ export function ImageUploader({
 
   const uploadFile = useCallback(
     async (file: File) => {
-      // Validate client-side first
+      
       const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
       if (!allowed.includes(file.type)) {
         setErrorMsg("Invalid file type. Allowed: JPEG, PNG, WebP, GIF, SVG");
@@ -43,14 +43,14 @@ export function ImageUploader({
         return;
       }
 
-      // Show local preview immediately
+      
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
       setState("uploading");
       setProgress(0);
       setErrorMsg("");
 
-      // Fake smooth progress (real progress not easily available with fetch)
+      
       const interval = setInterval(() => {
         setProgress((p) => Math.min(p + 10, 85));
       }, 200);
@@ -76,7 +76,7 @@ export function ImageUploader({
         onUpload(data.url);
         setState("success");
 
-        // Revoke object URL
+        
         URL.revokeObjectURL(objectUrl);
       } catch {
         clearInterval(interval);
@@ -110,7 +110,7 @@ export function ImageUploader({
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) uploadFile(file);
-    // Reset input so same file can be re-uploaded
+    
     e.target.value = "";
   };
 
@@ -126,7 +126,7 @@ export function ImageUploader({
 
   return (
     <div className="w-full">
-      {/* Preview */}
+      {}
       {previewUrl && !isUploading && (
         <div className="relative mb-3 group">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -153,7 +153,7 @@ export function ImageUploader({
         </div>
       )}
 
-      {/* Upload zone */}
+      {}
       {(!previewUrl || isUploading) && (
         <div
           onDrop={handleDrop}
@@ -210,7 +210,7 @@ export function ImageUploader({
         </div>
       )}
 
-      {/* Change image button (when preview exists and not uploading) */}
+      {}
       {previewUrl && !isUploading && (
         <button
           type="button"
@@ -222,7 +222,7 @@ export function ImageUploader({
         </button>
       )}
 
-      {/* Error message */}
+      {}
       {state === "error" && errorMsg && (
         <div className="mt-2 flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
           <AlertCircle size={12} />

@@ -39,7 +39,7 @@ export function CategoryCards({ categories }: CategoryCardsProps) {
               border: "1px solid var(--border-color)",
             }}
           >
-            {/* Small icon with subtle color bg */}
+            {}
             <div
               className="w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-transform duration-200 group-hover:scale-110"
               style={{ background: `${category.color}15`, color: category.color }}
@@ -51,7 +51,7 @@ export function CategoryCards({ categories }: CategoryCardsProps) {
               {category.name}
             </span>
 
-            {/* Subtle count badge */}
+            {}
             <span
               className="text-xs px-2 py-0.5 rounded-md transition-colors bg-[var(--bg-muted)] text-[var(--text-secondary)] group-hover:bg-[var(--link-color)] group-hover:text-white"
             >

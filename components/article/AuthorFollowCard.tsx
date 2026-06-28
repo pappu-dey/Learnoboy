@@ -18,17 +18,17 @@ function getFollowedSlugs(): Set<string> {
   try {
     const raw = localStorage.getItem("followed_authors");
     if (raw) return new Set<string>(JSON.parse(raw));
-  } catch { /* ignore */ }
+  } catch {  }
   return new Set<string>();
 }
 
 function saveFollowedSlugs(slugs: Set<string>) {
   try {
     localStorage.setItem("followed_authors", JSON.stringify([...slugs]));
-  } catch { /* ignore */ }
+  } catch {  }
 }
 
-/* ─── Small floating toast ─── */
+
 function LoginToast({ message, onDismiss }: { message: string; onDismiss: () => void }) {
   useEffect(() => {
     const t = setTimeout(onDismiss, 2500);
@@ -58,12 +58,12 @@ function LoginToast({ message, onDismiss }: { message: string; onDismiss: () => 
 
 export function AuthorFollowCard({ author, isLoggedIn = false }: AuthorFollowCardProps) {
   const [isFollowing, setIsFollowing] = useState(false);
-  // Initialise with the server-provided count
+  
   const [followers, setFollowers] = useState<number>(author.followers ?? 0);
   const [showToast, setShowToast] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Fetch fresh follower count from API on mount (fixes stale ISR data)
+  
   useEffect(() => {
     fetch(`/api/authors/${author.slug}/follow`)
       .then((r) => r.json())
@@ -72,10 +72,10 @@ export function AuthorFollowCard({ author, isLoggedIn = false }: AuthorFollowCar
           setFollowers(data.followers);
         }
       })
-      .catch(() => { /* keep initial value */ });
+      .catch(() => {  });
   }, [author.slug]);
 
-  // Load follow state from localStorage if logged in
+  
   useEffect(() => {
     if (!isLoggedIn) return;
     const wasFollowing = getFollowedSlugs().has(author.slug);
@@ -96,7 +96,7 @@ export function AuthorFollowCard({ author, isLoggedIn = false }: AuthorFollowCar
               localStorage.setItem(syncKey, "true");
             }
           })
-          .catch(() => { /* ignore */ });
+          .catch(() => {  });
       }
     }
   }, [author.slug, isLoggedIn]);
@@ -130,7 +130,7 @@ export function AuthorFollowCard({ author, isLoggedIn = false }: AuthorFollowCar
             setFollowers(data.followers);
           }
         }
-      } catch { /* ignore */ }
+      } catch {  }
     }, 500);
   };
 
@@ -143,7 +143,7 @@ export function AuthorFollowCard({ author, isLoggedIn = false }: AuthorFollowCar
         style={{ background: "var(--bg-surface)" }}
       >
         <div className="flex items-center justify-between gap-4">
-          {/* Left: avatar + name */}
+          {}
           <div className="flex items-center gap-4 min-w-0">
             <Link href={`/author/${author.slug}`} className="relative flex-shrink-0" aria-label={`View ${author.name}'s profile`}>
               <AuthorAvatar author={author} sizeClass="w-12 h-12 sm:w-14 sm:h-14" shape="circle" sizes="56px" />
@@ -166,7 +166,7 @@ export function AuthorFollowCard({ author, isLoggedIn = false }: AuthorFollowCar
                   Author
                 </span>
               </div>
-              {/* Follower count — always real from API */}
+              {}
               <div className="flex items-center gap-1.5 mt-1 text-[11px] text-[var(--text-tertiary)] font-medium">
                 <Users size={11} aria-hidden="true" />
                 <span>{followers.toLocaleString()} {followers === 1 ? "follower" : "followers"}</span>
@@ -180,7 +180,7 @@ export function AuthorFollowCard({ author, isLoggedIn = false }: AuthorFollowCar
             </div>
           </div>
 
-          {/* Right: Follow button — looks the same for everyone */}
+          {}
           <div className="relative flex-shrink-0">
             <button
               onClick={handleFollowToggle}

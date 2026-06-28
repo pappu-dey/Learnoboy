@@ -18,7 +18,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-// ─── Types ─────────────────────────────────────────────────────────────────
+
 export interface Session {
   user: {
     name?: string | null;
@@ -31,7 +31,7 @@ export interface Session {
   };
 }
 
-// ─── Helpers ───────────────────────────────────────────────────────────────
+
 
 const ROLE_CONFIG = {
   superadmin: {
@@ -60,7 +60,7 @@ const ROLE_CONFIG = {
   },
 } as const;
 
-// ─── Component ─────────────────────────────────────────────────────────────
+
 export function ProfileClient({ session }: { session: Session }) {
   const [loggingOut, setLoggingOut] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -68,7 +68,7 @@ export function ProfileClient({ session }: { session: Session }) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(session.user.image || null);
   const [uploadMsg, setUploadMsg] = useState<{ text: string; ok: boolean } | null>(null);
   
-  // Writer application states
+  
   const [writerStatus] = useState<string>(session.user.writerStatus || "none");
 
   const fileRef = useRef<HTMLInputElement>(null);
@@ -116,11 +116,11 @@ export function ProfileClient({ session }: { session: Session }) {
       const saveData = await saveRes.json();
       if (saveData.success) {
         setAvatarUrl(upData.url);
-        // Also sync Author document's avatar if they are a writer/superadmin
+        
         if (role === "writer" || role === "superadmin") {
-          // Find the active author ID from header or DB in page - 
-          // profile PATCH route now handles auto-syncing User and Author documents,
-          // so this triggers the sync on backend automatically!
+          
+          
+          
         }
         setUploadMsg({ text: "Profile photo updated!", ok: true });
         setTimeout(() => setUploadMsg(null), 3000);
@@ -145,7 +145,7 @@ export function ProfileClient({ session }: { session: Session }) {
         background: "var(--bg-base)",
       }}
     >
-      {/* Hidden file input */}
+      {}
       <input
         ref={fileRef}
         type="file"
@@ -179,7 +179,7 @@ export function ProfileClient({ session }: { session: Session }) {
           .profile-avatar-wrap:hover .profile-avatar-overlay { opacity: 1 !important; }
         `}</style>
 
-        {/* ── Gradient header banner ── */}
+        {}
         <div
           style={{
             background: roleConf.gradient,
@@ -187,7 +187,7 @@ export function ProfileClient({ session }: { session: Session }) {
             position: "relative",
           }}
         >
-          {/* Decorative blobs */}
+          {}
           <div style={{
             position: "absolute", inset: 0,
             background: "radial-gradient(ellipse 60% 80% at 100% 0%, rgba(255,255,255,0.15) 0%, transparent 60%)",
@@ -197,7 +197,7 @@ export function ProfileClient({ session }: { session: Session }) {
             background: "radial-gradient(ellipse 40% 60% at 0% 100%, rgba(0,0,0,0.15) 0%, transparent 60%)",
           }} />
 
-          {/* Avatar — positioned half inside the banner */}
+          {}
           <div
             className="profile-avatar-wrap"
             style={{
@@ -210,7 +210,7 @@ export function ProfileClient({ session }: { session: Session }) {
             onClick={() => !uploading && fileRef.current?.click()}
             title="Click to change profile photo"
           >
-            {/* Spinning ring */}
+            {}
             <div style={{
               position: "absolute",
               inset: "-6px",
@@ -220,7 +220,7 @@ export function ProfileClient({ session }: { session: Session }) {
               pointerEvents: "none",
             }} />
 
-            {/* Avatar circle */}
+            {}
             <div style={{
               width: "88px",
               height: "88px",
@@ -252,7 +252,7 @@ export function ProfileClient({ session }: { session: Session }) {
               )}
             </div>
 
-            {/* Hover overlay */}
+            {}
             <div
               className="profile-avatar-overlay"
               style={{
@@ -275,10 +275,10 @@ export function ProfileClient({ session }: { session: Session }) {
           </div>
         </div>
 
-        {/* ── Card body ── */}
+        {}
         <div style={{ padding: "60px 28px 28px", textAlign: "center" }}>
 
-          {/* Name */}
+          {}
           <h1 style={{
             fontSize: "1.5rem",
             fontWeight: 700,
@@ -290,7 +290,7 @@ export function ProfileClient({ session }: { session: Session }) {
             {user.name ?? "Anonymous User"}
           </h1>
 
-          {/* Role badge */}
+          {}
           <div style={{ marginTop: "10px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
             <span style={{
               display: "inline-flex",
@@ -311,7 +311,7 @@ export function ProfileClient({ session }: { session: Session }) {
             </span>
           </div>
 
-          {/* Upload feedback */}
+          {}
           {uploadMsg && (
             <p style={{
               marginTop: "10px",
@@ -323,7 +323,7 @@ export function ProfileClient({ session }: { session: Session }) {
             </p>
           )}
 
-          {/* Panel shortcut links */}
+          {}
           {(role === "superadmin" || role === "writer") && (
             <div style={{ marginTop: "16px", display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
               {role === "superadmin" && (
@@ -371,10 +371,10 @@ export function ProfileClient({ session }: { session: Session }) {
             </div>
           )}
 
-          {/* ── Info rows ── */}
+          {}
           <div style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "10px", textAlign: "left" }}>
 
-            {/* Email */}
+            {}
             <div style={{
               display: "flex",
               alignItems: "center",
@@ -417,7 +417,7 @@ export function ProfileClient({ session }: { session: Session }) {
               )}
             </div>
 
-            {/* Change photo row */}
+            {}
             <button
               onClick={() => !uploading && fileRef.current?.click()}
               style={{
@@ -459,7 +459,7 @@ export function ProfileClient({ session }: { session: Session }) {
               </div>
             </button>
 
-            {/* Joined */}
+            {}
             {user.joinedAt && (
               <div style={{
                 display: "flex",
@@ -495,7 +495,7 @@ export function ProfileClient({ session }: { session: Session }) {
             )}
           </div>
 
-          {/* ── Writer Application Section (Reader Only) ── */}
+          {}
           {role === "reader" && (
             <div
               style={{
@@ -507,7 +507,7 @@ export function ProfileClient({ session }: { session: Session }) {
                 overflow: "hidden",
               }}
             >
-              {/* Pending state */}
+              {}
               {(writerStatus === "pending" || writerStatus === "needs-review") && (
                 <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -541,7 +541,7 @@ export function ProfileClient({ session }: { session: Session }) {
                 </div>
               )}
 
-              {/* Rejected — re-apply CTA */}
+              {}
               {writerStatus === "rejected" && (
                 <>
                   <div style={{ padding: "14px 20px", background: "rgba(239,68,68,0.07)", borderBottom: "1px solid rgba(239,68,68,0.15)" }}>
@@ -572,10 +572,10 @@ export function ProfileClient({ session }: { session: Session }) {
                 </>
               )}
 
-              {/* None — apply CTA */}
+              {}
               {writerStatus === "none" && (
                 <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {/* Gradient accent top bar */}
+                  {}
                   <div style={{
                     height: "3px", borderRadius: "2px", marginBottom: "4px",
                     background: "linear-gradient(90deg, #2563eb, #7c3aed, #10b981)",
@@ -613,10 +613,10 @@ export function ProfileClient({ session }: { session: Session }) {
             </div>
           )}
 
-          {/* ── Divider ── */}
+          {}
           <div style={{ margin: "24px 0", borderTop: "1px solid var(--border-color)" }} />
 
-          {/* ── Sign out ── */}
+          {}
           <button
             onClick={handleLogout}
             disabled={loggingOut}

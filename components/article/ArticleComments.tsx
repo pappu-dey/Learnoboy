@@ -16,7 +16,7 @@ import {
 import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import type { IAuthor } from "@/types";
 
-/* ─── Types ─── */
+
 interface Reply {
   _id: string;
   authorName: string;
@@ -52,7 +52,7 @@ interface ArticleCommentsProps {
   isLoggedIn?: boolean;
 }
 
-/* ─── Helpers ─── */
+
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
@@ -84,7 +84,7 @@ function Avatar({ name, avatar, size = 8 }: { name: string; avatar?: string; siz
   );
 }
 
-/* ─── Main Component ─── */
+
 export function ArticleComments({
   articleId,
   author,
@@ -107,14 +107,14 @@ export function ArticleComments({
     setCurrentPath(window.location.pathname);
   }, []);
 
-  /* Listen for toggle-discussion custom event */
+  
   useEffect(() => {
     const handleToggle = () => setShowComments((prev) => !prev);
     window.addEventListener("toggle-discussion", handleToggle);
     return () => window.removeEventListener("toggle-discussion", handleToggle);
   }, []);
 
-  /* Publish real comment count to ArticleMetrics */
+  
   useEffect(() => {
     const total = comments.reduce(
       (acc, c) => acc + 1 + (c.replies?.length ?? 0),
@@ -125,7 +125,7 @@ export function ArticleComments({
     );
   }, [comments]);
 
-  /* Fetch real comments when panel opens */
+  
   useEffect(() => {
     if (!showComments || !articleId || comments.length > 0) return;
     setLoadingComments(true);
@@ -140,14 +140,14 @@ export function ArticleComments({
       .finally(() => setLoadingComments(false));
   }, [showComments, articleId, comments.length]);
 
-  /* Like a comment (only when logged in) */
+  
   const handleLikeComment = async (commentId: string, parentId?: string) => {
     if (!isLoggedIn) {
       window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
       return;
     }
 
-    // Optimistic local update
+    
     setComments((prev) =>
       prev.map((c) => {
         if (parentId && c._id === parentId) {
@@ -183,7 +183,7 @@ export function ArticleComments({
       if (!res.ok || !data.success) {
         throw new Error(data.error || "Failed to toggle like");
       }
-      // Sync actual values from database response
+      
       setComments((prev) =>
         prev.map((c) => {
           if (parentId && c._id === parentId) {
@@ -208,7 +208,7 @@ export function ArticleComments({
       );
     } catch (err) {
       console.error("Failed to like comment:", err);
-      // Revert optimistic update on error
+      
       setComments((prev) =>
         prev.map((c) => {
           if (parentId && c._id === parentId) {
@@ -238,7 +238,7 @@ export function ArticleComments({
     }
   };
 
-  /* Post new comment */
+  
   const handlePostComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCommentText.trim() || !isLoggedIn || !articleId) return;
@@ -289,13 +289,13 @@ export function ArticleComments({
   return (
     <div id="article-discussion" className={hideHeader ? "" : "mt-12 border-t border-[var(--border-color)] pt-8"}>
 
-      {/* ── Unified Header Bar ── */}
+      {}
       {!hideHeader && (
         <div
           className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-[var(--border-color)] transition-all hover:shadow-md"
           style={{ background: "var(--bg-surface)" }}
         >
-          {/* Author details */}
+          {}
           <div className="flex items-center gap-4">
             <Link
               href={`/author/${author.slug}`}
@@ -334,7 +334,7 @@ export function ArticleComments({
             </div>
           </div>
 
-          {/* Discussion toggle button */}
+          {}
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("toggle-discussion"))}
             className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer shadow-sm active:scale-95 ${
@@ -350,7 +350,7 @@ export function ArticleComments({
         </div>
       )}
 
-      {/* ── Collapsible Discussion Panel ── */}
+      {}
       {showComments && (
         <div
           className={`${
@@ -359,7 +359,7 @@ export function ArticleComments({
           style={{ background: "var(--bg-base)" }}
         >
 
-          {/* ── Comment composer ── */}
+          {}
           {isLoggedIn ? (
             <form onSubmit={handlePostComment} className="space-y-3">
               {replyingTo && (
@@ -403,7 +403,7 @@ export function ArticleComments({
               </div>
             </form>
           ) : (
-            /* Inline sign-in prompt — keeps UI clean, no big banner */
+            
             <div className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border-color)]" style={{ background: "var(--bg-muted)" }}>
               <LogIn size={15} className="text-[var(--link-color)] shrink-0" />
               <p className="text-xs text-[var(--text-secondary)] flex-1">
@@ -418,17 +418,17 @@ export function ArticleComments({
             </div>
           )}
 
-          {/* Divider */}
+          {}
           <div className="border-t border-[var(--border-color)]" />
 
-          {/* ── Comment List ── */}
+          {}
           {loadingComments ? (
             <div className="flex items-center justify-center py-10 gap-2 text-[var(--text-tertiary)]">
               <Loader2 size={18} className="animate-spin" />
               <span className="text-sm">Loading discussion…</span>
             </div>
           ) : comments.length === 0 ? (
-            /* Empty state */
+            
             <div className="flex flex-col items-center py-10 gap-3 text-center">
               <div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center"
@@ -459,7 +459,7 @@ export function ArticleComments({
                   key={comment._id}
                   className="space-y-4 border-b border-[var(--border-color)] last:border-b-0 pb-5 last:pb-0"
                 >
-                  {/* Comment */}
+                  {}
                   <CommentRow
                     comment={comment}
                     isLoggedIn={isLoggedIn}
@@ -471,7 +471,7 @@ export function ArticleComments({
                     }}
                   />
 
-                  {/* Nested replies */}
+                  {}
                   {comment.replies && comment.replies.length > 0 && (
                     <div className="pl-6 border-l-2 border-[var(--border-color)] space-y-4 ml-4">
                       {comment.replies.map((reply) => (
@@ -494,7 +494,7 @@ export function ArticleComments({
   );
 }
 
-/* ─── Comment Row ─── */
+
 function CommentRow({
   comment,
   isLoggedIn,
@@ -554,7 +554,7 @@ function CommentRow({
   );
 }
 
-/* ─── Reply Row ─── */
+
 function ReplyRow({
   reply,
   isLoggedIn,

@@ -15,7 +15,7 @@ export default async function WriterProfilePage() {
   const authorDoc = await Author.findOne({ email: session.email }).lean();
 
   if (!authorDoc) {
-    // No author doc yet — show a setup message
+    
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="text-center max-w-md">
@@ -30,7 +30,7 @@ export default async function WriterProfilePage() {
     );
   }
 
-  // Serialize Mongoose doc to plain object
+  
   const author = JSON.parse(JSON.stringify(authorDoc));
 
   return (

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Cookie, X, ChevronDown, Shield, BarChart2, Megaphone } from "lucide-react";
 
-// ── Cookie helpers ────────────────────────────────────────────────────────────
+
 function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
@@ -24,7 +24,7 @@ interface CookiePrefs {
 const COOKIE_NAME = "lb_cookie_consent";
 const COOKIE_DAYS = 365;
 
-// ── Main component ─────────────────────────────────────────────────────────────
+
 export function CookieConsent() {
   const [visible, setVisible] = useState(false);
   const [manageOpen, setManageOpen] = useState(false);
@@ -44,6 +44,16 @@ export function CookieConsent() {
   function save(accepted: CookiePrefs) {
     setSaving(true);
     setCookie(COOKIE_NAME, JSON.stringify(accepted), COOKIE_DAYS);
+    
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      (window as any).gtag("consent", "update", {
+        analytics_storage: accepted.analytics ? "granted" : "denied",
+        ad_storage: accepted.marketing ? "granted" : "denied",
+        ad_user_data: accepted.marketing ? "granted" : "denied",
+        ad_personalization: accepted.marketing ? "granted" : "denied",
+      });
+    }
+
     setTimeout(() => { setSaving(false); setVisible(false); }, 350);
   }
 
@@ -55,7 +65,7 @@ export function CookieConsent() {
 
   return (
     <>
-      {/* Backdrop */}
+      {}
       <div
         aria-hidden="true"
         onClick={handleRejectAll}
@@ -70,7 +80,7 @@ export function CookieConsent() {
         }}
       />
 
-      {/* Banner */}
+      {}
       <div
         role="dialog"
         aria-modal="true"
@@ -90,9 +100,9 @@ export function CookieConsent() {
           animation: "cookieSlideUp 0.38s cubic-bezier(0.22,1,0.36,1)",
         }}
       >
-        {/* Header */}
+        {}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
-          {/* Icon badge */}
+          {}
           <span style={{
             display: "flex", alignItems: "center", justifyContent: "center",
             width: 32, height: 32, borderRadius: 10, flexShrink: 0,
@@ -122,13 +132,13 @@ export function CookieConsent() {
           </button>
         </div>
 
-        {/* Description */}
+        {}
         <p style={{ fontSize: 13, lineHeight: 1.65, color: "var(--text-secondary)", margin: "0 0 14px" }}>
           Learno-Boy uses cookies to give you the best experience. Essential cookies keep the
           site running. Optional cookies help us understand how you use the site and improve our content.
         </p>
 
-        {/* Manage toggle */}
+        {}
         <button
           onClick={() => setManageOpen(v => !v)}
           aria-expanded={manageOpen}
@@ -143,7 +153,7 @@ export function CookieConsent() {
           <ChevronDown size={14} style={{ transform: manageOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.25s ease" }} />
         </button>
 
-        {/* Preferences panel */}
+        {}
         {manageOpen && (
           <div style={{
             display: "flex", flexDirection: "column", gap: 2,
@@ -158,7 +168,7 @@ export function CookieConsent() {
           </div>
         )}
 
-        {/* Action buttons */}
+        {}
         <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", flexWrap: "wrap" }}>
           <BannerBtn variant="ghost"   onClick={handleRejectAll}  disabled={saving}>Reject all</BannerBtn>
           {manageOpen && (
@@ -173,7 +183,7 @@ export function CookieConsent() {
   );
 }
 
-// ── Button ─────────────────────────────────────────────────────────────────────
+
 interface BannerBtnProps {
   variant: "ghost" | "outline" | "primary";
   onClick: () => void;
@@ -205,7 +215,7 @@ function BannerBtn({ variant, onClick, disabled, minWidth, children }: BannerBtn
   );
 }
 
-// ── Preference row ─────────────────────────────────────────────────────────────
+
 interface PrefRowProps {
   icon: React.ReactNode;
   label: string;
@@ -225,7 +235,7 @@ function PrefRow({ icon, label, description, checked, locked, onChange }: PrefRo
         <span style={{ fontSize: 11, color: "var(--text-tertiary)", lineHeight: 1.4 }}>{description}</span>
       </div>
 
-      {/* Toggle switch */}
+      {}
       <label
         style={{
           display: "flex", alignItems: "center", gap: 7, flexShrink: 0,
@@ -276,7 +286,7 @@ function PrefRow({ icon, label, description, checked, locked, onChange }: PrefRo
   );
 }
 
-// ── Uiverse SVG loader (Lissy07) ───────────────────────────────────────────────
+
 function UiverseLoader({ size = 18 }: { size?: number }) {
   const d =
     "M29.760000000000005 18.72 c0 7.28 -3.9200000000000004 13.600000000000001 -9.840000000000002 16.96 c -2.8800000000000003 1.6800000000000002 -6.24 2.64 -9.840000000000002 2.64 c -3.6 0 -6.88 -0.96 -9.76 -2.64 c0 -7.28 3.9200000000000004 -13.52 9.840000000000002 -16.96 c2.8800000000000003 -1.6800000000000002 6.24 -2.64 9.76 -2.64 S26.880000000000003 17.040000000000003 29.760000000000005 18.72 c5.84 3.3600000000000003 9.76 9.68 9.840000000000002 16.96 c -2.8800000000000003 1.6800000000000002 -6.24 2.64 -9.76 2.64 c -3.6 0 -6.88 -0.96 -9.840000000000002 -2.64 c -5.84 -3.3600000000000003 -9.76 -9.68 -9.76 -16.96 c0 -7.28 3.9200000000000004 -13.600000000000001 9.76 -16.96 C25.84 5.120000000000001 29.760000000000005 11.440000000000001 29.760000000000005 18.72z";

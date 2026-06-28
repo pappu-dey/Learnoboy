@@ -7,7 +7,7 @@ import { Author } from "@/lib/models";
 import { getBreadcrumbJsonLd, BASE_URL } from "@/lib/utils/seo";
 import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 
-// Revalidate every 5 minutes (300 seconds)
+
 export const revalidate = 300;
 
 export const metadata: Metadata = {
@@ -47,7 +47,7 @@ const LinkedinIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export default async function AuthorsDirectoryPage() {
   await connectDB();
   
-  // Fetch all authors sorted by article count (most active first)
+  
   const authors = await Author.find({}).sort({ articleCount: -1, name: 1 }).lean();
 
   const breadcrumbLd = getBreadcrumbJsonLd([
@@ -57,14 +57,14 @@ export default async function AuthorsDirectoryPage() {
 
   return (
     <>
-      {/* Breadcrumb Structured Data */}
+      {}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Link */}
+        {}
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--link-color)] transition-colors mb-8"
@@ -72,7 +72,7 @@ export default async function AuthorsDirectoryPage() {
           <ArrowLeft size={16} /> Back to Home
         </Link>
 
-        {/* Page Header */}
+        {}
         <div className="mb-10 text-center max-w-2xl mx-auto">
           <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-blue-500/10 text-[var(--link-color)] mb-4 shadow-sm border border-blue-500/10">
             <Users size={28} />
@@ -85,7 +85,7 @@ export default async function AuthorsDirectoryPage() {
           </p>
         </div>
 
-        {/* Authors Grid */}
+        {}
         {authors.length === 0 ? (
           <div
             className="text-center py-20 rounded-2xl border border-[var(--border-color)]"
@@ -110,9 +110,9 @@ export default async function AuthorsDirectoryPage() {
                 }}
               >
                 <div>
-                  {/* Top Header Section */}
+                  {}
                   <div className="flex items-start gap-4 mb-4">
-                    {/* Avatar */}
+                    {}
                     <div className="flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-[var(--border-color)] relative">
                       {author.avatar ? (
                         <Image
@@ -131,7 +131,7 @@ export default async function AuthorsDirectoryPage() {
                       )}
                     </div>
 
-                    {/* Meta info */}
+                    {}
                     <div className="min-w-0 flex-1">
                       <Link href={`/author/${author.slug}`}>
                         <h2 className="text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--link-color)] transition-colors truncate flex items-center gap-1.5 flex-wrap">
@@ -146,11 +146,11 @@ export default async function AuthorsDirectoryPage() {
                     </div>
                   </div>
 
-                  {/* Bio */}
+                  {}
                   <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-3 line-clamp-3">
                     {author.bio || "An active technical writer sharing knowledge and developer guides on the Learno-Boy platform."}
                   </p>
-                  {/* Expertise chips */}
+                  {}
                   {(author.expertise?.length ?? 0) > 0 && (
                     <div className="flex flex-wrap gap-1 mb-3">
                       {author.expertise!.slice(0, 3).map((exp: string) => (
@@ -162,9 +162,9 @@ export default async function AuthorsDirectoryPage() {
                   )}
                 </div>
 
-                {/* Bottom Section */}
+                {}
                 <div className="pt-4 border-t border-[var(--border-color)] flex items-center justify-between">
-                  {/* Social icons */}
+                  {}
                   <div className="flex items-center gap-2">
                     {author.social?.github && (
                       <a
@@ -212,7 +212,7 @@ export default async function AuthorsDirectoryPage() {
                     )}
                   </div>
 
-                  {/* View Profile Action */}
+                  {}
                   <Link
                     href={`/author/${author.slug}`}
                     className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--link-color)] hover:opacity-85 transition-opacity group/btn"

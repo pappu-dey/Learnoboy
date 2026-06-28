@@ -1,7 +1,4 @@
-/**
- * Seed script for HTML Introduction article
- * Run with: npx tsx scripts/seed-html-intro.ts
- */
+
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
@@ -14,7 +11,7 @@ if (!MONGODB_URI) {
   process.exit(1);
 }
 
-// Inline schemas for safety in scripts
+
 const AuthorSchema = new mongoose.Schema({
   name: String,
   slug: String,
@@ -187,7 +184,7 @@ async function seed() {
     await mongoose.connect(MONGODB_URI!, { dbName: "learno-boy" });
     console.log("✅ Connected!");
 
-    // Find "web-development" (parent category) and "html" (subcategory)
+    
     const webDevCategory = await Category.findOne({ slug: "web-development" });
     let htmlCategory = await Category.findOne({ slug: "html" });
 
@@ -208,7 +205,7 @@ async function seed() {
       });
     }
 
-    // Find default author by slug, or create it safely
+    
     let author = await Author.findOne({ slug: "ikka-dey" });
     if (!author) {
       console.log("👤 Creating a default author 'Ikka Dey'...");
@@ -221,13 +218,13 @@ async function seed() {
         articleCount: 1,
       });
     } else {
-      // Force update fields safely
+      
       author.name = "Ikka Dey";
       author.avatar = "https://api.dicebear.com/8.x/avataaars/svg?seed=IkkaDey";
       await author.save();
     }
 
-    // Find or create tags "Beginner" and "Web Dev"
+    
     let beginnerTag = await Tag.findOne({ slug: "beginner" });
     if (!beginnerTag) {
       beginnerTag = await Tag.create({ name: "Beginner", slug: "beginner" });
@@ -237,7 +234,7 @@ async function seed() {
       htmlTag = await Tag.create({ name: "HTML", slug: "html" });
     }
 
-    // Seed "HTML Introduction" article with exact Date "2026-04-20"
+    
     const articleData = {
       title: "HTML Introduction",
       slug: "html-introduction",
@@ -256,14 +253,14 @@ async function seed() {
       isFeatured: true,
       status: "published",
       views: 10034,
-      publishedAt: new Date("2026-04-20T10:00:00.000Z"), // Set publishedAt to April 20, 2026
+      publishedAt: new Date("2026-04-20T10:00:00.000Z"), 
       seo: {
         metaTitle: "HTML Introduction: Learn Web Structure from Scratch | LearnoBoy",
         metaDescription: "Master HTML basics, elements, semantic structure, and standard coding best practices with our comprehensive beginner-friendly tutorial.",
       },
     };
 
-    // Upsert the article by slug
+    
     const updatedArticle = await Article.findOneAndUpdate(
       { slug: "html-introduction" },
       articleData,
@@ -273,7 +270,7 @@ async function seed() {
     console.log(`✅ Seeded/Updated Article: "${updatedArticle.title}" (slug: ${updatedArticle.slug})`);
     console.log(`📅 Published At: ${updatedArticle.publishedAt}`);
 
-    // Update article counts
+    
     const count = await Article.countDocuments({
       $or: [{ subcategory: "html" }, { category: htmlCategory._id }],
     });

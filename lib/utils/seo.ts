@@ -11,9 +11,7 @@ const DEFAULT_OG_IMAGE = `${BASE_URL}/og-default.png`;
 
 export { BASE_URL, SITE_NAME, SITE_DESCRIPTION };
 
-/**
- * Default metadata for the site
- */
+
 export function getDefaultMetadata(): Metadata {
   return {
     title: {
@@ -54,9 +52,7 @@ export function getDefaultMetadata(): Metadata {
   };
 }
 
-/**
- * Generate metadata for an article page
- */
+
 export function getArticleMetadata(article: IArticle): Metadata {
   const category =
     typeof article.category === "object" ? article.category : null;
@@ -98,9 +94,7 @@ export function getArticleMetadata(article: IArticle): Metadata {
   };
 }
 
-/**
- * Generate metadata for a category page
- */
+
 export function getCategoryMetadata(category: ICategory): Metadata {
   const title = `${category.name} Articles`;
   const description =
@@ -129,9 +123,7 @@ export function getCategoryMetadata(category: ICategory): Metadata {
   };
 }
 
-/**
- * Generate Article JSON-LD structured data
- */
+
 export function getArticleJsonLd(article: IArticle): object {
   const category =
     typeof article.category === "object" ? article.category : null;
@@ -174,9 +166,7 @@ export function getArticleJsonLd(article: IArticle): object {
   };
 }
 
-/**
- * Generate BreadcrumbList JSON-LD
- */
+
 export function getBreadcrumbJsonLd(
   items: { name: string; url: string }[]
 ): object {

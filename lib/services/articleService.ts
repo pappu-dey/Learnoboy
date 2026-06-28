@@ -1,5 +1,5 @@
 import connectDB from "@/lib/mongodb";
-// Import all models together to ensure they're all registered before populate() runs
+
 import { Article, Category, Author, Tag } from "@/lib/models";
 import type { IArticle, PaginatedResponse } from "@/types";
 import { slugify } from "@/lib/utils/slugify";
@@ -7,18 +7,16 @@ import { slugify } from "@/lib/utils/slugify";
 export interface GetArticlesOptions {
   page?: number;
   limit?: number;
-  category?: string; // category slug
-  tag?: string; // tag slug
+  category?: string; 
+  tag?: string; 
   status?: "draft" | "published";
   featured?: boolean;
   sort?: "newest" | "oldest" | "popular";
-  authorId?: string; // filter by author _id
+  authorId?: string; 
   search?: string;
 }
 
-/**
- * Get paginated list of articles
- */
+
 export async function getArticles(
   options: GetArticlesOptions = {}
 ): Promise<PaginatedResponse<IArticle>> {
@@ -34,7 +32,7 @@ export async function getArticles(
 
   const skip = (page - 1) * limit;
 
-  // Build filter
+  
   const filter: Record<string, unknown> = { status };
   if (featured !== undefined) filter.isFeatured = featured;
 
@@ -49,31 +47,17 @@ export async function getArticles(
   }
 
   if (options.category) {
-    const categoryDoc = await Category.findOne({ slug: options.category });
+    const categoryDoc = await Category.findOne({ slug: options.category.toLowerCase() });
     if (categoryDoc) {
-      if (!categoryDoc.parent) {
-        // This is a parent category (e.g. dsa, coding, web-development, database, more)
-        const subcategories = await Category.find({ parent: categoryDoc._id }).select("_id").lean();
-        const subcategoryIds = subcategories.map(s => s._id);
-        filter.$or = [
-          { primaryCategory: options.category.toLowerCase() },
-          { category: categoryDoc._id },
-          { category: { $in: subcategoryIds } },
-          { categories: categoryDoc._id },
-          { categories: { $in: subcategoryIds } }
-        ];
-      } else {
-        // This is a subcategory (e.g. tree, numpy)
-        filter.$or = [
-          { subcategory: options.category.toLowerCase() },
-          { category: categoryDoc._id },
-          { categories: categoryDoc._id }
-        ];
-      }
-    } else {
-      // Fallback
+      
       filter.$or = [
         { primaryCategory: options.category.toLowerCase() },
+        { category: categoryDoc._id },
+        { categories: categoryDoc._id }
+      ];
+    } else {
+      
+      filter.$or = [
         { subcategory: options.category.toLowerCase() }
       ];
     }
@@ -114,7 +98,7 @@ export async function getArticles(
     filter.author = options.authorId;
   }
 
-  // Build sort
+  
   const sortMap = {
     newest: { publishedAt: -1 },
     oldest: { publishedAt: 1 },
@@ -145,9 +129,7 @@ export async function getArticles(
   };
 }
 
-/**
- * Get a single article by slug (with category slug for URL matching)
- */
+
 export async function getArticleBySlug(
   categorySlug: string,
   articleSlug: string
@@ -165,12 +147,12 @@ export async function getArticleBySlug(
 
   const populated = article as unknown as IArticle;
   
-  // Check primary category
+  
   const primaryCategory =
     typeof populated.category === "object" ? populated.category : null;
   let hasMatchingCategory = primaryCategory && primaryCategory.slug === categorySlug;
 
-  // Check extra categories
+  
   if (!hasMatchingCategory && Array.isArray(populated.categories)) {
     for (const cat of populated.categories) {
       if (typeof cat === "object" && cat && cat.slug === categorySlug) {
@@ -182,15 +164,13 @@ export async function getArticleBySlug(
 
   if (!hasMatchingCategory) return null;
 
-  // Increment view count (fire and forget)
+  
   Article.findByIdAndUpdate(article._id, { $inc: { views: 1 } }).exec();
 
   return populated;
 }
 
-/**
- * Get article by ID
- */
+
 export async function getArticleById(id: string): Promise<IArticle | null> {
   await connectDB();
   const article = await Article.findById(id)
@@ -203,9 +183,7 @@ export async function getArticleById(id: string): Promise<IArticle | null> {
   return injectAutoTags(article) as unknown as IArticle | null;
 }
 
-/**
- * Get related articles (same category, excluding current)
- */
+
 export async function getRelatedArticles(
   categoryId: string,
   currentSlug: string,
@@ -229,9 +207,7 @@ export async function getRelatedArticles(
   return injectedArticles as unknown as IArticle[];
 }
 
-/**
- * Get featured articles
- */
+
 export async function getFeaturedArticles(limit = 3): Promise<IArticle[]> {
   await connectDB();
   const articles = await Article.find({ isFeatured: true, status: "published" })
@@ -244,9 +220,7 @@ export async function getFeaturedArticles(limit = 3): Promise<IArticle[]> {
   return articles as unknown as IArticle[];
 }
 
-/**
- * Get latest articles
- */
+
 export async function getLatestArticles(limit = 8): Promise<IArticle[]> {
   await connectDB();
   const articles = await Article.find({ status: "published" })
@@ -270,7 +244,7 @@ export async function processKeywords(keywords: string): Promise<string[]> {
     const slug = slugify(keyword);
     if (!slug) continue;
 
-    // Find or create tag
+    
     let tag = await Tag.findOne({ slug });
     if (!tag) {
       tag = await Tag.create({
@@ -285,26 +259,25 @@ export async function processKeywords(keywords: string): Promise<string[]> {
 }
 
 export async function resolveSubcategoryDoc(primaryCategory: string, subcategoryName: string): Promise<string> {
-  const slug = slugify(subcategoryName);
-  let cat = await Category.findOne({ slug });
-  
-  // Find the parent category
+  const subSlug = slugify(subcategoryName);
   const parentCat = await Category.findOne({ slug: primaryCategory.toLowerCase() });
-
-  if (!cat) {
-    cat = await Category.create({
-      name: subcategoryName,
-      slug,
-      description: `${subcategoryName} subcategory under ${primaryCategory}`,
-      icon: "📚",
-      color: parentCat ? parentCat.color : "#3b82f6",
-      parent: parentCat ? parentCat._id : null,
-    });
-  } else if (!cat.parent && parentCat) {
-    cat.parent = parentCat._id;
-    await (cat as any).save();
+  if (parentCat) {
+    if (!parentCat.subcategories) {
+      parentCat.subcategories = [];
+    }
+    const subExists = parentCat.subcategories.some((s: any) => s.slug === subSlug);
+    if (!subExists) {
+      parentCat.subcategories.push({
+        name: subcategoryName,
+        slug: subSlug,
+        description: `${subcategoryName} subcategory under ${parentCat.name}`,
+        articleCount: 0
+      });
+      await parentCat.save();
+    }
+    return String(parentCat._id);
   }
-  return String(cat._id);
+  return "";
 }
 
 export function injectAutoTags(article: any) {
@@ -356,19 +329,17 @@ export async function getArticleBySubcategoryAndSlug(
 
   if (!article) return null;
 
-  // Increment view count
+  
   Article.findByIdAndUpdate(article._id, { $inc: { views: 1 } }).exec();
 
   return injectAutoTags(article) as unknown as IArticle;
 }
 
-/**
- * Create a new article
- */
+
 export async function createArticle(data: Partial<IArticle>): Promise<IArticle> {
   await connectDB();
 
-  // If subcategory is selected, we resolve its ObjectID ref to a flat Category document
+  
   if (data.primaryCategory && data.subcategory) {
     const subcategoryName = data.subcategory.charAt(0).toUpperCase() + data.subcategory.slice(1);
     const subcatId = await resolveSubcategoryDoc(data.primaryCategory, subcategoryName);
@@ -376,7 +347,7 @@ export async function createArticle(data: Partial<IArticle>): Promise<IArticle> 
     data.categories = [subcatId];
   }
 
-  // Handle manual keywords if passed (save inside seo.keywords)
+  
   if (data.keywords !== undefined) {
     const keywordList = data.keywords.split(",").map(k => k.trim()).filter(k => k.length > 0);
     data.seo = {
@@ -387,7 +358,7 @@ export async function createArticle(data: Partial<IArticle>): Promise<IArticle> 
     };
   }
 
-  // Keep `category` in sync with first item of `categories` for URL routing
+  
   if (Array.isArray(data.categories) && data.categories.length > 0 && !data.category) {
     (data as Record<string, unknown>).category = data.categories[0];
   }
@@ -396,16 +367,14 @@ export async function createArticle(data: Partial<IArticle>): Promise<IArticle> 
   return article.toObject() as unknown as IArticle;
 }
 
-/**
- * Update article by ID
- */
+
 export async function updateArticle(
   id: string,
   data: Partial<IArticle>
 ): Promise<IArticle | null> {
   await connectDB();
 
-  // If subcategory is selected, we resolve its ObjectID ref to a flat Category document
+  
   if (data.primaryCategory && data.subcategory) {
     const subcategoryName = data.subcategory.charAt(0).toUpperCase() + data.subcategory.slice(1);
     const subcatId = await resolveSubcategoryDoc(data.primaryCategory, subcategoryName);
@@ -413,7 +382,7 @@ export async function updateArticle(
     data.categories = [subcatId];
   }
 
-  // Handle manual keywords if passed (save inside seo.keywords)
+  
   if (data.keywords !== undefined) {
     const keywordList = data.keywords.split(",").map(k => k.trim()).filter(k => k.length > 0);
     data.seo = {
@@ -424,7 +393,7 @@ export async function updateArticle(
     };
   }
 
-  // Keep `category` in sync with first item of `categories` for URL routing
+  
   if (Array.isArray(data.categories) && data.categories.length > 0) {
     (data as Record<string, unknown>).category = data.categories[0];
   }
@@ -438,18 +407,14 @@ export async function updateArticle(
   return injectAutoTags(article) as unknown as IArticle | null;
 }
 
-/**
- * Delete article by ID
- */
+
 export async function deleteArticle(id: string): Promise<IArticle | null> {
   await connectDB();
   const result = await Article.findByIdAndDelete(id).lean();
   return result as unknown as IArticle | null;
 }
 
-/**
- * Get all slugs for static generation
- */
+
 export async function getAllArticleSlugs(): Promise<
   { category: string; subcategory: string; slug: string }[]
 > {
@@ -474,9 +439,7 @@ function highlightText(text: string, query: string): string {
   return text.replace(regex, `<mark class="search-highlight">$1</mark>`);
 }
 
-/**
- * Real-time character-by-character substring search for articles
- */
+
 export async function searchArticles(
   query: string,
   limit = 10
@@ -501,9 +464,9 @@ export async function searchArticles(
     .lean();
 
   return articles.map((art: any) => {
-    // Extract snippet around matched query from content
+    
     const rawContent = art.content || "";
-    // Clean markdown syntax for a clean preview text snippet
+    
     const cleanContent = rawContent
       .replace(/[#*`_\[\]()\-+]/g, " ")
       .replace(/\s+/g, " ")
@@ -530,7 +493,7 @@ export async function searchArticles(
       title: highlightText(art.title, query),
       excerpt: highlightText(art.excerpt, query),
       snippet: highlightText(snippet, query),
-      content: undefined, // remove full raw content to keep network footprint small
+      content: undefined, 
     };
   }) as unknown as IArticle[];
 }

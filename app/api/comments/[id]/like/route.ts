@@ -33,11 +33,11 @@ export async function PATCH(
 
     let likedByUser = false;
     if (index > -1) {
-      // Unlike: remove user from likes array
+      
       comment.likes.splice(index, 1);
       likedByUser = false;
     } else {
-      // Like: add user to likes array
+      
       comment.likes.push(session.userId as any);
       likedByUser = true;
     }

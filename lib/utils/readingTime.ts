@@ -1,22 +1,19 @@
-/**
- * Estimates reading time for a given text.
- * Based on average adult reading speed of 200-238 words per minute.
- */
+
 export function calculateReadingTime(content: string): number {
   if (!content || typeof content !== "string" || !content.trim()) return 1;
 
   const wordsPerMinute = 220;
-  // Strip markdown syntax for accurate word count
+  
   const plainText = content
-    .replace(/```[\s\S]*?```/g, "") // code blocks
-    .replace(/`[^`]*`/g, "") // inline code
-    .replace(/#{1,6}\s/g, "") // headers
-    .replace(/\*\*|__|~~|\*/g, "") // bold, italic, strikethrough
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // links
-    .replace(/!\[[^\]]*\]\([^)]+\)/g, "") // images
-    .replace(/^\s*[-*+]\s/gm, "") // list items
-    .replace(/^\s*\d+\.\s/gm, "") // ordered list items
-    .replace(/\n+/g, " ") // newlines
+    .replace(/```[\s\S]*?```/g, "") 
+    .replace(/`[^`]*`/g, "") 
+    .replace(/#{1,6}\s/g, "") 
+    .replace(/\*\*|__|~~|\*/g, "") 
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") 
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, "") 
+    .replace(/^\s*[-*+]\s/gm, "") 
+    .replace(/^\s*\d+\.\s/gm, "") 
+    .replace(/\n+/g, " ") 
     .trim();
 
   const wordCount = plainText.split(/\s+/).filter((word) => word.length > 0).length;

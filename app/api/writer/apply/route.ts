@@ -4,7 +4,7 @@ import User from "@/lib/models/User";
 import { getSession } from "@/lib/auth/session";
 import { EXPERTISE_OPTIONS } from "@/types";
 
-// GET /api/writer/apply — check own application status
+
 export async function GET() {
   const session = await getSession();
   if (!session) {
@@ -31,7 +31,7 @@ export async function GET() {
   });
 }
 
-// POST /api/writer/apply — submit a writer application
+
 export async function POST(req: NextRequest) {
   const session = await getSession();
   if (!session) {
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "User not found." }, { status: 404 });
   }
 
-  // Already a writer or superadmin
+  
   if (user.role !== "reader") {
     return NextResponse.json(
       { error: "Only readers can apply to become a writer." },
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Already has a pending or approved application
+  
   if (user.writerStatus === "pending" || user.writerStatus === "needs-review") {
     return NextResponse.json(
       { error: "You already have a pending application." },
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { fullName, email, qualification, expertise, whyWrite, college, company, experience } = body;
 
-  // Validate required fields
+  
   if (!fullName?.trim()) {
     return NextResponse.json({ error: "Full name is required." }, { status: 400 });
   }
@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  // Validate expertise options
+  
   const validExpertise = expertise.filter((e: string) =>
     (EXPERTISE_OPTIONS as readonly string[]).includes(e)
   );

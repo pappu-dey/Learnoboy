@@ -16,12 +16,12 @@ export const metadata: Metadata = {
 export default async function ApplyPage() {
   const session = await getSession();
 
-  // Not logged in → send to login with redirect
+  
   if (!session) {
     redirect("/login?redirect=/apply");
   }
 
-  // Already a writer/superadmin → go to dashboard
+  
   if (session.role === "writer" || session.role === "superadmin") {
     redirect("/writer");
   }
@@ -35,7 +35,7 @@ export default async function ApplyPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
-      {/* Page header */}
+      {}
       <div className="text-center mb-10">
         <div
           className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg"
@@ -55,7 +55,7 @@ export default async function ApplyPage() {
         </p>
       </div>
 
-      {/* Status gate — if already applied */}
+      {}
       {status === "pending" && (
         <StatusBanner
           icon={<Clock size={22} />}
@@ -100,10 +100,10 @@ export default async function ApplyPage() {
         />
       )}
 
-      {/* Show form only if not yet applied (or rejected — can re-apply) */}
+      {}
       {(status === "none" || status === "rejected") && (
         <>
-          {/* Benefits strip */}
+          {}
           <div
             className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 p-5 rounded-2xl border border-[var(--border-color)]"
             style={{ background: "var(--bg-surface)" }}
@@ -125,7 +125,7 @@ export default async function ApplyPage() {
         </>
       )}
 
-      {/* Already logged in link */}
+      {}
       <p className="text-center text-xs text-[var(--text-tertiary)] mt-8">
         Changed your mind?{" "}
         <Link href="/" className="text-[var(--link-color)] hover:underline font-medium">

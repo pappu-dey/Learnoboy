@@ -37,10 +37,10 @@ interface AuthorPageProps {
   params: Promise<{ slug: string }>;
 }
 
-// ISR: revalidate every 5 minutes (300 seconds)
+
 export const revalidate = 300;
 
-// Pre-render known authors at build time
+
 export async function generateStaticParams() {
   try {
     await connectDB();
@@ -51,7 +51,7 @@ export async function generateStaticParams() {
   }
 }
 
-// Dynamic SEO metadata
+
 export async function generateMetadata({ params }: AuthorPageProps): Promise<Metadata> {
   const { slug } = await params;
   await connectDB();
@@ -89,7 +89,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
   const author = await Author.findOne({ slug }).lean();
   if (!author) notFound();
 
-  // Fetch articles authored by this writer
+  
   const paginatedResult = await getArticles({
     authorId: String(author._id),
     limit: 20,
@@ -99,14 +99,14 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
 
   const articles = paginatedResult.data;
 
-  // Schema markup
+  
   const breadcrumbLd = getBreadcrumbJsonLd([
     { name: "Home", url: BASE_URL },
     { name: "Authors", url: `${BASE_URL}/author` },
     { name: author.name, url: `${BASE_URL}/author/${author.slug}` },
   ]);
 
-  // JSON-LD Person Schema
+  
   const personLd = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -134,17 +134,17 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
 
   return (
     <>
-      {/* Structured Data */}
+      {}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Link */}
+        {}
         <Link href="/" className="inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--link-color)] transition-colors mb-8">
           <ArrowLeft size={16} /> Back to Home
         </Link>
 
-        {/* Banner */}
+        {}
         {author.bannerImage && (
           <div className="w-full h-40 rounded-2xl overflow-hidden mb-[-48px] relative">
             <Image src={author.bannerImage} alt="" fill className="object-cover" />
@@ -152,16 +152,16 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
           </div>
         )}
 
-        {/* Author Header Card */}
+        {}
         <div
           className="p-8 md:p-10 rounded-2xl border border-[var(--border-color)] mb-10 relative overflow-hidden"
           style={{ background: "var(--bg-surface)" }}
         >
-          {/* Background glow */}
+          {}
           <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full blur-3xl opacity-5 pointer-events-none" style={{ backgroundColor: "var(--link-color)" }} />
 
           <div className="flex flex-col md:flex-row md:items-start gap-8">
-            {/* Avatar */}
+            {}
             <div className="flex-shrink-0">
               <div className="relative w-28 h-28 rounded-2xl overflow-hidden border-2 border-[var(--border-color)] bg-[var(--bg-muted)] shadow-sm">
                 {author.avatar ? (
@@ -176,7 +176,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
               </div>
             </div>
 
-            {/* Author Details */}
+            {}
             <div className="flex-grow">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-3">
                 <div>
@@ -187,7 +187,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                     {author.isVerified && <VerifiedBadge size="md" />}
                   </div>
 
-                  {/* Meta chips */}
+                  {}
                   <div className="flex flex-wrap items-center gap-3 mt-2">
                     <span className="flex items-center gap-1 text-xs font-semibold text-[var(--text-tertiary)]">
                       <FileText size={12} className="text-[var(--link-color)]" />
@@ -224,7 +224,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                   </div>
                 </div>
 
-                {/* Social Links */}
+                {}
                 {socialLinks.length > 0 && (
                   <div className="flex items-center gap-2 flex-wrap">
                     {socialLinks.map(({ href, icon, label }) => (
@@ -243,12 +243,12 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                 )}
               </div>
 
-              {/* Bio */}
+              {}
               <p className="text-[var(--text-secondary)] text-base leading-relaxed max-w-3xl mb-4">
                 {author.bio || "This author hasn't written a biography yet, but is actively contributing high-quality guides and lessons."}
               </p>
 
-              {/* Expertise chips */}
+              {}
               {(author.expertise?.length ?? 0) > 0 && (
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {author.expertise!.map((exp) => (
@@ -263,7 +263,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                 </div>
               )}
 
-              {/* Joined date + Follow button */}
+              {}
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-1">
                 <div className="flex items-center gap-1.5 text-xs text-[var(--text-tertiary)]">
                   <Calendar size={13} />
@@ -275,7 +275,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
           </div>
         </div>
 
-        {/* Articles list */}
+        {}
         <div>
           <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2">
             <BookOpen size={20} className="text-[var(--link-color)]" />

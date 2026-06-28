@@ -12,7 +12,7 @@ export default async function AdminDonorsPage() {
   try {
     await connectDB();
     
-    // Fetch all donors (both pending and verified)
+    
     const rawDonors = await Donor.find().sort({ createdAt: -1 }).lean();
     const donors = serializeArray(rawDonors) as unknown as IDonor[];
     

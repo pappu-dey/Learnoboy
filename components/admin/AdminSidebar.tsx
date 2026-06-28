@@ -29,7 +29,7 @@ const ADMIN_NAV = [
   { href: "/admin/donors", icon: Heart, label: "Donors", exact: false },
 ];
 
-// Bottom tab bar shows only 5 items max; overflow goes into a "More" sheet
+
 const BOTTOM_NAV = ADMIN_NAV.slice(0, 5);
 
 export function AdminSidebar() {
@@ -52,7 +52,7 @@ export function AdminSidebar() {
 
   return (
     <>
-      {/* ─── Desktop sidebar ─── */}
+      {}
       <aside
         className="hidden md:flex flex-col w-64 flex-shrink-0"
         style={{
@@ -61,7 +61,7 @@ export function AdminSidebar() {
           minHeight: "100vh",
         }}
       >
-        {/* Logo / brand header */}
+        {}
         <div className="px-5 pt-6 pb-5 border-b border-[var(--border-color)]">
           <Link href="/" className="flex items-center gap-1.5">
             <Image
@@ -89,7 +89,7 @@ export function AdminSidebar() {
           </p>
         </div>
 
-        {/* Navigation */}
+        {}
         <nav className="flex-1 px-3 py-4 space-y-0.5" aria-label="Admin navigation">
           <p className="px-2 mb-2 text-[10px] font-semibold text-[var(--text-tertiary)] uppercase tracking-widest">
             Content
@@ -135,7 +135,7 @@ export function AdminSidebar() {
           })}
         </nav>
 
-        {/* Footer */}
+        {}
         <div className="p-4 border-t border-[var(--border-color)] space-y-2">
           <Link
             href="/"
@@ -164,7 +164,7 @@ export function AdminSidebar() {
         </div>
       </aside>
 
-      {/* ─── Mobile top header ─── */}
+      {}
       <div
         className="md:hidden flex items-center justify-between px-4 py-3 border-b border-[var(--border-color)] sticky top-0 z-30"
         style={{ background: "var(--bg-surface)" }}
@@ -197,7 +197,7 @@ export function AdminSidebar() {
         </div>
       </div>
 
-      {/* ─── Mobile bottom tab bar ─── */}
+      {}
       <nav
         className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-stretch border-t border-[var(--border-color)]"
         style={{
@@ -225,7 +225,7 @@ export function AdminSidebar() {
             </Link>
           );
         })}
-        {/* More button for Users (6th item) */}
+        {}
         <button
           onClick={() => setMoreOpen(true)}
           className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 transition-all duration-200"
@@ -238,7 +238,7 @@ export function AdminSidebar() {
         </button>
       </nav>
 
-      {/* ─── Mobile More sheet / overlay ─── */}
+      {}
       {moreOpen && (
         <>
           <div

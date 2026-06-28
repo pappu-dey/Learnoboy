@@ -1,9 +1,4 @@
-/**
- * Restructure Database Categories:
- * Enforces exactly 7 top-level parent categories in the database and re-maps
- * all 34+ other categories as subcategories under them.
- * Also updates articles to align with the new 7 parent slugs.
- */
+
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
@@ -16,7 +11,7 @@ if (!MONGODB_URI) {
   process.exit(1);
 }
 
-// Inline schemas for safety
+
 const CategorySchema = new mongoose.Schema({
   name: String,
   slug: String,
@@ -64,7 +59,7 @@ async function migrate() {
   await mongoose.connect(MONGODB_URI!);
   console.log("✅ Connected!");
 
-  // 1. Create target parent categories if they do not exist
+  
   const parentIdMap: Record<string, mongoose.Types.ObjectId> = {};
   for (const parent of TARGET_PARENTS) {
     let doc = await Category.findOne({ slug: parent.slug });
@@ -75,7 +70,7 @@ async function migrate() {
       });
       console.log(`✨ Created new parent category: "${parent.name}"`);
     } else {
-      // Update its parent field to null to guarantee it is top-level
+      
       doc.parent = null;
       doc.name = parent.name;
       doc.color = parent.color;
@@ -87,20 +82,20 @@ async function migrate() {
     parentIdMap[parent.slug] = doc._id;
   }
 
-  // 2. Link all subcategories under their new parents
+  
   let subcatCount = 0;
   for (const [parentSlug, childSlugs] of Object.entries(CHILD_MAPPINGS)) {
     const parentId = parentIdMap[parentSlug];
     const parentDoc = await Category.findById(parentId);
 
     for (const childSlug of childSlugs) {
-      // Don't map parent categories to themselves
+      
       if (childSlug === parentSlug) continue;
 
       const childDoc = await Category.findOne({ slug: childSlug });
       if (childDoc) {
         childDoc.parent = parentId;
-        childDoc.color = parentDoc!.color; // inherit parent theme color
+        childDoc.color = parentDoc!.color; 
         await childDoc.save();
         console.log(`   🔗 Linked subcategory "${childDoc.name}" -> parent "${parentDoc!.name}"`);
         subcatCount++;
@@ -108,12 +103,12 @@ async function migrate() {
     }
   }
 
-  // 3. Make sure any leftover or old categories that are not the 7 parents are subcategories
+  
   const allCategories = await Category.find({});
   const parentSlugs = TARGET_PARENTS.map((p) => p.slug);
   for (const cat of allCategories) {
     if (!parentSlugs.includes(cat.slug) && cat.parent === null) {
-      // Orphan top-level category: put it under "Coding" or another logical parent
+      
       cat.parent = parentIdMap["coding"];
       cat.color = "#f59e0b";
       await cat.save();
@@ -122,13 +117,13 @@ async function migrate() {
     }
   }
 
-  // 4. Update articles to align with the new 7 parent category slugs
+  
   const articles = await Article.find({});
   let articleUpdates = 0;
   for (const art of articles) {
     let updated = false;
 
-    // Map old primaryCategory slugs to the new 7 parent slugs
+    
     const oldPrimary = art.primaryCategory;
     let newPrimary = oldPrimary;
 
@@ -152,17 +147,17 @@ async function migrate() {
     }
   }
 
-  // 5. Update article counts on all categories
+  
   console.log("\n🔄 Updating article counts...");
   for (const cat of allCategories) {
     const isParent = parentSlugs.includes(cat.slug);
     let count = 0;
     
     if (isParent) {
-      // For parent, count all articles where primaryCategory is this parent
+      
       count = await Article.countDocuments({ primaryCategory: cat.slug });
     } else {
-      // For subcategory, count articles where subcategory slug matches OR category points to it
+      
       count = await Article.countDocuments({
         $or: [
           { subcategory: cat.slug },

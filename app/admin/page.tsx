@@ -68,7 +68,7 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-8">
-      {/* ── Page Header ── */}
+      {}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] tracking-tight">
@@ -91,7 +91,7 @@ export default async function AdminDashboard() {
         </Link>
       </div>
 
-      {/* ── Stats grid ── */}
+      {}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map(({ label, value, icon: Icon, gradient, glow, href }) => (
           <Link
@@ -100,7 +100,7 @@ export default async function AdminDashboard() {
             className="group flex flex-col gap-4 p-5 rounded-2xl border border-[var(--border-color)] transition-all duration-300 hover:-translate-y-1 overflow-hidden relative"
             style={{ background: "var(--bg-surface)" }}
           >
-            {/* Glow blob in background */}
+            {}
             <div
               className="absolute -top-4 -right-4 w-20 h-20 rounded-full opacity-40 blur-xl transition-all duration-300 group-hover:opacity-70 group-hover:scale-110"
               style={{ background: glow }}
@@ -127,7 +127,7 @@ export default async function AdminDashboard() {
         ))}
       </div>
 
-      {/* ── Quick actions ── */}
+      {}
       <div
         className="flex flex-wrap gap-3 p-4 rounded-2xl border border-[var(--border-color)]"
         style={{ background: "var(--bg-surface)" }}
@@ -164,9 +164,9 @@ export default async function AdminDashboard() {
         ))}
       </div>
 
-      {/* ── Recent articles ── */}
+      {}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Published */}
+        {}
         <section
           className="rounded-2xl border border-[var(--border-color)] overflow-hidden"
           style={{ background: "var(--bg-surface)" }}
@@ -238,7 +238,7 @@ export default async function AdminDashboard() {
           </div>
         </section>
 
-        {/* Drafts */}
+        {}
         <section
           className="rounded-2xl border border-[var(--border-color)] overflow-hidden"
           style={{ background: "var(--bg-surface)" }}
@@ -307,7 +307,7 @@ export default async function AdminDashboard() {
         </section>
       </div>
 
-      {/* ── Categories overview ── */}
+      {}
       {categories.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-4">

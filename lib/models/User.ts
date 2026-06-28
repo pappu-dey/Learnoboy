@@ -20,21 +20,21 @@ export interface IUserDocument extends Document {
   email: string;
   passwordHash: string;
   role: UserRole;
-  /** Profile picture URL (Cloudinary) */
+  
   avatar?: string;
-  /** Track writer application status */
+  
   writerStatus: WriterStatus;
-  /** Legacy simple message field — kept for backward compat */
+  
   writerApplicationMessage?: string;
-  /** Full structured writer application */
+  
   writerApplication?: IWriterApplication;
-  /** Verified Writer Program */
+  
   isVerified: boolean;
   verifiedAt?: Date;
-  /** Password reset fields */
+  
   resetToken?: string;
   resetTokenExpiry?: Date;
-  /** Email verification fields */
+  
   verificationToken?: string;
   verificationTokenExpiry?: Date;
   createdAt: Date;

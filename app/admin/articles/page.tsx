@@ -26,13 +26,13 @@ export default async function AdminArticlesPage({ searchParams }: Props) {
     sort: "newest",
   }).catch(() => ({ data: [], total: 0, totalPages: 1, page: 1, limit: 20 }));
 
-  // Serialize Mongoose ObjectIds/Dates → plain strings before crossing the
-  // Server → Client boundary (Next.js rejects non-plain objects in props)
+  
+  
   const articles = serializeArray(rawArticles);
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
@@ -55,7 +55,7 @@ export default async function AdminArticlesPage({ searchParams }: Props) {
         </Link>
       </div>
 
-      {/* Status tabs */}
+      {}
       <div
         className="flex gap-1 p-1.5 rounded-xl w-fit"
         style={{
@@ -86,14 +86,14 @@ export default async function AdminArticlesPage({ searchParams }: Props) {
         ))}
       </div>
 
-      {/* Articles table with built-in search */}
+      {}
       <ArticlesTable
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         articles={articles as any}
         status={status}
       />
 
-      {/* Pagination */}
+      {}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-6">
           {currentPage > 1 && (

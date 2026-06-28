@@ -4,7 +4,7 @@ import User from "@/lib/models/User";
 import Author from "@/lib/models/Author";
 import { getSession, createSession } from "@/lib/auth/session";
 
-// PATCH /api/profile — any authenticated user can update their own name/avatar
+
 export async function PATCH(req: NextRequest) {
   const session = await getSession();
   if (!session) {
@@ -37,7 +37,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "User not found." }, { status: 404 });
   }
 
-  // Refresh session cookie with updated name/avatar
+  
   await createSession({
     userId: session.userId,
     name: updatedUser.name,
@@ -46,7 +46,7 @@ export async function PATCH(req: NextRequest) {
     avatar: updatedUser.avatar || null,
   });
 
-  // Dual-sync: update corresponding Author document if user is a writer or superadmin
+  
   if (updatedUser.role === "writer" || updatedUser.role === "superadmin") {
     try {
       const authorUpdate: Record<string, any> = {};

@@ -20,7 +20,7 @@ export default async function WriterNewArticlePage() {
 
   await connectDB();
 
-  // Find this writer's Author document to pre-fill authorId
+  
   const authorDoc = await Author.findOne({ email: session.email }).lean();
   const authorId = authorDoc ? String((authorDoc as { _id: unknown })._id) : undefined;
 
@@ -35,7 +35,7 @@ export default async function WriterNewArticlePage() {
       Tag.find().select("_id name slug").lean().catch(() => []) as Promise<ITag[]>,
     ]) as [IAuthor[], IAuthor[], ITag[]];
   } catch {
-    // continue with empty arrays
+    
   }
 
   return (

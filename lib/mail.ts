@@ -1,29 +1,16 @@
-/**
- * lib/mail.ts
- *
- * Premium mail service utilizing the Resend SDK.
- * Includes beautiful, responsive HTML templates for:
- *  1. Email Verification
- *  2. Password Reset
- *
- * If RESEND_API_KEY is missing (e.g. during local development), it automatically
- * falls back to logging the email links to the console to ensure a flawless local
- * development experience.
- */
+
 
 import { Resend } from "resend";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
-// Only instantiate Resend if the API key is present
+
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
-// Default sender. Resend free tier requires 'onboarding@resend.dev' for unverified domains.
+
 const SENDER = process.env.MAIL_FROM || "LearnoBoy <onboarding@resend.dev>";
 
-/**
- * Common HTML email wrapper for premium branding and responsiveness.
- */
+
 function getEmailTemplate(title: string, greeting: string, bodyHtml: string, ctaLink: string, ctaText: string) {
   return `
 <!DOCTYPE html>
@@ -147,9 +134,7 @@ function getEmailTemplate(title: string, greeting: string, bodyHtml: string, cta
   `;
 }
 
-/**
- * Sends an email to verify a new user's account.
- */
+
 export async function sendVerificationEmail(email: string, name: string, token: string): Promise<boolean> {
   const verifyLink = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/verify?token=${token}`;
   
@@ -193,9 +178,7 @@ export async function sendVerificationEmail(email: string, name: string, token: 
   }
 }
 
-/**
- * Sends a password reset email.
- */
+
 export async function sendPasswordResetEmail(email: string, token: string): Promise<boolean> {
   const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/reset-password?token=${token}`;
   

@@ -18,7 +18,7 @@ async function migrate() {
   try {
     console.log("Migrating donor statuses to 'approved'...");
     
-    // Update all records where status is 'verified', empty, or missing completely
+    
     const result = await mongoose.connection.collection("donors").updateMany(
       {
         $or: [

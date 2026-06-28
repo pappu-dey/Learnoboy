@@ -4,16 +4,16 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { BookOpen, Code2, Search, ArrowRight, Users } from "lucide-react";
 
-// ---------- Floating Illustration ----------
-// Pure SVG with viewBox="0 0 500 420" — scales perfectly at every viewport width.
-// No absolute positioning, no CSS scale() tricks. Everything in SVG coordinate space.
-//
-// Layout (SVG coords, no overlaps):
-//   Code editor   : x=148 y=108  w=204 h=204   (centre 250,210)
-//   My Note       : x=8   y=16   w=148 h=76
-//   Algorithms    : x=328 y=22   w=152 h=38
-//   Shared Notes  : x=8   y=330  w=190 h=72
-//   Progress      : x=330 y=326  w=158 h=76
+
+
+
+
+
+
+
+
+
+
 function FloatingIllustration() {
   return (
     <div style={{ width: "100%", maxWidth: 520, margin: "0 auto" }}>
@@ -74,52 +74,48 @@ function FloatingIllustration() {
           </filter>
         </defs>
 
-        {/* ── Glow ── */}
+        {}
         <ellipse className="ill-glow" cx="250" cy="210" rx="175" ry="155" fill="url(#ill-glow-g)" />
 
-        {/* ════════════════════════════════════════
-            CODE EDITOR   x=148 y=108  w=204 h=204
-        ════════════════════════════════════════ */}
+        {}
         <g className="ill-editor" filter="url(#ill-shadow-lg)">
-          {/* card body */}
+          {}
           <rect x="148" y="108" width="204" height="204" rx="14" fill="url(#ill-editor-g)"
             stroke="rgba(255,255,255,0.07)" strokeWidth="1" />
-          {/* inset highlight */}
+          {}
           <rect x="149" y="109" width="202" height="1" rx="0.5" fill="rgba(255,255,255,0.09)" />
-          {/* traffic lights */}
+          {}
           <circle cx="170" cy="129" r="5.5" fill="#ff5f57" />
           <circle cx="185" cy="129" r="5.5" fill="#ffbd2e" />
           <circle cx="200" cy="129" r="5.5" fill="#28ca41" />
-          {/* line numbers */}
+          {}
           {[0, 1, 2, 3, 4, 5].map(i => (
             <text key={i} x="166" y={150 + i * 22} fontFamily="monospace" fontSize="10"
               fill="#3d5068" textAnchor="end">{i + 1}</text>
           ))}
-          {/* Line 1: const learn = () => { */}
+          {}
           <text x="172" y="150" fontFamily="monospace" fontSize="11.5">
             <tspan fill="#c792ea">const </tspan><tspan fill="#82aaff">learn</tspan><tspan fill="#cdd6f4">{" = () => {"}</tspan>
           </text>
-          {/* Line 2: await fetchTopics() */}
+          {}
           <text x="188" y="172" fontFamily="monospace" fontSize="11.5">
             <tspan fill="#c792ea">await </tspan><tspan fill="#82aaff">fetchTopics</tspan><tspan fill="#cdd6f4">()</tspan>
           </text>
-          {/* Line 3: notes.save() */}
+          {}
           <text x="188" y="194" fontFamily="monospace" fontSize="11.5">
             <tspan fill="#a6e3a1">notes</tspan><tspan fill="#cdd6f4">.</tspan><tspan fill="#89dceb">save</tspan><tspan fill="#cdd6f4">()</tspan>
           </text>
-          {/* Line 4: return knowledge */}
+          {}
           <text x="188" y="216" fontFamily="monospace" fontSize="11.5">
             <tspan fill="#c792ea">return </tspan><tspan fill="#f9e2af">knowledge</tspan>
           </text>
-          {/* Line 5: } */}
+          {}
           <text x="172" y="238" fontFamily="monospace" fontSize="11.5" fill="#cdd6f4">{"}"}</text>
-          {/* Line 6: blinking cursor */}
+          {}
           <rect className="ill-cursor" x="172" y="248" width="7" height="13" rx="1" fill="#82aaff" />
         </g>
 
-        {/* ════════════════════════════════════════
-            MY NOTE   x=8 y=16  w=148 h=76
-        ════════════════════════════════════════ */}
+        {}
         <g className="ill-note" filter="url(#ill-shadow-sm)">
           <rect x="8" y="16" width="148" height="76" rx="10" fill="url(#ill-note-g)" />
           <text x="22" y="35" fontFamily="system-ui,sans-serif" fontSize="9" fontWeight="700"
@@ -128,9 +124,7 @@ function FloatingIllustration() {
           <text x="22" y="72" fontFamily="system-ui,sans-serif" fontSize="12" fill="#713f12">O(log n) — halving!</text>
         </g>
 
-        {/* ════════════════════════════════════════
-            ALGORITHMS badge   x=328 y=22  w=152 h=38
-        ════════════════════════════════════════ */}
+        {}
         <g className="ill-badge" filter="url(#ill-shadow-sm)">
           <rect x="328" y="22" width="152" height="38" rx="19" fill="url(#ill-badge-g)" />
           <circle cx="351" cy="41" r="5" fill="#2563eb" />
@@ -138,14 +132,12 @@ function FloatingIllustration() {
             fill="#1e40af">Algorithms</text>
         </g>
 
-        {/* ════════════════════════════════════════
-            SHARED NOTES   x=8 y=330  w=190 h=72
-        ════════════════════════════════════════ */}
+        {}
         <g className="ill-shared" filter="url(#ill-shadow-sm)">
           <rect x="8" y="330" width="190" height="72" rx="12" fill="url(#ill-shared-g)" />
           <text x="22" y="350" fontFamily="system-ui,sans-serif" fontSize="9" fontWeight="700"
             fill="#166534" letterSpacing="0.9">SHARED NOTES</text>
-          {/* avatars */}
+          {}
           <circle cx="34" cy="377" r="13" fill="#2563eb" stroke="#f0fdf4" strokeWidth="2.5" />
           <circle cx="53" cy="377" r="13" fill="#7c3aed" stroke="#f0fdf4" strokeWidth="2.5" />
           <circle cx="72" cy="377" r="13" fill="#db2777" stroke="#f0fdf4" strokeWidth="2.5" />
@@ -155,16 +147,14 @@ function FloatingIllustration() {
           <text x="92" y="381" fontFamily="system-ui,sans-serif" fontSize="11.5" fontWeight="600" fill="#166534">+42 learners</text>
         </g>
 
-        {/* ════════════════════════════════════════
-            PROGRESS   x=330 y=326  w=158 h=76
-        ════════════════════════════════════════ */}
+        {}
         <g className="ill-progress" filter="url(#ill-shadow-sm)">
           <rect x="330" y="326" width="158" height="76" rx="12" fill="white" />
           <text x="344" y="346" fontFamily="system-ui,sans-serif" fontSize="9" fontWeight="700"
             fill="#6b7280" letterSpacing="0.9">PROGRESS</text>
-          {/* bar track */}
+          {}
           <rect x="344" y="356" width="130" height="8" rx="4" fill="#f3f4f6" />
-          {/* bar fill — 72% of 130 = 93.6 */}
+          {}
           <rect x="344" y="356" width="94" height="8" rx="4" fill="url(#ill-bar-g)" />
           <text x="344" y="384" fontFamily="system-ui,sans-serif" fontSize="11.5" fontWeight="500" fill="#6b7280">72% complete</text>
         </g>
@@ -174,7 +164,7 @@ function FloatingIllustration() {
   );
 }
 
-// ---------- Main HeroSection ----------
+
 export function HeroSection() {
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -471,7 +461,7 @@ export function HeroSection() {
         }
       `}</style>
 
-      {/* bg radial */}
+      {}
       <div aria-hidden style={{
         position: "absolute", inset: 0, pointerEvents: "none",
         background: "radial-gradient(ellipse 70% 60% at 30% -10%, rgba(37,99,235,0.1) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 60%, rgba(124,58,237,0.07) 0%, transparent 55%)"
@@ -479,9 +469,9 @@ export function HeroSection() {
 
       <div className="hero-grid">
 
-        {/* LEFT — Content */}
+        {}
         <div className="hero-content">
-          {/* H1 */}
+          {}
           <h1 className="hero-title anim-fade-up anim-delay-1">
             Learn to Code,{" "}
             <span style={{
@@ -492,12 +482,12 @@ export function HeroSection() {
             </span>
           </h1>
 
-          {/* Subtitle */}
+          {}
           <p className="hero-subtitle anim-fade-up anim-delay-2">
             Expert articles on programming, data structures, web development, and CS — crafted for clarity and built for builders.
           </p>
 
-          {/* Search */}
+          {}
           <div className="hero-search-box anim-fade-up anim-delay-3" ref={dropdownRef}>
             <form onSubmit={handleSearchSubmit} className="hero-search-form">
               <Search size={15} style={{ color: "#9ca3af", flexShrink: 0 }} />
@@ -523,7 +513,7 @@ export function HeroSection() {
               </button>
             </form>
 
-            {/* Suggestions Dropdown */}
+            {}
             {isOpen && results.length > 0 && (
               <div className="hero-dropdown">
                 {results.map((article) => {
@@ -563,7 +553,7 @@ export function HeroSection() {
             )}
           </div>
 
-          {/* Stats */}
+          {}
           <div className="hero-stats anim-fade-up anim-delay-4">
             {[
               { icon: BookOpen, value: "1,000+", label: "Articles" },
@@ -581,7 +571,7 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* RIGHT — Illustration */}
+        {}
         <div className="hero-illustration-wrapper">
           <FloatingIllustration />
         </div>

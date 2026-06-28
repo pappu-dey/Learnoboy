@@ -71,7 +71,7 @@ export function DonateModal({ onClose, onSuccess }: DonateModalProps) {
           animation: "slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
-        {/* Close Button Top Right */}
+        {}
         <button
           onClick={onClose}
           className="absolute right-4 top-4 w-8 h-8 rounded-full flex items-center justify-center hover:bg-[var(--bg-muted)] transition-colors text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
@@ -117,7 +117,7 @@ export function DonateModal({ onClose, onSuccess }: DonateModalProps) {
           </div>
         ) : (
           <div>
-            {/* Header */}
+            {}
             <div className="mb-4 pr-6">
               <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--text-primary)]">
                 <span>💖</span> Support LearnoBoy
@@ -127,7 +127,7 @@ export function DonateModal({ onClose, onSuccess }: DonateModalProps) {
               </p>
             </div>
 
-            {/* QR Code Container (BIGGER QR CODE) */}
+            {}
             <div className="flex flex-col items-center justify-center p-4 rounded-2xl mb-4 border border-[var(--border-color)] bg-[var(--bg-base)]">
               <div className="relative w-64 h-64 rounded-xl overflow-hidden shadow-md border-2 border-white dark:border-zinc-800 transition-all duration-300 hover:scale-[1.02]">
                 <Image
@@ -143,9 +143,9 @@ export function DonateModal({ onClose, onSuccess }: DonateModalProps) {
               </span>
             </div>
 
-            {/* Form */}
+            {}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Amount Input */}
+              {}
               <div>
                 <label className="block text-xs font-semibold mb-1.5 text-[var(--text-secondary)]">
                   Donation Amount (Rp) <span className="text-red-500">*</span>
@@ -166,7 +166,7 @@ export function DonateModal({ onClose, onSuccess }: DonateModalProps) {
                 </div>
               </div>
 
-              {/* Name Input */}
+              {}
               <div>
                 <label className="block text-xs font-semibold mb-1.5 text-[var(--text-secondary)]">
                   Your Name <span className="text-red-500">*</span>
@@ -186,7 +186,7 @@ export function DonateModal({ onClose, onSuccess }: DonateModalProps) {
                 />
               </div>
 
-              {/* Email Input */}
+              {}
               <div>
                 <label className="block text-xs font-semibold mb-1.5 text-[var(--text-secondary)]">
                   Your Email <span className="text-red-500">*</span>
@@ -206,14 +206,14 @@ export function DonateModal({ onClose, onSuccess }: DonateModalProps) {
                 />
               </div>
 
-              {/* Error Box */}
+              {}
               {error && (
                 <div className="text-[11px] text-red-500 font-semibold bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 p-2.5 rounded-xl">
                   ⚠️ {error}
                 </div>
               )}
 
-              {/* Action Buttons: Submit & Close */}
+              {}
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"

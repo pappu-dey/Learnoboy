@@ -9,7 +9,7 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json().catch(() => ({}));
-    const { increment } = body; // true to increment (+1), false to decrement (-1)
+    const { increment } = body; 
 
     await connectDB();
     const amount = increment === false ? -1 : 1;

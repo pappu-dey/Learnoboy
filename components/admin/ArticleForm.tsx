@@ -35,49 +35,16 @@ import {
   Redo2,
 } from "lucide-react";
 
-/* ─── Constants ───────────────────────────────────────────── */
+
 
 const ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
 const MAX_FILE_SIZE_MB = 10;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 const MAX_HISTORY = 200;
 
-const CATEGORY_MAP: Record<string, { name: string; subcategories: string[] }> = {
-  coding: {
-    name: "Coding",
-    subcategories: ["C", "C++", "Java", "Python", "JavaScript"]
-  },
-  dsa: {
-    name: "DSA",
-    subcategories: [
-      "Arrays", "Linked List", "Stack", "Queue", "Tree", "Graph", 
-      "Heap", "Dynamic Programming", "Greedy", "Two Pointers", 
-      "Sliding Window", "Recursion"
-    ]
-  },
-  "web-development": {
-    name: "Web Development",
-    subcategories: ["HTML", "CSS", "JavaScript", "React", "Next.js", "Node.js", "Express.js"]
-  },
-  database: {
-    name: "Database",
-    subcategories: ["SQL", "MySQL", "MongoDB", "PostgreSQL", "DBMS"]
-  },
-  "cs-fundamentals": {
-    name: "CS Fundamentals",
-    subcategories: ["Operating Systems", "Computer Networks", "Software Engineering", "Cyber Law", "Professional Ethics"]
-  },
-  "machine-learning": {
-    name: "Machine Learning",
-    subcategories: ["General ML", "Supervised Learning", "Unsupervised Learning", "Deep Learning"]
-  },
-  "cyber-security": {
-    name: "Cyber Security",
-    subcategories: ["Network Security", "Cryptography", "Penetration Testing", "Cyber Defense"]
-  }
-};
 
-/* ─── Types ─────────────────────────────────────────────── */
+
+
 
 type UploadStatus = "uploading" | "done" | "error";
 
@@ -89,7 +56,7 @@ interface UploadedImage {
   justInserted: boolean;
   status: UploadStatus;
   errorMsg?: string;
-  /** original File kept for retry */
+  
   _file?: File;
 }
 
@@ -103,8 +70,8 @@ interface ArticleFormProps {
     slug: string;
     content: string;
     excerpt: string;
-    categoryId: string;      // primary category (legacy/URL)
-    categoryIds: string[];   // all selected categories
+    categoryId: string;      
+    categoryIds: string[];   
     authorId: string;
     tagIds: string[];
     coverImage: string;
@@ -123,7 +90,7 @@ interface ArticleFormProps {
   sessionRole?: "reader" | "writer" | "superadmin";
 }
 
-/* ─── Helpers ─────────────────────────────────────────────── */
+
 
 function validateFile(file: File): string | null {
   if (!ACCEPTED_TYPES.includes(file.type)) {
@@ -139,7 +106,7 @@ function uid() {
   return `img-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-/* ─── Image Dock Card ─────────────────────────────────────── */
+
 
 function ImageDockCard({
   img,
@@ -193,7 +160,7 @@ function ImageDockCard({
       ].join(" ")}
       style={{ background: "var(--bg-surface)" }}
     >
-      {/* Pulse ring on insert */}
+      {}
       {img.justInserted && !isError && (
         <div
           className="absolute inset-0 rounded-xl pointer-events-none animate-pulse-ring z-10"
@@ -201,7 +168,7 @@ function ImageDockCard({
         />
       )}
 
-      {/* Thumbnail */}
+      {}
       <div className="relative h-24 bg-[var(--bg-muted)] overflow-hidden">
         {isUploading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
@@ -224,7 +191,7 @@ function ImageDockCard({
           />
         )}
 
-        {/* Just-inserted badge */}
+        {}
         {img.justInserted && !isError && (
           <div
             className="absolute top-1.5 left-1.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white z-10"
@@ -235,7 +202,7 @@ function ImageDockCard({
           </div>
         )}
 
-        {/* Remove button */}
+        {}
         <button
           type="button"
           onClick={() => onRemove(img.id)}
@@ -246,7 +213,7 @@ function ImageDockCard({
         </button>
       </div>
 
-      {/* Alt text row */}
+      {}
       {!isUploading && !isError && (
         <div className="px-2.5 pt-2 pb-0.5 flex items-center gap-1">
           {editingAlt ? (
@@ -281,10 +248,10 @@ function ImageDockCard({
         </div>
       )}
 
-      {/* Action buttons */}
+      {}
       <div className="flex border-t border-[var(--border-color)] divide-x divide-[var(--border-color)] mt-1">
         {isError ? (
-          /* Retry button on error */
+          
           <button
             type="button"
             onClick={() => onRetry(img.id)}
@@ -329,14 +296,14 @@ function ImageDockCard({
   );
 }
 
-/* ─── Category icon renderer ─────────────────────────────── */
 
-/** Returns true when the icon string is raw SVG markup, not an emoji. */
+
+
 function isSvgIcon(icon: string) {
   return icon.trimStart().startsWith("<");
 }
 
-/** Renders the category icon whether it is an SVG string or an emoji character. */
+
 function CategoryIcon({
   icon,
   size = 8,
@@ -375,7 +342,7 @@ function CategoryIcon({
   );
 }
 
-/* ─── Category Select ─────────────────────────────────────── */
+
 
 function CategorySelect({
   categories,
@@ -399,7 +366,7 @@ function CategorySelect({
 
   const selected = categories.find((c) => c._id === value);
 
-  // Close on outside click
+  
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -411,14 +378,14 @@ function CategorySelect({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Focus search when opened
+  
   useEffect(() => {
     if (open && searchRef.current) {
       setTimeout(() => searchRef.current?.focus(), 50);
     }
   }, [open]);
 
-  // Keyboard close
+  
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") { setOpen(false); setSearch(""); }
   };
@@ -439,7 +406,7 @@ function CategorySelect({
 
   return (
     <div ref={ref} className="relative" onKeyDown={handleKeyDown}>
-      {/* Trigger */}
+      {}
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -465,14 +432,14 @@ function CategorySelect({
         />
       </button>
 
-      {/* Dropdown */}
+      {}
       {open && (
         <div
           className="absolute z-50 mt-1.5 w-full rounded-xl border border-[var(--border-color)] shadow-2xl overflow-hidden"
           style={{ background: "var(--bg-surface)" }}
           role="listbox"
         >
-          {/* Search bar — always visible */}
+          {}
           <div className="px-2.5 pt-2.5 pb-2 border-b border-[var(--border-color)]">
             <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[var(--bg-muted)] border border-[var(--border-color)]">
               <Search size={11} className="text-[var(--text-tertiary)] shrink-0" />
@@ -492,7 +459,7 @@ function CategorySelect({
             </div>
           </div>
 
-          {/* Options — icon grid layout */}
+          {}
           <div className="max-h-60 overflow-y-auto p-2" style={{ scrollbarWidth: "thin" }}>
             {filtered.length === 0 ? (
               <p className="px-3 py-4 text-xs text-[var(--text-tertiary)] text-center">
@@ -542,7 +509,7 @@ function CategorySelect({
             )}
           </div>
 
-          {/* Footer count */}
+          {}
           {filtered.length > 0 && (
             <div className="px-3 py-1.5 border-t border-[var(--border-color)]">
               <p className="text-[10px] text-[var(--text-tertiary)]">
@@ -557,7 +524,7 @@ function CategorySelect({
   );
 }
 
-/* ─── Markdown Toolbar ────────────────────────────────────── */
+
 
 interface ToolbarAction {
   icon: React.ReactNode;
@@ -571,7 +538,7 @@ interface ToolbarAction {
   separator?: boolean;
 }
 
-/** Wrap selected text. If nothing selected, inserts placeholder. */
+
 function wrapSelection(
   value: string,
   start: number,
@@ -589,16 +556,16 @@ function wrapSelection(
   };
 }
 
-/** Strip any existing list prefix from a line so we don't double-apply. */
+
 function stripListPrefix(line: string): string {
-  // ordered: "1. ", "2. " etc.
+  
   if (/^\d+\.\s/.test(line)) return line.replace(/^\d+\.\s/, "");
-  // unordered: "- " or "* "
+  
   if (/^[-*]\s/.test(line)) return line.replace(/^[-*]\s/, "");
   return line;
 }
 
-/** Prefix each selected line (strips pre-existing list markers first). */
+
 function prefixLines(
   value: string,
   start: number,
@@ -607,7 +574,7 @@ function prefixLines(
 ): { value: string; selStart: number; selEnd: number } {
   const before = value.slice(0, start);
 
-  // Work on whole lines
+  
   const lineStart = before.lastIndexOf("\n") + 1;
   const lineEnd = value.indexOf("\n", end) === -1 ? value.length : value.indexOf("\n", end);
 
@@ -626,7 +593,7 @@ function prefixLines(
   };
 }
 
-/** Insert a block (heading, HR) at current line. */
+
 function insertBlock(
   value: string,
   start: number,
@@ -726,16 +693,16 @@ function buildToolbarActions(): ToolbarAction[] {
 
 const TOOLBAR_ACTIONS = buildToolbarActions();
 
-/* ─── Undo/Redo Hook ──────────────────────────────────────── */
+
 
 function useUndoHistory(initial: string) {
   const historyRef = useRef<string[]>([initial]);
   const posRef = useRef(0);
 
   const push = useCallback((value: string) => {
-    // Drop any future history if we're mid-stack
+    
     historyRef.current = historyRef.current.slice(0, posRef.current + 1);
-    // Don't push identical consecutive states
+    
     if (historyRef.current[posRef.current] === value) return;
     historyRef.current.push(value);
     if (historyRef.current.length > MAX_HISTORY) historyRef.current.shift();
@@ -760,7 +727,7 @@ function useUndoHistory(initial: string) {
   return { push, undo, redo, canUndo, canRedo };
 }
 
-/* ─── Helper: parse & strip FAQ block from raw markdown ─────── */
+
 function parseFaqFromContent(raw: string): { content: string; faqs: { q: string; a: string }[] } {
   const faqHeading = /\n*##\s+Frequently Asked Questions\s*\n/i;
   const idx = raw.search(faqHeading);
@@ -769,7 +736,7 @@ function parseFaqFromContent(raw: string): { content: string; faqs: { q: string;
   const contentPart = raw.slice(0, idx).trimEnd();
   const faqPart = raw.slice(idx);
 
-  // Each FAQ entry is: **Q: <question>**\n\n<answer>\n
+  
   const entryRegex = /\*\*Q:\s*(.+?)\*\*\s*\n+([\s\S]+?)(?=\n\*\*Q:|$)/g;
   const faqs: { q: string; a: string }[] = [];
   let match;
@@ -779,7 +746,7 @@ function parseFaqFromContent(raw: string): { content: string; faqs: { q: string;
   return { content: contentPart, faqs };
 }
 
-/* ─── Main ArticleForm ────────────────────────────────────── */
+
 
 export function ArticleForm({
   categories,
@@ -789,8 +756,8 @@ export function ArticleForm({
   isEdit = false,
   sessionRole = "writer",
 }: ArticleFormProps) {
-  // Pre-compute FAQ-stripped content and parsed FAQ items from props
-  // (must happen before hooks so we can seed useUndoHistory correctly)
+  
+  
   const { content: initialContent, faqs: parsedFaqs } = parseFaqFromContent(initialData.content || "");
 
   const router = useRouter();
@@ -805,13 +772,13 @@ export function ArticleForm({
   const formRef = useRef<HTMLFormElement>(null);
   const dragCounter = useRef(0);
 
-  // Track undo/redo for content field — seeded with FAQ-stripped content
+  
   const { push: pushHistory, undo: undoHistory, redo: redoHistory } = useUndoHistory(initialContent);
-  // Debounce timer for history push on plain typing
+  
   const historyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 
-  // Document-level Ctrl+S → save from any field
+  
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "s") {
@@ -829,7 +796,7 @@ export function ArticleForm({
     slug: initialData.slug || "",
     content: initialContent,
     excerpt: initialData.excerpt || "",
-    // Multi-category: categoryIds holds all; categoryId = first (for URL routing)
+    
     categoryIds: initialData.categoryIds?.length
       ? initialData.categoryIds
       : initialData.categoryId
@@ -849,7 +816,7 @@ export function ArticleForm({
     seoKeywords: initialData.seoKeywords || [] as string[],
   });
 
-  // ── FAQ structured editor ──
+  
   const [faqItems, setFaqItems] = useState<{ q: string; a: string }[]>(
     parsedFaqs.length > 0 ? parsedFaqs : [{ q: "", a: "" }]
   );
@@ -858,7 +825,7 @@ export function ArticleForm({
   const updateFaq = (i: number, field: "q" | "a", val: string) =>
     setFaqItems((prev) => prev.map((item, idx) => idx === i ? { ...item, [field]: val } : item));
 
-  // ── Next Up structured editor ──
+  
   const [nextUpTitle, setNextUpTitle] = useState("");
   const [nextUpUrl, setNextUpUrl] = useState("");
   const [nextUpDesc, setNextUpDesc] = useState("");
@@ -901,7 +868,7 @@ export function ArticleForm({
     }
   };
 
-  /* ── Form helpers ── */
+  
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;
     setForm((prev) => ({
@@ -920,12 +887,12 @@ export function ArticleForm({
     []
   );
 
-  // Content change with history recording (debounced)
+  
   const handleContentChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const val = e.target.value;
       setForm((prev) => ({ ...prev, content: val }));
-      // Debounce: push to history 600ms after last keystroke
+      
       if (historyTimer.current) clearTimeout(historyTimer.current);
       historyTimer.current = setTimeout(() => pushHistory(val), 600);
     },
@@ -943,11 +910,12 @@ export function ArticleForm({
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const pCat = e.target.value;
-    const subcats = CATEGORY_MAP[pCat]?.subcategories || [];
+    const matchedParent = categories.find((c) => c.slug === pCat);
+    const subcats = matchedParent?.subcategories || [];
     setForm((prev) => ({
       ...prev,
       primaryCategory: pCat,
-      subcategory: subcats[0] ? slugify(subcats[0]) : "",
+      subcategory: subcats[0] ? subcats[0].slug : "",
     }));
   };
 
@@ -958,7 +926,7 @@ export function ArticleForm({
         .map((k) => k.trim())
         .filter((k) => k.length > 0);
       if (existing.map(x => x.toLowerCase()).includes(tagName.toLowerCase())) {
-        // Remove if clicked again
+        
         const next = existing.filter(x => x.toLowerCase() !== tagName.toLowerCase()).join(", ");
         return { ...prev, keywords: next };
       }
@@ -977,7 +945,7 @@ export function ArticleForm({
     });
   };
 
-  /* ── Apply a toolbar action ── */
+  
   const applyToolbarAction = useCallback(
     (actionFn: ToolbarAction["action"]) => {
       const textarea = contentRef.current;
@@ -998,19 +966,19 @@ export function ArticleForm({
     [form.content, pushHistory]
   );
 
-  /* ── Keyboard shortcuts inside textarea ── */
+  
   const handleContentKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       const ctrl = e.ctrlKey || e.metaKey;
 
-      // ── Ctrl+S → save ──────────────────────────────────────
+      
       if (ctrl && e.key === "s") {
         e.preventDefault();
         formRef.current?.requestSubmit();
         return;
       }
 
-      // ── Ctrl+Z → undo ──────────────────────────────────────
+      
       if (ctrl && e.key === "z" && !e.shiftKey) {
         e.preventDefault();
         const val = undoHistory();
@@ -1018,7 +986,7 @@ export function ArticleForm({
         return;
       }
 
-      // ── Ctrl+Y / Ctrl+Shift+Z → redo ───────────────────────
+      
       if (ctrl && (e.key === "y" || (e.key === "z" && e.shiftKey))) {
         e.preventDefault();
         const val = redoHistory();
@@ -1026,60 +994,60 @@ export function ArticleForm({
         return;
       }
 
-      // ── Ctrl+B → bold ───────────────────────────────────────
+      
       if (ctrl && e.key === "b") {
         e.preventDefault();
         applyToolbarAction(TOOLBAR_ACTIONS[0].action);
         return;
       }
 
-      // ── Ctrl+I → italic ─────────────────────────────────────
+      
       if (ctrl && e.key === "i") {
         e.preventDefault();
         applyToolbarAction(TOOLBAR_ACTIONS[1].action);
         return;
       }
 
-      // ── Ctrl+` → inline code ────────────────────────────────
+      
       if (ctrl && e.key === "`") {
         e.preventDefault();
         applyToolbarAction(TOOLBAR_ACTIONS[2].action);
         return;
       }
 
-      // ── Ctrl+K → link ───────────────────────────────────────
+      
       if (ctrl && e.key === "k") {
         e.preventDefault();
         applyToolbarAction(TOOLBAR_ACTIONS[9].action);
         return;
       }
 
-      // ── Enter → smart list continuation ─────────────────────
+      
       if (e.key === "Enter" && !ctrl && !e.shiftKey) {
         const ta = e.currentTarget;
         const pos = ta.selectionStart;
         const text = ta.value;
 
-        // Find the start of the current line
+        
         const lineStart = text.lastIndexOf("\n", pos - 1) + 1;
         const currentLine = text.slice(lineStart, pos);
 
-        // Match bullet: "- " or "* "
+        
         const bulletMatch = currentLine.match(/^([-*])\s/);
-        // Match ordered: "1. ", "10. " etc.
+        
         const orderedMatch = currentLine.match(/^(\d+)\.\s/);
 
         if (bulletMatch || orderedMatch) {
           e.preventDefault();
 
-          // If the current line is ONLY the prefix (empty item) → exit list
+          
           const prefixLen = bulletMatch
             ? bulletMatch[0].length
             : (orderedMatch as RegExpMatchArray)[0].length;
           const contentAfterPrefix = currentLine.slice(prefixLen);
 
           if (contentAfterPrefix.trim() === "") {
-            // Remove the empty list prefix and insert a plain newline
+            
             const newText =
               text.slice(0, lineStart) + "\n" + text.slice(pos);
             setForm((prev) => ({ ...prev, content: newText }));
@@ -1090,7 +1058,7 @@ export function ArticleForm({
             return;
           }
 
-          // Otherwise continue the list
+          
           let nextPrefix: string;
           if (orderedMatch) {
             const n = parseInt(orderedMatch[1], 10);
@@ -1111,7 +1079,7 @@ export function ArticleForm({
         }
       }
 
-      // ── Tab → insert 2 spaces ────────────────────────────────
+      
       if (e.key === "Tab") {
         e.preventDefault();
         const ta = e.currentTarget;
@@ -1124,7 +1092,7 @@ export function ArticleForm({
     [undoHistory, redoHistory, applyToolbarAction, pushHistory]
   );
 
-  /* ── Insert markdown snippet at cursor ── */
+  
   const insertImageAtCursor = useCallback((url: string, altText = "image") => {
     const textarea = contentRef.current;
     const snippet = `![${altText}](${url})`;
@@ -1155,13 +1123,13 @@ export function ArticleForm({
     });
   }, [pushHistory]);
 
-  /* ── Check for duplicate URL in dock ── */
+  
   const isDuplicate = useCallback(
     (url: string) => uploadedImages.some((i) => i.url === url && i.status === "done"),
     [uploadedImages]
   );
 
-  /* ── Add placeholder card (uploading state) ── */
+  
   const addPlaceholder = useCallback((file: File): string => {
     const id = uid();
     const placeholder: UploadedImage = {
@@ -1177,7 +1145,7 @@ export function ArticleForm({
     return id;
   }, []);
 
-  /* ── Finalize card after successful upload ── */
+  
   const finalizeCard = useCallback((id: string, url: string, alt: string) => {
     const markdown = `![${alt}](${url})`;
     setUploadedImages((prev) =>
@@ -1187,7 +1155,7 @@ export function ArticleForm({
           : i
       )
     );
-    // Remove the flash highlight after 3 s
+    
     setTimeout(() => {
       setUploadedImages((prev) =>
         prev.map((i) => (i.id === id ? { ...i, justInserted: false } : i))
@@ -1195,14 +1163,14 @@ export function ArticleForm({
     }, 3000);
   }, []);
 
-  /* ── Mark card as errored ── */
+  
   const errorCard = useCallback((id: string, msg: string) => {
     setUploadedImages((prev) =>
       prev.map((i) => (i.id === id ? { ...i, status: "error", errorMsg: msg } : i))
     );
   }, []);
 
-  /* ── Core upload function ── */
+  
   const uploadFile = useCallback(
     async (file: File, cardId: string, insertAfter = false) => {
       try {
@@ -1213,7 +1181,7 @@ export function ArticleForm({
         if (!res.ok) {
           const text = await res.text();
           let msg = `Upload failed (${res.status})`;
-          try { msg = JSON.parse(text).error || msg; } catch { /* ignore */ }
+          try { msg = JSON.parse(text).error || msg; } catch {  }
           errorCard(cardId, msg);
           return;
         }
@@ -1233,7 +1201,7 @@ export function ArticleForm({
     [finalizeCard, errorCard, insertImageAtCursor]
   );
 
-  /* ── Process a File (validate → placeholder → upload) ── */
+  
   const processFile = useCallback(
     async (file: File, insertAfter = false) => {
       const validationError = validateFile(file);
@@ -1248,19 +1216,19 @@ export function ArticleForm({
     [addPlaceholder, uploadFile]
   );
 
-  /* ── Process multiple files ── */
+  
   const processFiles = useCallback(
     async (files: FileList | File[], insertFirst = false) => {
       const arr = Array.from(files);
       if (arr.length === 0) return;
 
-      // Upload first file with cursor insertion if requested, rest go to dock only
+      
       await Promise.all(arr.map((f, i) => processFile(f, insertFirst && i === 0)));
     },
     [processFile]
   );
 
-  /* ── Toolbar: Insert Image button ── */
+  
   const handleInlineImageInsert = () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -1272,7 +1240,7 @@ export function ArticleForm({
     input.click();
   };
 
-  /* ── Clipboard paste on textarea ── */
+  
   const handleContentPaste = useCallback(
     async (e: ClipboardEvent<HTMLTextAreaElement>) => {
       const items = e.clipboardData?.items;
@@ -1288,7 +1256,7 @@ export function ArticleForm({
     [processFiles]
   );
 
-  /* ── Drag & drop on textarea ── */
+  
   const handleDragEnter = useCallback((e: DragEvent<HTMLTextAreaElement>) => {
     e.preventDefault();
     dragCounter.current += 1;
@@ -1317,7 +1285,7 @@ export function ArticleForm({
     [processFiles]
   );
 
-  /* ── Dock: insert at cursor ── */
+  
   const handleDockInsert = useCallback(
     (img: UploadedImage) => {
       insertImageAtCursor(img.url, img.alt);
@@ -1333,17 +1301,17 @@ export function ArticleForm({
     [insertImageAtCursor]
   );
 
-  /* ── Dock: remove ── */
+  
   const handleDockRemove = useCallback((id: string) => {
     setUploadedImages((prev) => {
       const card = prev.find((i) => i.id === id);
-      // Revoke object URL if it was a blob
+      
       if (card?.url.startsWith("blob:")) URL.revokeObjectURL(card.url);
       return prev.filter((i) => i.id !== id);
     });
   }, []);
 
-  /* ── Dock: retry ── */
+  
   const handleDockRetry = useCallback(
     (id: string) => {
       const card = uploadedImages.find((i) => i.id === id);
@@ -1356,7 +1324,7 @@ export function ArticleForm({
     [uploadedImages, uploadFile]
   );
 
-  /* ── Dock: alt text change ── */
+  
   const handleAltChange = useCallback((id: string, alt: string) => {
     setUploadedImages((prev) =>
       prev.map((i) =>
@@ -1365,7 +1333,7 @@ export function ArticleForm({
     );
   }, []);
 
-  /* ── Submit ── */
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -1382,7 +1350,7 @@ export function ArticleForm({
       return;
     }
 
-    // Warn about pending uploads
+    
     const pendingUploads = uploadedImages.filter((i) => i.status === "uploading").length;
     if (pendingUploads > 0) {
       setError(`${pendingUploads} image(s) are still uploading. Please wait or remove them before saving.`);
@@ -1390,14 +1358,17 @@ export function ArticleForm({
       return;
     }
 
-    // ── Build auto tags from selections ──
+    
     const autoTagParts: string[] = [];
-    if (form.primaryCategory) autoTagParts.push(CATEGORY_MAP[form.primaryCategory]?.name || form.primaryCategory);
+    if (form.primaryCategory) {
+      const parentName = categories.find(c => c.slug === form.primaryCategory)?.name || form.primaryCategory;
+      autoTagParts.push(parentName);
+    }
     if (form.subcategory) autoTagParts.push(form.subcategory.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()));
     if (form.contentType) autoTagParts.push(form.contentType.replace(/\s+/g, ""));
 
-    // ── Append FAQ markdown block ──
-    // Strip any pre-existing FAQ section first to avoid duplication on re-saves
+    
+    
     const faqStripRegex = /\n*##\s+Frequently Asked Questions[\s\S]*/i;
     const strippedContent = form.content.replace(faqStripRegex, "").trimEnd();
 
@@ -1411,7 +1382,7 @@ export function ArticleForm({
       finalContent += faqMd;
     }
 
-    // ── Append Next Up markdown block ──
+    
     if (nextUpTitle.trim()) {
       const nextMd = [
         "\n\n## Next Up\n",
@@ -1424,9 +1395,8 @@ export function ArticleForm({
     }
 
     try {
-      // Find dynamic category mapping matching client subcategory selection
-      const matchedCat = categories.find(c => c.slug === form.subcategory.toLowerCase());
-      const resolvedCatId = matchedCat ? matchedCat._id : "";
+      const matchedParent = categories.find(c => c.slug === form.primaryCategory.toLowerCase());
+      const resolvedCatId = matchedParent ? matchedParent._id : "";
 
       const payload = {
         title: form.title, slug: form.slug, content: finalContent,
@@ -1442,10 +1412,10 @@ export function ArticleForm({
         seo: { 
           metaTitle: form.seoTitle || form.title, 
           metaDescription: form.seoDescription || form.excerpt,
-          // Store ONLY the writer's manual keywords here (used for tag display on article page)
+          
           keywords: form.seoKeywords
         },
-        // keywords string field includes auto parts for SEO meta only (not shown as tags)
+        
         keywords: [...form.seoKeywords, ...autoTagParts].join(", "),
       };
 
@@ -1465,7 +1435,7 @@ export function ArticleForm({
   };
 
 
-  /* ── Style helpers ── */
+  
   const inputClass =
     "w-full px-3 py-2 rounded-lg border border-[var(--border-color)] bg-[var(--bg-base)] text-[var(--text-primary)] text-sm placeholder-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--link-color)]/30 focus:border-[var(--link-color)] transition-all";
   const labelClass = "block text-sm font-medium text-[var(--text-primary)] mb-1.5";
@@ -1474,7 +1444,7 @@ export function ArticleForm({
   const pendingCount = uploadedImages.filter((i) => i.status === "uploading").length;
   const errorCount = uploadedImages.filter((i) => i.status === "error").length;
 
-  /* ─────────────────────────────────────────────────────── */
+  
   return (
     <>
       <style>{`
@@ -1522,7 +1492,7 @@ export function ArticleForm({
       `}</style>
 
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
-        {/* Banners */}
+        {}
         {error && (
           <div className="p-3.5 rounded-xl text-sm text-red-700 bg-red-50 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 flex items-start gap-2">
             <AlertCircle size={15} className="mt-0.5 shrink-0" /><span>{error}</span>
@@ -1547,9 +1517,9 @@ export function ArticleForm({
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* ──────────── Main column ──────────── */}
+          {}
           <div className="lg:col-span-2 space-y-5">
-            {/* Title */}
+            {}
             <div>
               <label htmlFor="title" className={labelClass}>
                 Title <span className="text-red-500">*</span>
@@ -1559,7 +1529,7 @@ export function ArticleForm({
                 className={inputClass} />
             </div>
 
-            {/* Slug */}
+            {}
             <div>
               <label htmlFor="slug" className={labelClass}>URL Slug</label>
               <div className="flex gap-2">
@@ -1574,7 +1544,7 @@ export function ArticleForm({
               </div>
             </div>
 
-            {/* Excerpt */}
+            {}
             <div>
               <label htmlFor="excerpt" className={labelClass}>
                 Excerpt <span className="text-red-500">*</span>
@@ -1588,9 +1558,9 @@ export function ArticleForm({
               </p>
             </div>
 
-            {/* ── Content editor ── */}
+            {}
             <div>
-              {/* 💡 Writing & SEO Guidelines */}
+              {}
               <div 
                 className="mb-4.5 p-4 rounded-xl border border-[var(--border-color)] text-xs transition-all duration-200"
                 style={{ background: "rgba(37,99,235,0.03)" }}
@@ -1644,12 +1614,12 @@ export function ArticleForm({
                 </button>
               </div>
 
-              {/* ── Markdown Toolbar ── */}
+              {}
               <div
                 className="flex items-center gap-0.5 flex-wrap px-2 py-1.5 rounded-t-lg border border-b-0 border-[var(--border-color)]"
                 style={{ background: "var(--bg-surface)" }}
               >
-                {/* Undo / Redo */}
+                {}
                 <button
                   type="button"
                   className="toolbar-btn"
@@ -1675,7 +1645,7 @@ export function ArticleForm({
 
                 <div className="toolbar-separator" />
 
-                {/* Formatting actions */}
+                {}
                 {TOOLBAR_ACTIONS.map((action, idx) => (
                   <span key={idx} className="contents">
                     <button
@@ -1690,7 +1660,7 @@ export function ArticleForm({
                   </span>
                 ))}
 
-                {/* Word count / shortcuts hint */}
+                {}
                 <span className="ml-auto text-[10px] text-[var(--text-tertiary)] hidden sm:block pr-1">
                   Ctrl+B · I · K · Z
                 </span>
@@ -1719,7 +1689,7 @@ export function ArticleForm({
                   ].join(" ")}
                   style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
                 />
-                {/* Drag overlay label */}
+                {}
                 {isDraggingOver && (
                   <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-b-lg">
                     <div
@@ -1742,7 +1712,7 @@ export function ArticleForm({
 
             </div>
 
-            {/* ════════ IMAGE DOCK ════════ */}
+            {}
             {uploadedImages.length > 0 && (
               <div
                 className="rounded-xl border-2 overflow-hidden transition-all duration-300"
@@ -1752,7 +1722,7 @@ export function ArticleForm({
                   boxShadow: errorCount > 0 ? "none" : "0 0 0 3px rgba(37,99,235,0.08)",
                 }}
               >
-                {/* Dock header */}
+                {}
                 <div
                   className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border-color)]"
                   style={{ background: "linear-gradient(135deg, rgba(37,99,235,0.06), rgba(124,58,237,0.04))" }}
@@ -1790,7 +1760,7 @@ export function ArticleForm({
                   </div>
                 </div>
 
-                {/* Card strip */}
+                {}
                 <div
                   className="flex gap-3 p-3 overflow-x-auto pb-3"
                   style={{ scrollbarWidth: "thin" }}
@@ -1809,7 +1779,7 @@ export function ArticleForm({
               </div>
             )}
 
-            {/* ════ NEXT UP panel ════ */}
+            {}
             <div className="rounded-xl border border-[var(--border-color)] overflow-hidden" style={{ background: "var(--bg-surface)" }}>
               <div className="px-4 py-3 border-b border-[var(--border-color)] flex items-center gap-2" style={{ background: "linear-gradient(135deg,rgba(37,99,235,0.06),rgba(124,58,237,0.04))" }}>
                 <span className="text-base">👉</span>
@@ -1863,7 +1833,7 @@ export function ArticleForm({
               </div>
             </div>
 
-            {/* ════ FAQ panel ════ */}
+            {}
             <div className="rounded-xl border border-[var(--border-color)] overflow-hidden" style={{ background: "var(--bg-surface)" }}>
               <div className="px-4 py-3 border-b border-[var(--border-color)] flex items-center gap-2" style={{ background: "linear-gradient(135deg,rgba(37,99,235,0.06),rgba(124,58,237,0.04))" }}>
                 <span className="text-base">❓</span>
@@ -1917,7 +1887,7 @@ export function ArticleForm({
               </div>
             </div>
 
-            {/* SEO */}
+            {}
             <details
               className="group rounded-xl border border-[var(--border-color)] overflow-hidden"
               style={{ background: "var(--bg-surface)" }}
@@ -1944,9 +1914,9 @@ export function ArticleForm({
             </details>
           </div>
 
-          {/* ──────────── Sidebar ──────────── */}
+          {}
           <div className="space-y-4">
-            {/* Publish */}
+            {}
             <div className={panelClass} style={{ background: "var(--bg-surface)" }}>
               <h3 className="font-semibold text-sm text-[var(--text-primary)]">Publish</h3>
               <div>
@@ -1970,7 +1940,7 @@ export function ArticleForm({
               </Button>
             </div>
 
-            {/* Cover Image */}
+            {}
             <div className={panelClass} style={{ background: "var(--bg-surface)" }}>
               <h3 className="font-semibold text-sm text-[var(--text-primary)]">Cover Image</h3>
               <ImageUploader
@@ -1988,7 +1958,7 @@ export function ArticleForm({
               </div>
             </div>
 
-            {/* Step 1 & Step 2: Category & Subcategory Selection */}
+            {}
             <div className={panelClass} style={{ background: "var(--bg-surface)" }}>
               <label htmlFor="primaryCategory" className={labelClass}>
                 Step 1: Select Category <span className="text-red-500">*</span>
@@ -2001,9 +1971,9 @@ export function ArticleForm({
                 className={inputClass}
               >
                 <option value="">Select Category…</option>
-                {Object.keys(CATEGORY_MAP).map((slug) => (
-                  <option key={slug} value={slug}>
-                    {CATEGORY_MAP[slug].name}
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.slug}>
+                    {cat.name}
                   </option>
                 ))}
               </select>
@@ -2020,16 +1990,16 @@ export function ArticleForm({
                 disabled={!form.primaryCategory}
               >
                 <option value="">Select Subcategory…</option>
-                {(CATEGORY_MAP[form.primaryCategory]?.subcategories || []).map((sub) => (
-                  <option key={slugify(sub)} value={slugify(sub)}>
-                    {sub}
+                {(categories.find(c => c.slug === form.primaryCategory)?.subcategories || []).map((sub) => (
+                  <option key={sub.slug} value={sub.slug}>
+                    {sub.name}
                   </option>
                 ))}
               </select>
             </div>
 
 
-            {/* Content Type (no Difficulty) + Auto-tag Preview */}
+            {}
             <div className={panelClass} style={{ background: "var(--bg-surface)" }}>
               <h3 className="font-semibold text-sm text-[var(--text-primary)]">Content Type</h3>
               <div>
@@ -2053,14 +2023,14 @@ export function ArticleForm({
                 </select>
               </div>
 
-              {/* Auto-generated SEO tag preview */}
+              {}
               <div className="mt-2 p-3.5 rounded-xl border border-[var(--border-color)]/70 bg-[var(--bg-base)]/50">
                 <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2.5">
                   Auto-generated SEO Tags
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {([
-                    form.primaryCategory && (CATEGORY_MAP[form.primaryCategory]?.name || form.primaryCategory),
+                    form.primaryCategory && (categories.find(c => c.slug === form.primaryCategory)?.name || form.primaryCategory),
                     form.subcategory && form.subcategory.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
                     form.contentType && form.contentType.replace(/\s+/g, ""),
                     form.primaryCategory === "web-development" && "WebDev",
@@ -2081,7 +2051,7 @@ export function ArticleForm({
               </div>
             </div>
 
-            {/* SEO Keywords manual entry Tag Input */}
+            {}
             <div className={panelClass} style={{ background: "var(--bg-surface)" }}>
               <label htmlFor="keywordInput" className={labelClass}>
                 SEO Keywords (Manual Entry) <span className="text-red-500">*</span>

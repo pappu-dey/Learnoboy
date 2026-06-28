@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Shield, EyeOff, Mail, Lock, CheckCircle2 } from "lucide-react";
+import { Shield, EyeOff, Mail, Lock, CheckCircle2, BarChart2 } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-[var(--bg-base)] py-16 transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Header */}
+        {}
         <div className="text-center mb-16 animate-fade-in">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-[var(--text-primary)] mb-4 tracking-tight">
             Privacy Policy
@@ -21,11 +21,11 @@ export default function PrivacyPage() {
             Your privacy is our priority. This document outlines exactly how we manage, protect, and utilize your personal data at LearnoBoy.
           </p>
           <div className="mt-4 text-xs text-[var(--text-tertiary)] uppercase tracking-wider font-semibold">
-            Last Updated: May 2026
+            Last Updated: June 2026
           </div>
         </div>
 
-        {/* Core Promises Cards Grid */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           
           <div 
@@ -69,10 +69,10 @@ export default function PrivacyPage() {
 
         </div>
 
-        {/* Detailed Privacy Sections */}
+        {}
         <div className="space-y-12 text-[var(--text-secondary)] leading-relaxed">
           
-          {/* Section 1 */}
+          {}
           <section className="border-b border-[var(--border-color)] pb-8">
             <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
               <Shield className="text-blue-500" size={24} />
@@ -91,10 +91,13 @@ export default function PrivacyPage() {
               <li>
                 <strong>Article Metadata</strong>: Title, content, category mappings, and view count stats on articles you write.
               </li>
+              <li>
+                <strong>Usage and Tracking Data</strong>: If you consent to Analytics cookies, we collect details about your visits to and interaction with our website (e.g., page views, scroll depth, session duration, and device/browser details) via Google Analytics.
+              </li>
             </ul>
           </section>
 
-          {/* Section 2 */}
+          {}
           <section className="border-b border-[var(--border-color)] pb-8">
             <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
               <Mail className="text-emerald-500" size={24} />
@@ -116,82 +119,117 @@ export default function PrivacyPage() {
             </div>
           </section>
 
-          {/* Section 3 */}
+          {}
           <section className="border-b border-[var(--border-color)] pb-8">
             <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
               <EyeOff className="text-indigo-500" size={24} />
-              3. Strict Third-Party Non-Disclosure
+              3. Sharing of Personal Information
             </h2>
             <p className="mb-4">
-              We take an uncompromising stance on data sharing:
+              We do not sell your personal information to third parties. We value your privacy and restrict access to details about you according to the following principles:
             </p>
-            <div className="p-5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-muted)] flex items-start gap-4">
-              <CheckCircle2 className="text-indigo-500 shrink-0 mt-0.5" size={20} />
-              <div>
-                <h3 className="font-semibold text-[var(--text-primary)] mb-1">Our Anti-Sharing Promise</h3>
+            <div className="space-y-4">
+              <div className="p-5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-muted)]">
+                <h3 className="font-semibold text-sm text-[var(--text-primary)] mb-2 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                  Independent Promotion Only
+                </h3>
                 <p className="text-sm">
-                  We **never sell, trade, rent, or lease** your email address, password, personal profile details, or writing history to third-party marketing companies, advertisers, or data brokers.
+                  We may use your information to promote LearnoBoy and our own products or services. However, we do not sell, rent, or provide your personal information to third-party advertisers or marketers for their independent marketing purposes.
                 </p>
-                <p className="text-xs text-[var(--text-tertiary)] mt-2">
-                  *Your personal information is accessed exclusively by LearnoBoy platform services to deliver features and platform communications, and is kept strictly confidential.
+              </div>
+
+              <div className="p-5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-muted)]">
+                <h3 className="font-semibold text-sm text-[var(--text-primary)] mb-2 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                  Trusted Service Providers
+                </h3>
+                <p className="text-sm">
+                  We may share information with trusted service providers (such as hosting, analytics, email delivery, or payment providers) only as necessary to operate and improve our services, subject to appropriate contractual and security obligations.
                 </p>
               </div>
             </div>
           </section>
 
-          {/* Section 4 */}
+          {}
           <section className="border-b border-[var(--border-color)] pb-8">
             <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
               <Lock className="text-purple-500" size={24} />
-              4. Data Security: You Are in Safe Hands
+              4. Our Commitment to Protecting Your Information
             </h2>
-            <p className="mb-4">
-              We employ robust administrative, technical, and physical safeguards designed to keep your personal data strictly protected and secure:
+            <p className="mb-6">
+              We value your privacy and are committed to protecting your personal information.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)]">
-                <h3 className="font-bold text-sm text-[var(--text-primary)] mb-1 flex items-center gap-2">
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)]">
+                <h3 className="font-bold text-sm text-[var(--text-primary)] mb-2 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-                  Cryptographic Hashing
+                  No Sale of Personal Information
                 </h3>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Your passwords are hashed cryptographically using industry-leading algorithms (bcryptjs). We never store raw passwords.
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                  We do not sell, rent, or lease your personal information, including your email address, to third-party advertisers or marketers.
                 </p>
               </div>
-              <div className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)]">
-                <h3 className="font-bold text-sm text-[var(--text-primary)] mb-1 flex items-center gap-2">
+
+              <div className="p-5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)]">
+                <h3 className="font-bold text-sm text-[var(--text-primary)] mb-2 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-                  Secure Storage
+                  Security Measures
                 </h3>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  All databases are hosted in fully secure MongoDB Atlas clusters, utilizing strict firewall rules and active database protection logs.
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                  We implement reasonable technical and organizational measures to help protect your personal information. Passwords are securely hashed using cryptographic algorithms, and our infrastructure uses industry-standard security practices, including secure database access controls where applicable (such as SSL/TLS encryption and secure MongoDB clusters).
                 </p>
               </div>
-              <div className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)]">
-                <h3 className="font-bold text-sm text-[var(--text-primary)] mb-1 flex items-center gap-2">
+
+              <div className="p-5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)]">
+                <h3 className="font-bold text-sm text-[var(--text-primary)] mb-2 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-                  SSL/TLS Encryption
+                  No Absolute Guarantee
                 </h3>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Data transferred between your browser and our platform server endpoints is fully encrypted using HTTPS secure protocols.
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                  While we take reasonable steps to safeguard your information, no method of electronic storage, transmission, or internet-based service is completely secure. As a result, we cannot guarantee absolute security against unauthorized access, data breaches, or other security incidents.
                 </p>
               </div>
-              <div className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)]">
-                <h3 className="font-bold text-sm text-[var(--text-primary)] mb-1 flex items-center gap-2">
+
+              <div className="p-5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)]">
+                <h3 className="font-bold text-sm text-[var(--text-primary)] mb-2 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-                  Session Integrity
+                  Security Incidents
                 </h3>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Sessions are authenticated using secure JSON Web Tokens (JWT) encrypted with high-entropy cryptographic keys.
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                  If we become aware of a security incident affecting your personal information, we will investigate the matter, take appropriate steps to mitigate the impact, and, where required by applicable law, notify affected users.
                 </p>
               </div>
             </div>
           </section>
 
-          {/* Section 5 */}
+          {}
+          <section className="border-b border-[var(--border-color)] pb-8">
+            <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
+              <BarChart2 className="text-teal-500" size={24} />
+              5. Third-Party Analytics Tools (Google Analytics)
+            </h2>
+            <p className="mb-4">
+              We use <strong>Google Analytics</strong>, a web analytics service provided by Google LLC ("Google"), to analyze platform usage and traffic. Google Analytics uses cookies to gather standard internet log information and visitor behavior details in an anonymous format.
+            </p>
+            <div className="p-5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-muted)] space-y-3">
+              <p className="text-sm font-medium text-[var(--text-primary)]">
+                Key Analytics Terms & Opt-Out:
+              </p>
+              <p className="text-sm">
+                - The information generated by the cookies about your use of the website is transmitted to Google. This data helps us evaluate website activity, compile reports, and improve the overall LearnoBoy user experience.
+              </p>
+              <p className="text-sm">
+                - <strong>Consent & Choice</strong>: You can choose to allow or decline Google Analytics tracking at any time by toggling the "Analytics" option in our Cookie Consent preferences banner. You can also install the official Google Analytics Opt-out Browser Add-on to prevent your data from being used by Google Analytics.
+              </p>
+            </div>
+          </section>
+
+          {}
           <section className="pb-8">
             <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4">
-              5. Your Rights & Choice
+              6. Your Rights & Choice
             </h2>
             <p>
               As a valued member of the LearnoBoy community, you have the right to request access to the personal data we hold about you, request corrections to your information, or delete your account. You also retain full rights to update your newsletter preference or opt out of promotional lists at any time.
@@ -200,11 +238,11 @@ export default function PrivacyPage() {
 
         </div>
 
-        {/* Footer Contact */}
+        {}
         <div className="mt-16 pt-8 border-t border-[var(--border-color)] text-center text-sm text-[var(--text-tertiary)]">
           <p>If you have any questions or concerns regarding our privacy policies, please reach out to our privacy compliance officer at:</p>
-          <a href="mailto:privacy@learnoboy.dev" className="mt-2 inline-block font-semibold text-[var(--link-color)] hover:text-[var(--link-hover)]">
-            privacy@learnoboy.dev
+          <a href="mailto:xtpdev@gmail.com" className="mt-2 inline-block font-semibold text-[var(--link-color)] hover:text-[var(--link-hover)]">
+            xtpdev@gmail.com
           </a>
         </div>
 

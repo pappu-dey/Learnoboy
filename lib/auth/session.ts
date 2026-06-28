@@ -23,7 +23,7 @@ const SECRET = new TextEncoder().encode(
 );
 
 const COOKIE_NAME = "lb_session";
-const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
+const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; 
 
 export async function encrypt(payload: SessionPayload): Promise<string> {
   return new SignJWT({ ...payload })

@@ -7,7 +7,7 @@ interface SkeletonProps {
   style?: CSSProperties;
 }
 
-/** Base block with shimmer sweep animation */
+
 export function Skeleton({ className = "", lines, shimmer = true, style }: SkeletonProps) {
   const cls = shimmer ? "skeleton-shimmer" : "animate-pulse bg-[var(--bg-muted)] rounded";
 
@@ -28,7 +28,7 @@ export function Skeleton({ className = "", lines, shimmer = true, style }: Skele
   return <div className={`${cls} ${className}`} style={style} />;
 }
 
-/* ─── Article card skeleton ─── */
+
 export function ArticleCardSkeleton() {
   return (
     <div
@@ -47,7 +47,7 @@ export function ArticleCardSkeleton() {
   );
 }
 
-/* ─── Featured hero card skeleton (large) ─── */
+
 export function FeaturedCardSkeleton() {
   return (
     <div
@@ -69,14 +69,14 @@ export function FeaturedCardSkeleton() {
   );
 }
 
-/* ─── Hero section skeleton ─── */
+
 export function HeroSkeleton() {
   return (
     <section
       className="relative overflow-hidden flex items-center"
       style={{ minHeight: "calc(100vh - 64px)", padding: "60px 0" }}
     >
-      {/* subtle bg blob */}
+      {}
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
@@ -98,15 +98,15 @@ export function HeroSkeleton() {
         }}
         className="max-lg:flex max-lg:flex-col max-lg:items-center"
       >
-        {/* Left — text */}
+        {}
         <div className="space-y-5 max-lg:w-full max-lg:max-w-lg">
           <Skeleton className="h-12 w-3/4" />
           <Skeleton className="h-12 w-full" />
           <Skeleton className="h-5 w-full" />
           <Skeleton className="h-5 w-5/6" />
-          {/* search bar */}
+          {}
           <Skeleton className="h-12 w-full rounded-2xl" />
-          {/* stats row */}
+          {}
           <div className="flex gap-8 pt-2">
             {[1, 2, 3].map((i) => (
               <div key={i} className="space-y-1.5">
@@ -117,7 +117,7 @@ export function HeroSkeleton() {
           </div>
         </div>
 
-        {/* Right — illustration placeholder */}
+        {}
         <div className="max-lg:hidden">
           <Skeleton className="h-[380px] w-full rounded-2xl" />
         </div>
@@ -126,11 +126,11 @@ export function HeroSkeleton() {
   );
 }
 
-/* ─── Category pills skeleton ─── */
+
 export function CategorySkeleton({ count = 6 }: { count?: number }) {
   return (
     <section className="mb-10">
-      {/* heading */}
+      {}
       <div className="flex items-center gap-2 mb-4">
         <Skeleton className="h-5 w-5 rounded" />
         <Skeleton className="h-5 w-40" />
@@ -148,7 +148,7 @@ export function CategorySkeleton({ count = 6 }: { count?: number }) {
   );
 }
 
-/* ─── Featured articles skeleton ─── */
+
 export function FeaturedSkeleton() {
   return (
     <section className="mb-16">
@@ -169,7 +169,7 @@ export function FeaturedSkeleton() {
   );
 }
 
-/* ─── Latest articles grid skeleton ─── */
+
 export function LatestArticlesSkeleton({ count = 8 }: { count?: number }) {
   return (
     <section className="mb-16">
@@ -189,10 +189,7 @@ export function LatestArticlesSkeleton({ count = 8 }: { count?: number }) {
   );
 }
 
-/* ─────────────────────────────────────────────
-   FULL HOME PAGE SKELETON
-   Mirrors the layout of app/page.tsx exactly
-   ───────────────────────────────────────────── */
+
 export function HomePageSkeleton() {
   return (
     <>
@@ -206,7 +203,7 @@ export function HomePageSkeleton() {
   );
 }
 
-/* ─── Admin dashboard skeleton ─── */
+
 export function DashboardSkeleton() {
   return (
     <div className="space-y-8">
@@ -259,7 +256,7 @@ export function DashboardSkeleton() {
   );
 }
 
-/* ─── Admin form skeleton ─── */
+
 export function FormSkeleton() {
   return (
     <div className="space-y-8 animate-fade-in">

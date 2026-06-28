@@ -1,9 +1,4 @@
-/**
- * Update Category Icons Script
- * Replaces emoji icons with proper SVGs for all existing categories.
- * Run with: npx tsx scripts/update-category-icons.ts
- * Or: npm run update-icons
- */
+
 
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -28,7 +23,7 @@ const CategorySchema = new mongoose.Schema({
 
 const Category = mongoose.models.Category || mongoose.model("Category", CategorySchema);
 
-// ---- SVG Icons ----
+
 const JS_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><rect width="32" height="32" rx="4" fill="#f7df1e"/><path d="M9.5 24.5c.6 1 1.4 1.7 2.8 1.7 1.6 0 2.6-.8 2.6-2.3V14h-2.3v9.8c0 .7-.3 1-.8 1-.5 0-.8-.3-1.1-.8l-1.2 1.5zm7.8-.4c.7 1.2 1.8 2 3.6 2 1.9 0 3.3-1 3.3-2.7 0-1.6-.9-2.3-2.6-3.1l-.6-.3c-.9-.4-1.3-.7-1.3-1.3 0-.5.4-.9 1-.9.6 0 1 .3 1.4.9l1.6-1c-.7-1.2-1.7-1.7-3-1.7-1.8 0-3 1.1-3 2.7 0 1.6.9 2.4 2.4 3.1l.6.3c1 .5 1.5.8 1.5 1.5 0 .6-.5 1-1.3 1-.9 0-1.5-.5-1.9-1.3l-1.7 1z" fill="#323330"/></svg>`;
 
 const PYTHON_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><defs><linearGradient id="pyTop" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#5a9fd4"/><stop offset="100%" stop-color="#306998"/></linearGradient><linearGradient id="pyBot" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffd43b"/><stop offset="100%" stop-color="#ffe873"/></linearGradient></defs><path d="M15.9 3C11.3 3 11.6 5 11.6 5v4.1h4.5v1.3H8.6S6 10 6 14.7s2.2 4.5 2.2 4.5H10v-2.2s-.1-2.2 2.2-2.2h6.8s2.1.03 2.1-2V7.1S21.5 3 15.9 3zm-1.3 1.8c.7 0 1.2.6 1.2 1.2 0 .7-.5 1.2-1.2 1.2s-1.2-.5-1.2-1.2.5-1.2 1.2-1.2z" fill="url(#pyTop)"/><path d="M16.1 29c4.6 0 4.3-2 4.3-2v-4.1h-4.5v-1.3h7.5s2.6.4 2.6-4.3-2.2-4.5-2.2-4.5H22v2.2s.1 2.2-2.2 2.2h-6.8s-2.1-.03-2.1 2v4.8S10.5 29 16.1 29zm1.3-1.8c-.7 0-1.2-.6-1.2-1.2 0-.7.5-1.2 1.2-1.2s1.2.5 1.2 1.2-.5 1.2-1.2 1.2z" fill="url(#pyBot)"/></svg>`;

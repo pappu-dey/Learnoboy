@@ -24,7 +24,7 @@ export default async function WriterDashboard() {
 
   await connectDB();
 
-  // Find the Author document linked to this user
+  
   const authorDoc = await Author.findOne({ email: session.email }).lean();
   const authorId = authorDoc ? String((authorDoc as { _id: unknown })._id) : null;
 
@@ -74,7 +74,7 @@ export default async function WriterDashboard() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] tracking-tight">
@@ -97,7 +97,7 @@ export default async function WriterDashboard() {
         </Link>
       </div>
 
-      {/* Author profile not yet created banner */}
+      {}
       {!authorDoc && (
         <div
           className="flex items-center gap-3 p-4 rounded-2xl border"
@@ -114,7 +114,7 @@ export default async function WriterDashboard() {
         </div>
       )}
 
-      {/* Profile completeness banner — shown when author exists but profile is incomplete */}
+      {}
       {authorDoc && (!authorDoc.bio || !authorDoc.avatar) && (
         <div
           className="flex items-center gap-3 p-4 rounded-2xl border"
@@ -132,7 +132,7 @@ export default async function WriterDashboard() {
       )}
 
 
-      {/* Stats grid */}
+      {}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map(({ label, value, icon: Icon, gradient, glow, href }) => (
           <Link
@@ -154,7 +154,7 @@ export default async function WriterDashboard() {
         ))}
       </div>
 
-      {/* Quick actions */}
+      {}
       <div className="flex flex-wrap gap-3 p-4 rounded-2xl border border-[var(--border-color)]" style={{ background: "var(--bg-surface)" }}>
         <p className="w-full text-xs font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Quick Actions</p>
         {[
@@ -178,9 +178,9 @@ export default async function WriterDashboard() {
         ))}
       </div>
 
-      {/* Recent articles */}
+      {}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Published */}
+        {}
         <section className="rounded-2xl border border-[var(--border-color)] overflow-hidden" style={{ background: "var(--bg-surface)" }}>
           <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border-color)]">
             <div className="flex items-center gap-2.5">
@@ -228,7 +228,7 @@ export default async function WriterDashboard() {
           </div>
         </section>
 
-        {/* Drafts */}
+        {}
         <section className="rounded-2xl border border-[var(--border-color)] overflow-hidden" style={{ background: "var(--bg-surface)" }}>
           <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border-color)]">
             <div className="flex items-center gap-2.5">

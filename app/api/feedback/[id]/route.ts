@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Feedback } from "@/lib/models";
 import { getSession } from "@/lib/auth/session";
 
-/** PATCH /api/feedback/[id] — update feedback status (superadmin only) */
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -27,7 +27,7 @@ export async function PATCH(
 
     await connectDB();
 
-    // If role is writer, verify they own the article suggestion
+    
     if (session.role === "writer") {
       const { Author } = await import("@/lib/models");
       const authorDoc = await Author.findOne({ email: session.email }).lean();
@@ -68,7 +68,7 @@ export async function PATCH(
   }
 }
 
-/** DELETE /api/feedback/[id] — delete feedback (superadmin only) */
+
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

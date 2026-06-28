@@ -41,17 +41,17 @@ export default async function EditArticlePage({ params }: Props) {
       ? (article.category as ICategory)
       : null;
 
-  // Build all category IDs (multi-category support)
+  
   const categoriesArr = Array.isArray(article.categories) ? article.categories : [];
   const categoryIds: string[] = categoriesArr
     .filter((c) => typeof c === "object" && c._id)
     .map((c) => String((c as ICategory)._id));
-  // Fallback: if no categories[] yet, use the single category
+  
   if (categoryIds.length === 0 && category?._id) {
     categoryIds.push(String(category._id));
   }
 
-  // Serialize to convert ObjectIds → strings before crossing server→client boundary
+  
   const initialData = serialize({
     _id: String(article._id),
     title: article.title,

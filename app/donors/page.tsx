@@ -3,7 +3,7 @@ import { Donor } from "@/lib/models";
 import { DonorsClient } from "@/components/donors/DonorsClient";
 import type { Metadata } from "next";
 
-// Disable route caching so new donations appear instantly
+
 export const revalidate = 0;
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export default async function DonorsPage() {
     .sort({ amount: -1, createdAt: -1 })
     .lean();
 
-  // Serialize Mongoose _id and Date objects to plain values for Client Component boundary
+  
   const donors = rawDonors.map((d: any) => ({
     _id: d._id.toString(),
     name: d.name,

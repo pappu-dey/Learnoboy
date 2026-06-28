@@ -28,7 +28,7 @@ export default function LoginPage() {
         return;
       }
 
-      // Redirect based on role
+      
       if (data.role === "superadmin") {
         window.location.href = "/admin";
       } else if (data.role === "writer") {
@@ -45,7 +45,7 @@ export default function LoginPage() {
 
   return (
     <div className="animate-fade-in-up">
-      {/* Header */}
+      {}
       <div className="mb-8">
         <h2
           className="text-3xl font-extrabold tracking-tight"
@@ -58,7 +58,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* Error banner */}
+      {}
       {error && (
         <div className="mb-5 flex items-start gap-2.5 p-3.5 rounded-xl text-sm text-red-700 bg-red-50 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 animate-fade-in">
           <AlertCircle size={15} className="mt-0.5 shrink-0" />
@@ -67,7 +67,7 @@ export default function LoginPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-        {/* Email */}
+        {}
         <InputField
           id="login-email"
           label="Email address"
@@ -79,7 +79,7 @@ export default function LoginPage() {
           placeholder="you@example.com"
         />
 
-        {/* Password */}
+        {}
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label
@@ -135,7 +135,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Submit */}
+        {}
         <button
           type="submit"
           id="login-submit"
@@ -158,7 +158,7 @@ export default function LoginPage() {
         </button>
       </form>
 
-      {/* Divider */}
+      {}
       <div className="mt-6 flex items-center gap-3">
         <div className="flex-1 h-px" style={{ background: "var(--border-color)" }} />
         <span className="text-xs px-1" style={{ color: "var(--text-tertiary)" }}>
@@ -180,7 +180,7 @@ export default function LoginPage() {
   );
 }
 
-/* ── Reusable input component ── */
+
 function InputField({
   id,
   label,

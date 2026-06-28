@@ -149,7 +149,7 @@ export default function WriterProfileClient({
 
   return (
     <div className="space-y-6 max-w-2xl">
-      {/* Toast */}
+      {}
       {toast && (
         <div
           className="fixed top-5 right-5 z-50 flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium shadow-lg"
@@ -165,7 +165,7 @@ export default function WriterProfileClient({
         </div>
       )}
 
-      {/* Header */}
+      {}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
@@ -186,7 +186,7 @@ export default function WriterProfileClient({
         </a>
       </div>
 
-      {/* Profile completeness */}
+      {}
       <div
         className="p-4 rounded-2xl border border-[var(--border-color)]"
         style={{ background: "var(--bg-surface)" }}
@@ -211,12 +211,12 @@ export default function WriterProfileClient({
         </p>
       </div>
 
-      {/* Card */}
+      {}
       <div
         className="rounded-2xl border border-[var(--border-color)] overflow-hidden"
         style={{ background: "var(--bg-surface)" }}
       >
-        {/* Banner */}
+        {}
         <div
           className="relative h-28 group cursor-pointer overflow-hidden"
           style={{
@@ -241,7 +241,7 @@ export default function WriterProfileClient({
           />
         </div>
 
-        {/* Avatar section */}
+        {}
         <div className="px-6 pb-4 border-b border-[var(--border-color)]">
           <div className="flex items-end gap-4 -mt-8 mb-4">
             <div className="relative group z-10">
@@ -277,7 +277,7 @@ export default function WriterProfileClient({
             </div>
           </div>
 
-          {/* Change avatar btn */}
+          {}
           <button
             onClick={() => avatarRef.current?.click()}
             disabled={!!uploading}
@@ -288,7 +288,7 @@ export default function WriterProfileClient({
           </button>
         </div>
 
-        {/* Bio */}
+        {}
         <div className="p-6 border-b border-[var(--border-color)]">
           <label className="text-xs font-semibold text-[var(--text-tertiary)] uppercase tracking-wider block mb-2">
             Bio <span className="normal-case font-normal">(10–300 words)</span>
@@ -309,7 +309,7 @@ export default function WriterProfileClient({
           </div>
         </div>
 
-        {/* Personal details */}
+        {}
         <div className="p-6 border-b border-[var(--border-color)]">
           <p className="text-xs font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-4">Personal Details</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -341,7 +341,7 @@ export default function WriterProfileClient({
           </div>
         </div>
 
-        {/* Expertise chips */}
+        {}
         <div className="p-6 border-b border-[var(--border-color)]">
           <p className="text-xs font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-3">
             Areas of Expertise
@@ -368,7 +368,7 @@ export default function WriterProfileClient({
           </div>
         </div>
 
-        {/* Social links */}
+        {}
         <div className="p-6 border-b border-[var(--border-color)]">
           <p className="text-xs font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-3">Social Links</p>
           <div className="space-y-3">
@@ -401,7 +401,7 @@ export default function WriterProfileClient({
           </div>
         </div>
 
-        {/* Save footer */}
+        {}
         <div className="p-4 flex items-center justify-end" style={{ background: "var(--bg-muted)" }}>
           <button
             id="writer-profile-save"

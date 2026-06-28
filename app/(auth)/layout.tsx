@@ -17,14 +17,14 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
 
   return (
     <div className="min-h-screen flex" style={{ background: "var(--bg-base)" }}>
-      {/* ── Left panel – branding ── */}
+      {}
       <div
         className="hidden lg:flex lg:w-[45%] flex-col justify-between p-12 relative overflow-hidden"
         style={{
           background: "linear-gradient(150deg, #1e3a8a 0%, #4338ca 55%, #6d28d9 100%)",
         }}
       >
-        {/* Decorative blobs */}
+        {}
         <div
           className="absolute top-[-80px] right-[-80px] w-96 h-96 rounded-full pointer-events-none"
           style={{
@@ -44,7 +44,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
           }}
         />
 
-        {/* Logo */}
+        {}
         <Link href="/" className="flex items-center gap-3 z-10">
           <div
             className="rounded-xl overflow-hidden flex items-center justify-center"
@@ -61,7 +61,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
           </div>
         </Link>
 
-        {/* Centre tagline */}
+        {}
         <div className="z-10 space-y-8">
           <div>
             <h1 className="text-4xl font-extrabold text-white leading-tight mb-3">
@@ -74,7 +74,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
             </p>
           </div>
 
-          {/* Stats row */}
+          {}
           <div className="flex gap-6">
             {[
               { value: "10K+", label: "Readers" },
@@ -89,13 +89,13 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
           </div>
         </div>
 
-        {/* Footer */}
+        {}
         <p className="text-white/35 text-xs z-10">
           © {new Date().getFullYear()} LearnoBoy. All rights reserved.
         </p>
       </div>
 
-      {/* ── Right panel – form ── */}
+      {}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">{children}</div>
       </div>

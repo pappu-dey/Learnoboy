@@ -1,7 +1,4 @@
-/**
- * Debug script: check what's in the DB
- * Run with: npx tsx scripts/check-db.ts
- */
+
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";

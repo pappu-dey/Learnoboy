@@ -1,6 +1,6 @@
-// ===========================
-// Shared TypeScript Interfaces
-// ===========================
+
+
+
 
 export interface IAuthor {
   _id: string;
@@ -43,6 +43,16 @@ export interface IWriterApplication {
   appliedAt: string;
 }
 
+export interface ISubcategory {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  articleCount: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface ICategory {
   _id: string;
   name: string;
@@ -51,8 +61,9 @@ export interface ICategory {
   icon: string;
   color: string;
   articleCount: number;
-  parent?: string | ICategory | null;
+  subcategories?: ISubcategory[];
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface ITag {
@@ -81,9 +92,9 @@ export interface IArticle {
   _id: string;
   title: string;
   slug: string;
-  /** Primary category (used for URL routing) */
+  
   category: ICategory | string;
-  /** All categories (multi-category support) */
+  
   categories?: ICategory[] | string[];
   primaryCategory: string;
   subcategory: string;
@@ -91,7 +102,7 @@ export interface IArticle {
   contentType: "Tutorial" | "Interview Prep" | "Best Practices" | "Roadmap" | "Project" | "Cheat Sheet" | "Notes";
   author: IAuthor | string;
   tags: ITag[] | string[];
-  content: string; // Markdown
+  content: string; 
   excerpt: string;
   snippet?: string;
   keywords?: string;
@@ -108,7 +119,7 @@ export interface IArticle {
   authorSnapshot?: IAuthorSnapshot;
 }
 
-// API Response types
+
 export interface PaginatedResponse<T> {
   data: T[];
   total: number;
@@ -124,7 +135,7 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
-// Article form data for create/edit
+
 export interface ArticleFormData {
   title: string;
   slug: string;
@@ -139,21 +150,21 @@ export interface ArticleFormData {
   seo?: IArticleSEO;
 }
 
-// Search result
+
 export interface SearchResult {
   articles: IArticle[];
   total: number;
   query: string;
 }
 
-// Table of Contents item
+
 export interface TocItem {
   id: string;
   text: string;
   level: number;
 }
 
-// Writer Application
+
 export const EXPERTISE_OPTIONS = [
   "Web Development",
   "Machine Learning",

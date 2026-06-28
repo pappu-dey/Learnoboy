@@ -12,7 +12,7 @@ export default function TermsPage() {
     <div className="min-h-screen bg-[var(--bg-base)] py-16 transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Header */}
+        {}
         <div className="text-center mb-16 animate-fade-in">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-[var(--text-primary)] mb-4 tracking-tight">
             Terms of Service
@@ -21,11 +21,11 @@ export default function TermsPage() {
             Please read these terms carefully before using LearnoBoy. They outline your rights as a reader, writer, and account holder.
           </p>
           <div className="mt-4 text-xs text-[var(--text-tertiary)] uppercase tracking-wider font-semibold">
-            Last Updated: May 2026
+            Last Updated: June 2026
           </div>
         </div>
 
-        {/* Quick Highlights Box */}
+        {}
         <div 
           className="rounded-2xl border border-[var(--border-color)] p-6 sm:p-8 mb-12 shadow-sm relative overflow-hidden"
           style={{ background: "var(--bg-surface)" }}
@@ -55,10 +55,10 @@ export default function TermsPage() {
           </div>
         </div>
 
-        {/* Full Terms Content */}
+        {}
         <div className="space-y-12 text-[var(--text-secondary)] leading-relaxed">
           
-          {/* Section 1 */}
+          {}
           <section className="border-b border-[var(--border-color)] pb-8">
             <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
               <span className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold text-base">1</span>
@@ -69,7 +69,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          {/* Section 2 */}
+          {}
           <section className="border-b border-[var(--border-color)] pb-8">
             <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
               <span className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-base">2</span>
@@ -106,11 +106,11 @@ export default function TermsPage() {
             </p>
           </section>
 
-          {/* Section 3 */}
+          {}
           <section className="border-b border-[var(--border-color)] pb-8">
             <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
               <span className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center font-bold text-base">3</span>
-              User Accounts & Promotional Communication
+              User Accounts, Communication & Analytics
             </h2>
             <p className="mb-4">
               To write articles or access certain features on LearnoBoy, you may need to register an account. During registration, you agree to provide accurate and complete information.
@@ -127,31 +127,46 @@ export default function TermsPage() {
                 </p>
               </div>
             </div>
+            <div className="p-5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-muted)] flex gap-4">
+              <div className="shrink-0 mt-1 text-xl">📊</div>
+              <div>
+                <h3 className="font-semibold text-[var(--text-primary)] mb-1">Platform Analytics</h3>
+                <p className="text-sm">
+                  We use third-party analytics services (Google Analytics) to help us measure traffic, usability, and visitor patterns. Consent to analytics tracking is completely voluntary and governed by our Cookie Consent banner, where you can opt in or out at your discretion.
+                </p>
+              </div>
+            </div>
           </section>
 
-          {/* Section 4 */}
+          {}
           <section className="border-b border-[var(--border-color)] pb-8">
             <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
               <span className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-500 flex items-center justify-center font-bold text-base">4</span>
-              Data Protection & Privacy Commitment
+              Our Commitment to Protecting Your Information
             </h2>
             <p className="mb-4">
-              We understand the value of your personal data. We are committed to maintaining the trust you place in us by implementing the following absolute rules:
+              We value your privacy and are committed to protecting your personal information. Under these terms:
             </p>
-            <ul className="list-disc pl-6 space-y-2 mb-4 text-sm">
+            <ul className="list-disc pl-6 space-y-4 mb-4 text-sm">
               <li>
-                <strong>Strict No-Sharing Policy</strong>: Under no circumstances do we sell, rent, lease, or share your email address or personal profile details with third-party marketers or advertisers.
+                <strong>No Sale of Personal Information:</strong> We do not sell, rent, or lease your personal information, including your email address, to third-party advertisers or marketers.
               </li>
               <li>
-                <strong>Robust Technical Safeguards</strong>: Your passwords are encrypted, and our databases (built with MongoDB Atlas) employ industry-standard access control and security configurations to ensure your account details are in safe hands.
+                <strong>Security Measures:</strong> We implement reasonable technical and organizational measures to help protect your personal information. Passwords are securely hashed, and our infrastructure uses industry-standard security practices, including secure database access controls where applicable.
+              </li>
+              <li>
+                <strong>No Absolute Guarantee:</strong> While we take reasonable steps to safeguard your information, no method of electronic storage, transmission, or internet-based service is completely secure. As a result, we cannot guarantee absolute security against unauthorized access, data breaches, or other security incidents.
+              </li>
+              <li>
+                <strong>Security Incidents:</strong> If we become aware of a security incident affecting your personal information, we will investigate the matter, take appropriate steps to mitigate the impact, and, where required by applicable law, notify affected users.
               </li>
             </ul>
             <p>
-              For more details on how we store and handle your personal data, please review our full <Link href="/privacy" className="underline font-semibold text-[var(--link-color)] hover:text-[var(--link-hover)]">Privacy Policy</Link>.
+              For more details on how we collect, use, and protect your data, please review our full <Link href="/privacy" className="underline font-semibold text-[var(--link-color)] hover:text-[var(--link-hover)]">Privacy Policy</Link>.
             </p>
           </section>
 
-          {/* Section 5 */}
+          {}
           <section className="pb-8">
             <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
               <span className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center font-bold text-base">5</span>
@@ -164,11 +179,11 @@ export default function TermsPage() {
 
         </div>
 
-        {/* Footer Contact */}
+        {}
         <div className="mt-16 pt-8 border-t border-[var(--border-color)] text-center text-sm text-[var(--text-tertiary)]">
           <p>If you have any questions or clarifications regarding our Terms of Service, please contact us at:</p>
-          <a href="mailto:support@learnoboy.dev" className="mt-2 inline-block font-semibold text-[var(--link-color)] hover:text-[var(--link-hover)]">
-            support@learnoboy.dev
+          <a href="mailto:xtpdev@gmail.com" className="mt-2 inline-block font-semibold text-[var(--link-color)] hover:text-[var(--link-hover)]">
+            xtpdev@gmail.com
           </a>
         </div>
 

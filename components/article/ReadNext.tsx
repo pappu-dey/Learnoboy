@@ -29,7 +29,7 @@ export function ReadNext({ nextArticle }: ReadNextProps) {
         </span>
       </div>
 
-      {/* Mobile view: simple text link displaying just the title */}
+      {}
       <div className="block md:hidden">
         <Link href={articleUrl} className="group flex items-center justify-between p-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] hover:border-[var(--link-color)] transition-colors">
           <span className="text-sm font-semibold text-[var(--text-primary)] group-hover:text-[var(--link-color)] transition-colors line-clamp-1 pr-4">
@@ -39,14 +39,14 @@ export function ReadNext({ nextArticle }: ReadNextProps) {
         </Link>
       </div>
 
-      {/* Desktop view: full feature card */}
+      {}
       <div className="hidden md:block">
         <Link href={articleUrl} className="group block">
           <div
             className="rounded-2xl border border-[var(--border-color)] p-5 flex flex-col md:flex-row gap-5 transition-all duration-300 hover:shadow-lg hover:border-[var(--link-color)] overflow-hidden"
             style={{ background: "var(--bg-surface)" }}
           >
-            {/* Cover Image teaser */}
+            {}
             {nextArticle.coverImage && (
               <div className="relative w-full md:w-48 h-32 rounded-xl overflow-hidden flex-shrink-0 bg-[var(--bg-muted)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -59,7 +59,7 @@ export function ReadNext({ nextArticle }: ReadNextProps) {
               </div>
             )}
 
-            {/* Details */}
+            {}
             <div className="flex-1 min-w-0 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--link-color)] uppercase tracking-wider mb-1">

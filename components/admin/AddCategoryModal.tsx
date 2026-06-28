@@ -27,28 +27,26 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
   const [description, setDescription] = useState("");
   const [color, setColor] = useState(PRESET_COLORS[0]);
 
-  // Hierarchical categories states
+  
   const [type, setType] = useState<"top" | "sub">(defaultParentId ? "sub" : "top");
   const [parentId, setParentId] = useState(defaultParentId || "");
   const [parentCategories, setParentCategories] = useState<ICategory[]>([]);
 
-  // Fetch top-level categories dynamically when modal is opened
+  
   useEffect(() => {
     if (open) {
       fetch("/api/categories")
         .then((res) => res.json())
         .then((json) => {
           if (json.success && Array.isArray(json.data)) {
-            // Filter to get only top-level categories (no parent field set)
-            const topLevels = json.data.filter((c: ICategory) => !c.parent);
-            setParentCategories(topLevels);
+            setParentCategories(json.data);
           }
         })
         .catch((err) => console.error("Error fetching parent categories:", err));
     }
   }, [open]);
 
-  // Adjust modal values when defaultParentId changes (or when resetting)
+  
   useEffect(() => {
     if (defaultParentId) {
       setType("sub");
@@ -56,7 +54,7 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
     }
   }, [defaultParentId]);
 
-  // Auto-inherit parent color for subcategories
+  
   useEffect(() => {
     if (type === "sub" && parentId && parentCategories.length > 0) {
       const parent = parentCategories.find((c) => c._id === parentId);
@@ -66,7 +64,7 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
     }
   }, [parentId, type, parentCategories]);
 
-  /** Auto-generate slug from name */
+  
   function handleNameChange(value: string) {
     setName(value);
     setSlug(
@@ -139,7 +137,7 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
 
   return (
     <>
-      {/* ── Trigger button ── */}
+      {}
       {trigger ? (
         <div onClick={() => setOpen(true)} className="inline-block cursor-pointer">
           {trigger}
@@ -159,19 +157,19 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
         </button>
       )}
 
-      {/* ── Backdrop ── */}
+      {}
       {open && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }}
           onClick={(e) => e.target === e.currentTarget && handleClose()}
         >
-          {/* ── Modal panel ── */}
+          {}
           <div
             className="w-full max-w-md rounded-2xl shadow-2xl border border-[var(--border-color)] overflow-hidden"
             style={{ background: "var(--bg-base)" }}
           >
-            {/* Header */}
+            {}
             <div
               className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-color)]"
               style={{ background: "var(--bg-surface)" }}
@@ -200,9 +198,9 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
               </button>
             </div>
 
-            {/* Form */}
+            {}
             <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[75vh]">
-              {/* Category Type Selection */}
+              {}
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-[var(--text-primary)]">
                   Category Type
@@ -236,7 +234,7 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
                 </div>
               </div>
 
-              {/* Parent Category Dropdown (if Subcategory selected) */}
+              {}
               {type === "sub" && (
                 <div className="space-y-1.5 animate-fadeIn">
                   <label
@@ -265,7 +263,7 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
                 </div>
               )}
 
-              {/* Name */}
+              {}
               <div className="space-y-1.5">
                 <label
                   htmlFor="cat-name"
@@ -285,7 +283,7 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
                 />
               </div>
 
-              {/* Slug */}
+              {}
               <div className="space-y-1.5">
                 <label
                   htmlFor="cat-slug"
@@ -306,7 +304,7 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
                 </p>
               </div>
 
-              {/* Description */}
+              {}
               <div className="space-y-1.5">
                 <label
                   htmlFor="cat-desc"
@@ -328,7 +326,7 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
                 />
               </div>
 
-              {/* Color Selection (only shown for top-level, subcategories inherit parent color) */}
+              {}
               {type === "top" ? (
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-[var(--text-primary)]">
@@ -353,7 +351,7 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
                         )}
                       </button>
                     ))}
-                    {/* Custom color picker */}
+                    {}
                     <label
                       className="w-7 h-7 rounded-full border-2 border-dashed border-[var(--border-color)] flex items-center justify-center cursor-pointer hover:scale-110 transition-transform overflow-hidden"
                       title="Custom color"
@@ -377,7 +375,7 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
                 )
               )}
 
-              {/* Color preview badge */}
+              {}
               <div
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium"
                 style={{ background: `${color}18`, color }}
@@ -389,7 +387,7 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
                 Preview: {name || "Name"}
               </div>
 
-              {/* Error */}
+              {}
               {error && (
                 <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-red-600 bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
                   <X size={14} />
@@ -397,7 +395,7 @@ export function AddCategoryModal({ onSuccess, defaultParentId, trigger }: AddCat
                 </div>
               )}
 
-              {/* Actions */}
+              {}
               <div className="flex items-center justify-end gap-3 pt-2">
                 <button
                   type="button"

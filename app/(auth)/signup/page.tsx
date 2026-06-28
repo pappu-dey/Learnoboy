@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2, AlertCircle, Check, X, ShieldCheck } from "lucide-react";
 
-/* ─── Password Strength Bar ─── */
+
 type Check = { label: string; pass: boolean };
 
 function PasswordStrength({ password }: { password: string }) {
@@ -28,7 +28,7 @@ function PasswordStrength({ password }: { password: string }) {
 
   return (
     <div className="mt-2.5 space-y-2">
-      {/* Bar */}
+      {}
       <div className="flex items-center gap-2">
         <div
           className="flex-1 h-1.5 rounded-full overflow-hidden"
@@ -43,7 +43,7 @@ function PasswordStrength({ password }: { password: string }) {
           {label}
         </span>
       </div>
-      {/* Checklist */}
+      {}
       <div className="grid grid-cols-2 gap-x-3 gap-y-1">
         {checks.map((c) => (
           <span
@@ -64,7 +64,7 @@ function PasswordStrength({ password }: { password: string }) {
   );
 }
 
-/* ─── Terms Checkbox ─── */
+
 function TermsCheckbox({
   checked,
   onChange,
@@ -74,7 +74,7 @@ function TermsCheckbox({
 }) {
   return (
     <label className="flex items-start gap-3 cursor-pointer group select-none">
-      {/* Custom checkbox */}
+      {}
       <button
         type="button"
         role="checkbox"
@@ -116,7 +116,7 @@ function TermsCheckbox({
   );
 }
 
-/* ─── Input Field ─── */
+
 function Field({
   id,
   label,
@@ -191,7 +191,7 @@ function Field({
   );
 }
 
-/* ─── Signup Page ─── */
+
 export default function SignupPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
   const [showPass, setShowPass] = useState(false);
@@ -254,7 +254,7 @@ export default function SignupPage() {
 
   return (
     <div className="animate-fade-in-up">
-      {/* Header */}
+      {}
       <div className="mb-7">
         <h2 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--text-primary)" }}>
           Create account
@@ -264,7 +264,7 @@ export default function SignupPage() {
         </p>
       </div>
 
-      {/* Error banner */}
+      {}
       {error && (
         <div className="mb-5 flex items-start gap-2.5 p-3.5 rounded-xl text-sm text-red-700 bg-red-50 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 animate-fade-in">
           <AlertCircle size={15} className="mt-0.5 shrink-0" />
@@ -273,7 +273,7 @@ export default function SignupPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-        {/* Name */}
+        {}
         <Field
           id="signup-name"
           label="Full name"
@@ -284,7 +284,7 @@ export default function SignupPage() {
           onChange={set("name")}
         />
 
-        {/* Email */}
+        {}
         <Field
           id="signup-email"
           label="Email address"
@@ -296,7 +296,7 @@ export default function SignupPage() {
           onChange={set("email")}
         />
 
-        {/* Password */}
+        {}
         <div>
           <label
             htmlFor="signup-password"
@@ -344,7 +344,7 @@ export default function SignupPage() {
           <PasswordStrength password={form.password} />
         </div>
 
-        {/* Confirm Password */}
+        {}
         <Field
           id="signup-confirm"
           label="Confirm password"
@@ -361,7 +361,7 @@ export default function SignupPage() {
           }
         />
 
-        {/* Terms & Conditions */}
+        {}
         <div className="pt-1">
           <TermsCheckbox checked={agreed} onChange={(v) => { setAgreed(v); if (v) setTermsError(false); }} />
           {termsError && (
@@ -372,7 +372,7 @@ export default function SignupPage() {
           )}
         </div>
 
-        {/* Submit */}
+        {}
         <button
           type="submit"
           disabled={loading || !passwordsMatch}

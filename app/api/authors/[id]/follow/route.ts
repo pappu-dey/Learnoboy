@@ -2,11 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Author from "@/lib/models/Author";
 
-/**
- * GET /api/authors/[id]/follow
- * Returns the current follower count for an author (by slug or _id).
- * No authentication required — read-only.
- */
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -29,16 +25,7 @@ export async function GET(
   }
 }
 
-/**
- * POST /api/authors/[id]/follow
- * Body: { action: "follow" | "unfollow" }
- *
- * [id] here is the author's SLUG (e.g. "pappu-dey").
- * We look up by slug first; if not found we try by MongoDB _id as a fallback.
- *
- * Atomically increments or decrements the followers counter on the Author document.
- * Returns the updated follower count.
- */
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -59,14 +46,14 @@ export async function POST(
 
     const delta = action === "follow" ? 1 : -1;
 
-    // Try slug first, fall back to _id
+    
     let updated = await Author.findOneAndUpdate(
       { slug: id },
       { $inc: { followers: delta } },
       { new: true, select: "followers slug" }
     );
 
-    // Fallback: maybe the caller passed a MongoDB ObjectId
+    
     if (!updated && id.match(/^[a-f\d]{24}$/i)) {
       updated = await Author.findByIdAndUpdate(
         id,
@@ -82,7 +69,7 @@ export async function POST(
       );
     }
 
-    // Clamp to 0 if it somehow went negative
+    
     if (updated.followers < 0) {
       await Author.findOneAndUpdate(
         { _id: updated._id },

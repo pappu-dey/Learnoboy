@@ -123,7 +123,7 @@ export default function AdminUsersClient() {
 
   return (
     <div className="space-y-6">
-      {/* Toast */}
+      {}
       {toast && (
         <div
           className="fixed top-5 right-5 z-50 flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium shadow-lg animate-in fade-in slide-in-from-top-2"
@@ -138,7 +138,7 @@ export default function AdminUsersClient() {
         </div>
       )}
 
-      {/* Header */}
+      {}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
@@ -157,7 +157,7 @@ export default function AdminUsersClient() {
         </button>
       </div>
 
-      {/* Pending Writer Applications Banner */}
+      {}
       {pending.length > 0 && (
         <div
           className="flex flex-col gap-3 p-4 rounded-2xl border"
@@ -209,7 +209,7 @@ export default function AdminUsersClient() {
         </div>
       )}
 
-      {/* Filters */}
+      {}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" />
@@ -238,7 +238,7 @@ export default function AdminUsersClient() {
         </div>
       </div>
 
-      {/* Table */}
+      {}
       <div className="rounded-2xl border border-[var(--border-color)] overflow-hidden" style={{ background: "var(--bg-surface)" }}>
         {loading ? (
           <div className="py-16 text-center text-[var(--text-tertiary)] text-sm">Loading users…</div>
@@ -300,7 +300,7 @@ export default function AdminUsersClient() {
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="flex items-center justify-end gap-1.5">
-                          {/* Verify / Unverify writer */}
+                          {}
                           {u.role === "writer" && !u.isVerified && (
                             <button
                               onClick={() => patch(u._id, { isVerified: true }, `${u.name} verified!`)}
@@ -322,7 +322,7 @@ export default function AdminUsersClient() {
                               <ShieldCheck size={13} />
                             </button>
                           )}
-                          {/* Promote to writer */}
+                          {}
                           {u.role === "reader" && u.writerStatus !== "pending" && (
                             <button
                               onClick={() => patch(u._id, { role: "writer", writerStatus: "approved" }, `${u.name} promoted to writer.`)}
@@ -333,7 +333,7 @@ export default function AdminUsersClient() {
                               <PenLine size={13} />
                             </button>
                           )}
-                          {/* Approve pending */}
+                          {}
                           {u.writerStatus === "pending" && (
                             <>
                               <button
@@ -354,7 +354,7 @@ export default function AdminUsersClient() {
                               </button>
                             </>
                           )}
-                          {/* Demote writer to reader */}
+                          {}
                           {u.role === "writer" && (
                             <button
                               onClick={() => patch(u._id, { role: "reader", writerStatus: "none" }, `${u.name} demoted to reader.`)}
@@ -365,7 +365,7 @@ export default function AdminUsersClient() {
                               <BookOpen size={13} />
                             </button>
                           )}
-                          {/* Delete */}
+                          {}
                           {u.role !== "superadmin" && (
                             <button
                               onClick={() => deleteUser(u._id, u.name)}

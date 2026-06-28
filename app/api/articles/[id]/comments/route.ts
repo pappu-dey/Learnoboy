@@ -14,13 +14,13 @@ export async function GET(
     const session = await getSession();
     const currentUserId = session?.userId;
 
-    // Fetch top-level comments and replies concurrently
+    
     const [dbComments, dbReplies] = await Promise.all([
       Comment.find({ articleId, parentId: null }).sort({ createdAt: -1 }).lean(),
       Comment.find({ articleId, parentId: { $ne: null } }).sort({ createdAt: 1 }).lean(),
     ]);
 
-    // Group replies by parentId
+    
     const repliesMap: Record<string, any[]> = {};
     dbReplies.forEach((reply: any) => {
       const pId = String(reply.parentId);
@@ -42,7 +42,7 @@ export async function GET(
       });
     });
 
-    // Format top-level comments
+    
     const formattedComments = dbComments.map((comment: any) => {
       const commentIdStr = String(comment._id);
       return {
@@ -98,7 +98,7 @@ export async function POST(
 
     await connectDB();
 
-    // Verify article exists and check if comment author is the article author
+    
     const article = await Article.findById(articleId).lean();
     if (!article) {
       return NextResponse.json(
@@ -115,7 +115,7 @@ export async function POST(
       }
     }
 
-    // If parentId is provided, verify it is a valid comment
+    
     if (parentId) {
       const parentComment = await Comment.findById(parentId).lean();
       if (!parentComment) {

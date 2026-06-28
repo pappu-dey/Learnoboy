@@ -4,7 +4,7 @@ import Author from "@/lib/models/Author";
 import User from "@/lib/models/User";
 import { getSession } from "@/lib/auth/session";
 
-// PATCH /api/authors/[id] — writer updates their own Author profile / superadmin updates any
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -17,13 +17,13 @@ export async function PATCH(
   const { id } = await params;
   await connectDB();
 
-  // Fetch the author doc to verify ownership (unless superadmin)
+  
   const authorDoc = await Author.findById(id);
   if (!authorDoc) {
     return NextResponse.json({ error: "Author not found." }, { status: 404 });
   }
 
-  // Non-superadmins can only edit their own profile
+  
   if (session.role !== "superadmin" && authorDoc.email !== session.email) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   }
@@ -41,7 +41,7 @@ export async function PATCH(
     }
   }
 
-  // Superadmin-only fields
+  
   if (session.role === "superadmin") {
     if (body.slug !== undefined) update.slug = body.slug;
     if (body.email !== undefined) update.email = body.email;
@@ -53,7 +53,7 @@ export async function PATCH(
 
   const updated = await Author.findByIdAndUpdate(id, update, { new: true });
 
-  // Dual-sync: update corresponding User document's name/avatar if set
+  
   if (updated) {
     try {
       const userUpdate: Record<string, any> = {};
@@ -74,7 +74,7 @@ export async function PATCH(
   return NextResponse.json({ success: true, data: updated });
 }
 
-// DELETE /api/authors/[id] — superadmin only
+
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

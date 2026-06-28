@@ -38,7 +38,7 @@ export default async function TagPage({ params }: PageParams) {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Back */}
+      {}
       <Link
         href="/"
         className="inline-flex items-center gap-1.5 text-sm text-[var(--text-secondary)] hover:text-[var(--link-color)] transition-colors mb-8"
@@ -46,7 +46,7 @@ export default async function TagPage({ params }: PageParams) {
         <ArrowLeft size={14} /> Back to home
       </Link>
 
-      {/* Header */}
+      {}
       <div className="mb-10">
         <div
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold mb-4"
@@ -68,7 +68,7 @@ export default async function TagPage({ params }: PageParams) {
         </p>
       </div>
 
-      {/* Articles */}
+      {}
       {articles.length === 0 ? (
         <div className="text-center py-20">
           <Hash size={36} className="mx-auto mb-3 text-[var(--text-tertiary)] opacity-40" />

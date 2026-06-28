@@ -35,11 +35,11 @@ export default async function WriterEditArticlePage({ params }: Props) {
 
   if (!article) notFound();
 
-  // Find this writer's Author document
+  
   const authorDoc = await Author.findOne({ email: session.email }).lean();
   const loggedInAuthorId = authorDoc ? String((authorDoc as { _id: unknown })._id) : "";
 
-  // Secure: check if the logged-in writer is the author of this article (unless superadmin)
+  
   const articleAuthorId = typeof article.author === "object" ? String(article.author._id) : String(article.author);
   if (session.role === "writer" && articleAuthorId !== loggedInAuthorId) {
     redirect("/writer");
@@ -50,7 +50,7 @@ export default async function WriterEditArticlePage({ params }: Props) {
       ? (article.category as ICategory)
       : null;
 
-  // Build all category IDs (multi-category support)
+  
   const categoriesArr = Array.isArray(article.categories) ? article.categories : [];
   const categoryIds: string[] = categoriesArr
     .filter((c) => typeof c === "object" && c._id)

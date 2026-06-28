@@ -10,7 +10,7 @@ export function CategoryIcon({ icon, className = "" }: CategoryIconProps) {
 
   const trimmedIcon = icon.trim();
   if (trimmedIcon.toLowerCase().startsWith("<svg") || trimmedIcon.toLowerCase().includes("<svg")) {
-    // Find where the SVG starts
+    
     const svgStartIdx = trimmedIcon.toLowerCase().indexOf("<svg");
     const svgContent = trimmedIcon.substring(svgStartIdx);
     

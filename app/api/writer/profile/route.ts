@@ -4,7 +4,7 @@ import Author from "@/lib/models/Author";
 import { getSession } from "@/lib/auth/session";
 import { EXPERTISE_OPTIONS } from "@/types";
 
-// PATCH /api/writer/profile — authenticated writer updates their extended Author profile
+
 export async function PATCH(req: NextRequest) {
   const session = await getSession();
   if (!session) {
@@ -25,7 +25,7 @@ export async function PATCH(req: NextRequest) {
   const body = await req.json();
   const update: Record<string, unknown> = {};
 
-  // Bio with word count validation (50–300 words)
+  
   if (typeof body.bio === "string") {
     const wordCount = body.bio.trim().split(/\s+/).filter(Boolean).length;
     if (body.bio.trim() && wordCount < 10) {
@@ -50,21 +50,21 @@ export async function PATCH(req: NextRequest) {
   if (typeof body.company === "string") update.company = body.company.trim();
   if (typeof body.experience === "number") update.experience = body.experience;
 
-  // Expertise validation
+  
   if (Array.isArray(body.expertise)) {
     update.expertise = body.expertise.filter((e: string) =>
       (EXPERTISE_OPTIONS as readonly string[]).includes(e)
     );
   }
 
-  // Social links — validate URLs
+  
   if (body.social && typeof body.social === "object") {
     const social: Record<string, string> = {};
     const urlFields = ["twitter", "github", "linkedin", "website", "portfolio"] as const;
     for (const field of urlFields) {
       if (typeof body.social[field] === "string") {
         const val = body.social[field].trim();
-        // Allow empty (clearing) or valid URL
+        
         if (val && !val.startsWith("http://") && !val.startsWith("https://")) {
           return NextResponse.json(
             { error: `${field} must be a valid URL starting with http:// or https://` },

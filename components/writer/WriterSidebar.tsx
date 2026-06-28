@@ -43,7 +43,7 @@ export function WriterSidebar() {
 
   return (
     <>
-      {/* ─── Desktop sidebar ─── */}
+      {}
       <aside
         className="hidden md:flex flex-col w-64 flex-shrink-0"
         style={{
@@ -52,7 +52,7 @@ export function WriterSidebar() {
           minHeight: "100vh",
         }}
       >
-        {/* Logo / brand header */}
+        {}
         <div className="px-5 pt-6 pb-5 border-b border-[var(--border-color)]">
           <Link href="/" className="flex items-center gap-1.5">
             <Image
@@ -80,7 +80,7 @@ export function WriterSidebar() {
           </p>
         </div>
 
-        {/* Navigation */}
+        {}
         <nav className="flex-1 px-3 py-4 space-y-0.5" aria-label="Writer navigation">
           <p className="px-2 mb-2 text-[10px] font-semibold text-[var(--text-tertiary)] uppercase tracking-widest">
             Content
@@ -124,7 +124,7 @@ export function WriterSidebar() {
           })}
         </nav>
 
-        {/* Footer */}
+        {}
         <div className="p-4 border-t border-[var(--border-color)] space-y-2">
           <Link
             href="/"
@@ -153,7 +153,7 @@ export function WriterSidebar() {
         </div>
       </aside>
 
-      {/* ─── Mobile top header ─── */}
+      {}
       <div
         className="md:hidden flex items-center justify-between px-4 py-3 border-b border-[var(--border-color)] sticky top-0 z-30"
         style={{ background: "var(--bg-surface)" }}
@@ -186,7 +186,7 @@ export function WriterSidebar() {
         </div>
       </div>
 
-      {/* ─── Mobile bottom tab bar ─── */}
+      {}
       <nav
         className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-stretch border-t border-[var(--border-color)]"
         style={{
@@ -216,7 +216,7 @@ export function WriterSidebar() {
         })}
       </nav>
 
-      {/* ─── Mobile More sheet / overlay ─── */}
+      {}
       {moreOpen && (
         <>
           <div

@@ -67,7 +67,7 @@ export default async function NewArticlePage() {
         </div>
       )}
 
-      {/* Serialize all Mongoose ObjectIds → strings before passing to client component */}
+      {}
       <ArticleForm
         categories={serializeArray(categories as unknown as import("@/types").ICategory[])}
         authors={serializeArray(authors as unknown as IAuthor[]) as unknown as IAuthor[]}

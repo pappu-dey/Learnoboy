@@ -14,13 +14,13 @@ export async function POST(req: NextRequest) {
     await connectDB();
     const user = await User.findOne({ email: email.toLowerCase().trim() });
 
-    // Always return success to avoid email enumeration
+    
     if (!user) {
       return NextResponse.json({ success: true, message: "If an account exists, a reset link has been generated." });
     }
 
     const token = crypto.randomBytes(32).toString("hex");
-    const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    const expiry = new Date(Date.now() + 60 * 60 * 1000); 
 
     await User.findByIdAndUpdate(user._id, {
       resetToken: token,
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/reset-password?token=${token}`;
 
-    // Send reset email via Resend
+    
     const emailSent = await sendPasswordResetEmail(user.email, token);
     if (!emailSent) {
       console.error("[forgot-password] Failed to send password reset email.");
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       message: "Reset link generated.",
-      // Only expose in development — remove before production
+      
       resetUrl: process.env.NODE_ENV !== "production" ? resetUrl : undefined,
     });
   } catch (err) {

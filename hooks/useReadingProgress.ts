@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-/**
- * Tracks reading progress (0–100) based on scroll position
- * relative to the article body element.
- */
+
 export function useReadingProgress(targetId = "article-body"): number {
   const [progress, setProgress] = useState(0);
 
@@ -22,7 +19,7 @@ export function useReadingProgress(targetId = "article-body"): number {
     };
 
     window.addEventListener("scroll", updateProgress, { passive: true });
-    updateProgress(); // initial
+    updateProgress(); 
 
     return () => window.removeEventListener("scroll", updateProgress);
   }, [targetId]);

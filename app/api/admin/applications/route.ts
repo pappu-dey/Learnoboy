@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import User from "@/lib/models/User";
 import { getSession } from "@/lib/auth/session";
 
-// GET /api/admin/applications — list all writer applications (superadmin only)
+
 export async function GET(req: NextRequest) {
   const session = await getSession();
   if (!session || session.role !== "superadmin") {

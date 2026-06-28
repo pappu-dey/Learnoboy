@@ -66,15 +66,15 @@ export function ArticleHeader({ article, content = "" }: ArticleHeaderProps) {
       ? (article.category as ICategory)
       : null;
 
-  // Build deduplicated list of all categories
+  
   const allCategories: ICategory[] = [];
   const seenIds = new Set<string>();
-  // Start with the primary category
+  
   if (category) {
     allCategories.push(category);
     seenIds.add(String(category._id));
   }
-  // Add extra categories from the categories[] array
+  
   if (Array.isArray(article.categories)) {
     for (const c of article.categories) {
       if (typeof c === "object" && c._id && !seenIds.has(String(c._id))) {
@@ -91,7 +91,7 @@ export function ArticleHeader({ article, content = "" }: ArticleHeaderProps) {
 
   return (
     <header className="mb-8">
-      {/* Breadcrumb */}
+      {}
       <nav className="flex items-center gap-2 text-xs md:text-sm text-[var(--text-tertiary)] mb-6 font-medium" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-[var(--link-color)] transition-colors">
           Home
@@ -127,7 +127,7 @@ export function ArticleHeader({ article, content = "" }: ArticleHeaderProps) {
         </span>
       </nav>
 
-      {/* Category badges — supports multiple */}
+      {}
       {allCategories.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
           {allCategories.map((cat) => (
@@ -140,7 +140,7 @@ export function ArticleHeader({ article, content = "" }: ArticleHeaderProps) {
         </div>
       )}
 
-      {/* Title */}
+      {}
       <h1
         className="font-extrabold text-[var(--text-primary)] mb-3 leading-tight tracking-tight"
         style={{ fontSize: "clamp(22px, 5vw, 42px)" }}
@@ -148,7 +148,7 @@ export function ArticleHeader({ article, content = "" }: ArticleHeaderProps) {
         {article.title}
       </h1>
 
-      {/* Date & Action Row */}
+      {}
       {(() => {
         const dateToShow = article.updatedAt || article.publishedAt || article.createdAt;
         const formattedDate = dateToShow ? format(new Date(dateToShow), "d/M/yyyy") : "20/4/2026";
@@ -168,7 +168,7 @@ export function ArticleHeader({ article, content = "" }: ArticleHeaderProps) {
         );
       })()}
 
-      {/* Excerpt */}
+      {}
       {article.excerpt && (
         <p
           className="text-base md:text-lg text-[var(--text-secondary)] mb-6 leading-relaxed max-w-[72ch]"

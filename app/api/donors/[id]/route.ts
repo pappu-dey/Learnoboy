@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Donor } from "@/lib/models";
 import { getSession } from "@/lib/auth/session";
 
-/** PATCH /api/donors/[id] — update donor amount and verification status (admin/superadmin only) */
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -65,7 +65,7 @@ export async function PATCH(
   }
 }
 
-/** DELETE /api/donors/[id] — delete donor record (admin/superadmin only) */
+
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

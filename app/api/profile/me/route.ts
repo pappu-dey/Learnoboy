@@ -5,7 +5,7 @@ import User, { IUserDocument } from "@/lib/models/User";
 
 export const dynamic = "force-dynamic";
 
-// GET /api/profile/me — returns current user info for the header & profile
+
 export async function GET() {
   const session = await getSession();
   if (!session) {
@@ -14,7 +14,7 @@ export async function GET() {
 
   try {
     await connectDB();
-    // Use typed lean so avatar is properly inferred from IUserDocument
+    
     const dbUser = await User.findById(session.userId)
       .select("name email role avatar")
       .lean<Pick<IUserDocument, "name" | "email" | "role" | "avatar">>();
@@ -34,7 +34,7 @@ export async function GET() {
     });
   } catch (err) {
     console.error("[GET /api/profile/me] Error fetching user:", err);
-    // Fallback to session data if DB is unavailable
+    
     return NextResponse.json({
       success: true,
       user: {

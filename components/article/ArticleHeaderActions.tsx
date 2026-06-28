@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Share2, Edit3, Link2, Check, Send, X, Loader2 } from "lucide-react";
 
-// Custom SVG Icons because some Lucide packages lack social icons
+
 const TwitterIcon = ({ size = 13 }: { size?: number }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
     <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
@@ -29,7 +29,7 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
   const [copied, setCopied] = useState(false);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   
-  // Suggest Modal Form States
+  
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,7 +38,7 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
+  
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -133,7 +133,7 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
         suggestEditButton
       ) : (
         <div className="flex items-center gap-2 md:gap-3 flex-wrap">
-          {/* Share Button & Dropdown */}
+          {}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setShowShareDropdown(!showShareDropdown)}
@@ -176,12 +176,12 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
             )}
           </div>
 
-          {/* Suggest Change Button */}
+          {}
           {suggestEditButton}
         </div>
       )}
 
-      {/* Suggest Change Modal */}
+      {}
       {showSuggestModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
           <div
@@ -189,11 +189,11 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
             role="dialog"
             aria-modal="true"
           >
-            {/* Background Accent Gradients */}
+            {}
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--link-color)]/5 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
 
-            {/* Header */}
+            {}
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-[var(--border-color)] relative z-10">
               <h3 className="text-lg font-bold text-[var(--text-primary)]">Suggest a Change</h3>
               <button
@@ -205,7 +205,7 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
               </button>
             </div>
 
-            {/* Content Form */}
+            {}
             {!submitSuccess ? (
               <form onSubmit={handleSuggestSubmit} className="space-y-4 relative z-10">
                 <div className="bg-blue-500/5 border border-blue-500/10 rounded-xl p-3 text-xs text-[var(--text-secondary)] leading-relaxed">
@@ -250,7 +250,7 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
                   </p>
                 )}
 
-                {/* Footer buttons */}
+                {}
                 <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--border-color)]">
                   <button
                     type="button"

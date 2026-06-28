@@ -49,12 +49,12 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    // Secure Author Resolution
+    
     let finalAuthorId = body.authorId;
     if (session.role === "writer") {
       let authorDoc = await Author.findOne({ userId: session.userId });
       if (!authorDoc) {
-        // Fallback: search by email to self-heal missing userId links from seeding
+        
         authorDoc = await Author.findOne({ email: session.email });
         if (authorDoc) {
           authorDoc.userId = session.userId as any;
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     } else if (session.role === "superadmin" && !finalAuthorId) {
       let authorDoc = await Author.findOne({ userId: session.userId });
       if (!authorDoc) {
-        // Fallback: search by email to self-heal missing userId links from seeding
+        
         authorDoc = await Author.findOne({ email: session.email });
         if (authorDoc) {
           authorDoc.userId = session.userId as any;
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate required fields
+    
     const { title, content, excerpt, categoryId } = body;
     if (!title || !content || !excerpt || !categoryId) {
       return NextResponse.json(
@@ -99,13 +99,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Auto-generate slug if not provided
+    
     const slug = body.slug || slugify(title);
 
-    // Auto-calculate reading time
+    
     const readingTime = calculateReadingTime(content);
 
-    // Build categories array (multi-category support)
+    
     const categories = Array.isArray(body.categoryIds) && body.categoryIds.length > 0
       ? body.categoryIds
       : [categoryId];
@@ -114,8 +114,8 @@ export async function POST(request: NextRequest) {
       ...body,
       slug,
       readingTime,
-      category: categoryId,     // primary (for URL routing)
-      categories,               // all selected
+      category: categoryId,     
+      categories,               
       author: finalAuthorId,
       publishedAt: body.status === "published" ? new Date().toISOString() : undefined,
     });

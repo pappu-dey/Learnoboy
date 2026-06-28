@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import User from "@/lib/models/User";
 import { getSession } from "@/lib/auth/session";
 
-// GET /api/users — superadmin only
+
 export async function GET() {
   const session = await getSession();
   if (!session || session.role !== "superadmin") {
@@ -15,7 +15,7 @@ export async function GET() {
   return NextResponse.json({ success: true, data: users });
 }
 
-// PATCH /api/users — apply for writer (reader only)
+
 export async function PATCH(req: NextRequest) {
   const session = await getSession();
   if (!session) {

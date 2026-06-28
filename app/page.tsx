@@ -9,7 +9,7 @@ import {
 } from "@/lib/services/articleService";
 import { getAllCategories } from "@/lib/services/categoryService";
 
-// Revalidate every 60 seconds (ISR)
+
 export const revalidate = 60;
 
 export default async function HomePage() {
@@ -24,19 +24,19 @@ export default async function HomePage() {
       <HeroSection />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Category Cards */}
+        {}
         <CategoryCards categories={categories} />
 
-        {/* Featured Articles */}
+        {}
         <FeaturedArticles articles={featuredArticles} />
 
-        {/* Latest Articles */}
+        {}
         <LatestArticles articles={latestArticles} />
 
-        {/* Infinite Scroll / Lazy Loaded Articles */}
+        {}
         <AllArticlesInfinite />
 
-        {/* Empty state when DB has no data yet */}
+        {}
         {featuredArticles.length === 0 && latestArticles.length === 0 && (
           <div
             className="text-center py-20 rounded-2xl border border-[var(--border-color)] mb-16"

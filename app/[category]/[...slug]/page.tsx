@@ -23,14 +23,14 @@ import { ArticleMetrics } from "@/components/article/ArticleMetrics";
 import { ArticleComments } from "@/components/article/ArticleComments";
 import { getSession } from "@/lib/auth/session";
 
-/* ─── Parse FAQ items from article content markdown ────────── */
+
 function parseFaqsFromContent(content: string): { question: string; answer: string }[] {
   const faqHeading = /\n*##\s+Frequently Asked Questions\s*\n/i;
   const idx = content.search(faqHeading);
   if (idx === -1) return [];
 
   const faqBlock = content.slice(idx);
-  // Stop at the next ## heading (e.g. ## Next Up)
+  
   const nextHeading = faqBlock.search(/\n##\s+(?!Frequently)/m);
   const block = nextHeading === -1 ? faqBlock : faqBlock.slice(0, nextHeading);
 
@@ -45,7 +45,7 @@ function parseFaqsFromContent(content: string): { question: string; answer: stri
   return faqs;
 }
 
-/* ─── Remove FAQ block from article content markdown ──────── */
+
 function removeFaqFromContent(content: string): string {
   const faqHeading = /\n*##\s+Frequently Asked Questions\s*\n/i;
   const idx = content.search(faqHeading);
@@ -54,14 +54,14 @@ function removeFaqFromContent(content: string): string {
   const contentPart = content.slice(0, idx).trimEnd();
   const faqPart = content.slice(idx);
 
-  // Find where the next section (like ## Next Up or another header) starts within faqPart
-  // We search for a newline followed by ## (not including Frequently Asked Questions)
+  
+  
   const nextHeadingIdx = faqPart.search(/\n##\s+(?!Frequently Asked Questions)/i);
   if (nextHeadingIdx === -1) {
     return contentPart;
   }
 
-  // Combine the content before the FAQ and the content after the FAQ section
+  
   return (contentPart + "\n\n" + faqPart.slice(nextHeadingIdx).trim()).trim();
 }
 
@@ -132,10 +132,10 @@ interface PageParams {
   params: Promise<{ category: string; slug: string[] }>;
 }
 
-// ISR: revalidate every 5 minutes
+
 export const revalidate = 300;
 
-// Static generation — pre-render known slugs at build time
+
 export async function generateStaticParams() {
   try {
     const slugs = await getAllArticleSlugs();
@@ -148,7 +148,7 @@ export async function generateStaticParams() {
   }
 }
 
-// Dynamic SEO metadata
+
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const { category, slug } = await params;
   if (!slug || slug.length === 0) {
@@ -157,7 +157,8 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   if (slug.length === 1) {
     const subcategorySlug = slug[0];
     await connectDB();
-    const subcategory = await Category.findOne({ slug: subcategorySlug }).lean();
+    const parentCategory = await Category.findOne({ "subcategories.slug": subcategorySlug }).lean();
+    const subcategory = parentCategory?.subcategories?.find((sub: any) => sub.slug === subcategorySlug);
     if (subcategory) {
       return {
         title: `${subcategory.name} Tutorials | Learno-Boy`,
@@ -185,19 +186,25 @@ export default async function ArticlePage({ params }: PageParams) {
     notFound();
   }
 
-  // Case 1: Legacy redirect or Subcategory listing page
+  
   if (slug.length === 1) {
     const subcategorySlug = slug[0];
     await connectDB();
     
-    // 1. Try finding it as a Category/Subcategory doc
-    const subcategory = await Category.findOne({ slug: subcategorySlug }).populate("parent").lean();
+    const parentCategory = await Category.findOne({ slug: categorySlug }).lean();
+    const subcategoryDoc = parentCategory?.subcategories?.find((sub: any) => sub.slug === subcategorySlug);
     
-    if (subcategory) {
-      const parentSlug = typeof subcategory.parent === "object" && subcategory.parent ? (subcategory.parent as any).slug : categorySlug;
-      const parentName = typeof subcategory.parent === "object" && subcategory.parent ? (subcategory.parent as any).name : categorySlug;
+    if (subcategoryDoc) {
+      const subcategory = {
+        ...subcategoryDoc,
+        parent: parentCategory,
+        color: parentCategory?.color || "#2563eb",
+        icon: parentCategory?.icon || "📚",
+      };
+      const parentSlug = categorySlug;
+      const parentName = parentCategory?.name || categorySlug;
       
-      // Redirect if URL category doesn't match parent slug
+      
       if (categorySlug !== parentSlug) {
         redirect(`/${parentSlug}/${subcategorySlug}`);
       }
@@ -213,7 +220,7 @@ export default async function ArticlePage({ params }: PageParams) {
 
       return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Breadcrumb / Back Link */}
+          {}
           <Link
             href={`/${parentSlug}`}
             className="inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--link-color)] transition-colors mb-8"
@@ -221,21 +228,21 @@ export default async function ArticlePage({ params }: PageParams) {
             <ArrowLeft size={16} /> Back to {parentName}
           </Link>
 
-          {/* Subcategory Header Card */}
+          {}
           <div
             className="p-8 md:p-10 rounded-2xl border border-[var(--border-color)] mb-12 relative overflow-hidden"
             style={{
               background: "var(--bg-surface)",
             }}
           >
-            {/* Subtle colored glow background */}
+            {}
             <div
               className="absolute -right-16 -top-16 w-64 h-64 rounded-full blur-3xl opacity-10 pointer-events-none"
               style={{ backgroundColor: subcategory.color || "#2563eb" }}
             />
 
             <div className="flex flex-col md:flex-row md:items-center gap-6">
-              {/* Category Icon */}
+              {}
               <div
                 className="w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-sm flex-shrink-0"
                 style={{
@@ -265,7 +272,7 @@ export default async function ArticlePage({ params }: PageParams) {
             </div>
           </div>
 
-          {/* Articles List / Grid */}
+          {}
           <div>
             <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2">
               <BookOpen size={20} style={{ color: subcategory.color || "#2563eb" }} />
@@ -297,7 +304,7 @@ export default async function ArticlePage({ params }: PageParams) {
       );
     }
 
-    // 2. Try finding it as an Article doc for legacy redirect
+    
     const article = await Article.findOne({ slug: subcategorySlug, status: "published" }).lean();
     if (!article) {
       notFound();
@@ -307,12 +314,12 @@ export default async function ArticlePage({ params }: PageParams) {
     redirect(`/${primaryCategory}/${subcategoryName}/${subcategorySlug}`);
   }
 
-  // Case 2: Render article page (e.g. /[category]/[subcategory]/[slug])
+  
   const [subcategorySlug, articleSlug] = slug;
   const rawArticle = await getArticleBySubcategoryAndSlug(categorySlug, subcategorySlug, articleSlug).catch(() => null);
   if (!rawArticle) notFound();
 
-  // Fully serialize article mongoose doc to a plain JS object
+  
   const article = JSON.parse(JSON.stringify(rawArticle)) as IArticle;
 
   const category =
@@ -328,20 +335,20 @@ export default async function ArticlePage({ params }: PageParams) {
   const relatedArticles = JSON.parse(JSON.stringify(rawRelatedArticles)) as IArticle[];
 
   const strippedContent = stripFirstH1(article.content);
-  // Parse article-specific FAQs from saved markdown content
+  
   const articleFaqs = parseFaqsFromContent(strippedContent);
-  // Remove FAQ section from content to avoid rendering it twice in MDX/markdown body
+  
   const contentWithoutFaq = removeFaqFromContent(strippedContent);
 
   const { introduction, mainContent, conclusion } = splitMarkdown(contentWithoutFaq);
   const tocItems = extractTableOfContents(contentWithoutFaq).filter((item) => item.level === 2);
   const jsonLd = getArticleJsonLd(article);
   const tags = article.tags?.filter((t) => typeof t === "object") as ITag[] | undefined;
-  // Fallback: if no Tag documents, show the writer's manually entered SEO keywords as tags
+  
   const seoKeywords: string[] = article.seo?.keywords ?? [];
 
 
-  // Generate dynamic breadcrumbs: Home > Primary Category > Subcategory > Article Title
+  
   const breadcrumbLd = getBreadcrumbJsonLd([
     { name: "Home", url: BASE_URL },
     { name: article.primaryCategory.toUpperCase(), url: `${BASE_URL}/${article.primaryCategory}` },
@@ -351,7 +358,7 @@ export default async function ArticlePage({ params }: PageParams) {
 
   return (
     <>
-      {/* Structured Data */}
+      {}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -361,17 +368,17 @@ export default async function ArticlePage({ params }: PageParams) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
-      {/* Reading progress bar */}
+      {}
       <ReadingProgress />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8 xl:gap-12">
-          {/* Main content */}
+          {}
           <article className="flex-1 min-w-0 max-w-4xl">
-            {/* 1. Title, 2. Date/Action Row, 3. Short Definition */}
+            {}
             <ArticleHeader article={article} content={contentWithoutFaq} />
 
-            {/* 4. Cover image */}
+            {}
             {article.coverImage && (
               <div className="relative w-full rounded-2xl overflow-hidden mb-8" style={{ aspectRatio: "16/9" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -384,23 +391,23 @@ export default async function ArticlePage({ params }: PageParams) {
               </div>
             )}
 
-            {/* Core Article Content Container */}
+            {}
             <div id="article-body">
-              {/* 5. Introduction */}
+              {}
               {introduction && (
                 <div className="mb-2">
                   <ArticleBody content={introduction} />
                 </div>
               )}
 
-              {/* 6. Main Content */}
+              {}
               {mainContent && (
                 <div className="mb-2">
                   <ArticleBody content={mainContent} />
                 </div>
               )}
 
-              {/* 7. Conclusion */}
+              {}
               {conclusion && (
                 <div className="mb-2">
                   <ArticleBody content={conclusion} />
@@ -408,7 +415,7 @@ export default async function ArticlePage({ params }: PageParams) {
               )}
             </div>
 
-            {/* Tags: writer's manual SEO keywords take priority over Tag documents */}
+            {}
             {seoKeywords.length > 0 ? (
               <div className="flex flex-wrap items-center gap-2 mt-8 pt-6 border-t border-[var(--border-color)]">
                 <svg
@@ -466,20 +473,20 @@ export default async function ArticlePage({ params }: PageParams) {
               </div>
             ) : null}
 
-            {/* 8. Table of Contents (Show all headings user has read) — Mobile Stack Only */}
+            {}
             {tocItems.length > 0 && (
               <div className="block xl:hidden mt-8">
                 <TableOfContents items={tocItems} />
               </div>
             )}
 
-            {/* 9. FAQ — rendered from article's own saved content */}
+            {}
             <FAQSection faqs={articleFaqs} />
 
-            {/* 10. Read Next */}
+            {}
             <ReadNext nextArticle={relatedArticles.length > 0 ? relatedArticles[0] : null} />
 
-            {/* 11. Author Card + Follow */}
+            {}
             {article.author && (
               <div id="comments-section" className="space-y-6">
                 <AuthorFollowCard
@@ -500,14 +507,14 @@ export default async function ArticlePage({ params }: PageParams) {
               </div>
             )}
 
-            {/* 12. Likes • Views • Reading Time */}
+            {}
             <ArticleMetrics article={article} isLoggedIn={isLoggedIn} />
 
-            {/* 13. Related Articles */}
+            {}
             <RelatedArticles articles={relatedArticles} />
           </article>
 
-          {/* Sidebar ToC — Desktop Only */}
+          {}
           {tocItems.length > 0 && (
             <aside className="hidden xl:block w-64 flex-shrink-0" aria-label="Article sidebar">
               <TableOfContents items={tocItems} />

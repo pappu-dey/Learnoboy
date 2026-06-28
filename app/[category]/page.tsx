@@ -12,10 +12,10 @@ interface CategoryPageProps {
   params: Promise<{ category: string }>;
 }
 
-// ISR: revalidate every 5 minutes (300 seconds)
+
 export const revalidate = 300;
 
-// Pre-render known categories at build time
+
 export async function generateStaticParams() {
   try {
     const categories = await getAllCategories();
@@ -27,7 +27,7 @@ export async function generateStaticParams() {
   }
 }
 
-// Dynamic SEO metadata
+
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { category: categorySlug } = await params;
   const category = await getCategoryBySlug(categorySlug).catch(() => null);
@@ -57,21 +57,21 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { category: categorySlug } = await params;
 
-  // Fetch category details
+  
   const category = await getCategoryBySlug(categorySlug).catch(() => null);
   if (!category) notFound();
 
-  // Fetch articles in this category
+  
   const paginatedResult = await getArticles({
     category: categorySlug,
-    limit: 20, // Fetch up to 20 articles initially
+    limit: 20, 
     status: "published",
     sort: "newest",
   }).catch(() => ({ data: [], total: 0 }));
 
   const articles = paginatedResult.data;
 
-  // Schema markup
+  
   const breadcrumbLd = getBreadcrumbJsonLd([
     { name: "Home", url: BASE_URL },
     { name: category.name, url: `${BASE_URL}/${category.slug}` },
@@ -79,14 +79,14 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <>
-      {/* Breadcrumb Structured Data */}
+      {}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Link */}
+        {}
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--link-color)] transition-colors mb-8"
@@ -94,21 +94,21 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <ArrowLeft size={16} /> Back to Home
         </Link>
 
-        {/* Category Header Card */}
+        {}
         <div
           className="p-8 md:p-10 rounded-2xl border border-[var(--border-color)] mb-12 relative overflow-hidden"
           style={{
             background: "var(--bg-surface)",
           }}
         >
-          {/* Subtle colored glow background */}
+          {}
           <div
             className="absolute -right-16 -top-16 w-64 h-64 rounded-full blur-3xl opacity-10 pointer-events-none"
             style={{ backgroundColor: category.color }}
           />
 
           <div className="flex flex-col md:flex-row md:items-center gap-6">
-            {/* Category Icon */}
+            {}
             <div
               className="w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-sm flex-shrink-0"
               style={{
@@ -138,7 +138,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           </div>
         </div>
 
-        {/* Articles List / Grid */}
+        {}
         <div>
           <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2">
             <BookOpen size={20} style={{ color: category.color }} />

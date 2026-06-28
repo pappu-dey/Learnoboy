@@ -7,7 +7,7 @@ export default async function WriterLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Server-side guard: only writers and superadmins may access /writer
+  
   const session = await getSession();
   if (!session) redirect("/login");
   if (session.role !== "writer" && session.role !== "superadmin") {

@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    // Ensure DB connection is active before direct queries (Author/Tag)
+    
     await connectDB();
 
     const [slugs, categories, authors, tags] = await Promise.all([
@@ -22,9 +22,21 @@ export async function GET() {
 
     const now = new Date().toISOString();
 
-    // 1. Static Pages
+    
     const staticPages = [
       { url: BASE_URL, lastmod: now, priority: "1.0", changefreq: "daily" },
+      {
+        url: `${BASE_URL}/about`,
+        lastmod: now,
+        priority: "0.8",
+        changefreq: "monthly",
+      },
+      {
+        url: `${BASE_URL}/contact`,
+        lastmod: now,
+        priority: "0.7",
+        changefreq: "monthly",
+      },
       {
         url: `${BASE_URL}/search`,
         lastmod: now,
@@ -56,6 +68,18 @@ export async function GET() {
         changefreq: "yearly",
       },
       {
+        url: `${BASE_URL}/cookie-policy`,
+        lastmod: now,
+        priority: "0.3",
+        changefreq: "yearly",
+      },
+      {
+        url: `${BASE_URL}/disclaimer`,
+        lastmod: now,
+        priority: "0.3",
+        changefreq: "yearly",
+      },
+      {
         url: `${BASE_URL}/author`,
         lastmod: now,
         priority: "0.7",
@@ -63,27 +87,29 @@ export async function GET() {
       },
     ];
 
-    // Helper to check if parent category is populated as an object
-    const isCategoryObj = (parent: any): parent is ICategory => {
-      return parent && typeof parent === "object" && "slug" in parent;
-    };
-
-    // 2. Category Pages (handles parent/sub-categories correctly)
-    const categoryPages = categories.map((cat) => {
-      const parentSlug = isCategoryObj(cat.parent) ? cat.parent.slug : null;
-      const url = parentSlug
-        ? `${BASE_URL}/${parentSlug}/${cat.slug}`
-        : `${BASE_URL}/${cat.slug}`;
-
-      return {
-        url,
+    
+    const categoryPages: { url: string; lastmod: string; priority: string; changefreq: string }[] = [];
+    categories.forEach((cat) => {
+      categoryPages.push({
+        url: `${BASE_URL}/${cat.slug}`,
         lastmod: now,
-        priority: parentSlug ? "0.8" : "0.85",
+        priority: "0.85",
         changefreq: "weekly",
-      };
+      });
+
+      if (Array.isArray(cat.subcategories)) {
+        cat.subcategories.forEach((sub) => {
+          categoryPages.push({
+            url: `${BASE_URL}/${cat.slug}/${sub.slug}`,
+            lastmod: now,
+            priority: "0.8",
+            changefreq: "weekly",
+          });
+        });
+      }
     });
 
-    // 3. Article Pages (uses proper /category/subcategory/slug path format)
+    
     const articlePages = slugs.map(({ category, subcategory, slug }) => ({
       url: `${BASE_URL}/${category}/${subcategory}/${slug}`,
       lastmod: now,
@@ -91,7 +117,7 @@ export async function GET() {
       changefreq: "monthly",
     }));
 
-    // 4. Author Profile Pages
+    
     const authorPages = authors.map((auth: any) => ({
       url: `${BASE_URL}/author/${auth.slug}`,
       lastmod: now,
@@ -99,7 +125,7 @@ export async function GET() {
       changefreq: "weekly",
     }));
 
-    // 5. Tag Pages
+    
     const tagPages = tags.map((tag: any) => ({
       url: `${BASE_URL}/tag/${tag.slug}`,
       lastmod: now,
@@ -115,7 +141,7 @@ export async function GET() {
       ...tagPages,
     ];
 
-    // Deduplicate pages by URL to avoid any potential duplicate entries
+    
     const seenUrls = new Set<string>();
     const uniquePages = allPages.filter((page) => {
       if (seenUrls.has(page.url)) {

@@ -23,7 +23,7 @@ export default async function WriterArticlesPage({ searchParams }: Props) {
 
   await connectDB();
 
-  // Find this writer's Author document to filter articles
+  
   const authorDoc = await Author.findOne({ email: session.email }).lean();
   const authorId = authorDoc ? String((authorDoc as { _id: unknown })._id) : undefined;
 
@@ -39,7 +39,7 @@ export default async function WriterArticlesPage({ searchParams }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">My Articles</h1>
@@ -57,7 +57,7 @@ export default async function WriterArticlesPage({ searchParams }: Props) {
         </Link>
       </div>
 
-      {/* Status tabs */}
+      {}
       <div className="flex gap-1 p-1.5 rounded-xl w-fit" style={{ background: "var(--bg-surface)", border: "1px solid var(--border-color)" }}>
         {[
           { value: "published", label: "✅ Published" },
@@ -85,7 +85,7 @@ export default async function WriterArticlesPage({ searchParams }: Props) {
         editArticleHrefPrefix="/writer/articles" 
       />
 
-      {/* Pagination */}
+      {}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-6">
           {currentPage > 1 && (

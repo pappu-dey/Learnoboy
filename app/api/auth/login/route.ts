@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
     }
 
-    // Force superadmin role if email matches env-configured superadmin
+    
     const superadminEmail = process.env.SUPERADMIN_EMAIL?.toLowerCase();
     if (!superadminEmail && process.env.NODE_ENV === "production") {
       console.error("[login] SUPERADMIN_EMAIL is not set in production.");

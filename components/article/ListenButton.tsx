@@ -9,27 +9,27 @@ interface ListenButtonProps {
   size?: "small" | "normal";
 }
 
-// Strip markdown syntax to get plain text for TTS
+
 function stripMarkdown(md: string): string {
   return md
-    // Remove headings
+    
     .replace(/#{1,6}\s+/g, "")
-    // Remove bold / italic
+    
     .replace(/(\*\*|__)(.*?)\1/g, "$2")
     .replace(/(\*|_)(.*?)\1/g, "$2")
-    // Remove inline code
+    
     .replace(/`{1,3}[^`]*`{1,3}/g, "")
-    // Remove fenced code blocks
+    
     .replace(/```[\s\S]*?```/g, " [code block] ")
-    // Remove links, keep label
+    
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-    // Remove images
+    
     .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
-    // Remove blockquote markers
+    
     .replace(/^>\s*/gm, "")
-    // Remove HTML tags
+    
     .replace(/<[^>]+>/g, "")
-    // Collapse whitespace
+    
     .replace(/\n{2,}/g, ". ")
     .replace(/\n/g, " ")
     .replace(/\s{2,}/g, " ")
@@ -111,7 +111,7 @@ class TTSService {
       };
 
       utterance.onerror = (e) => {
-        // Interrupted/removed happens on manual stop, log status and clear state
+        
         console.log("TTS status:", e.error);
         this.playState = "idle";
         this.notify();
@@ -180,7 +180,7 @@ export function ListenButton({ title, content, variant = "button", size = "norma
       setSupported(true);
     }
     
-    // Subscribe to singleton TTS state updates
+    
     const unsubscribe = ttsServiceInstance.subscribe((state) => {
       setTtsState(state);
     });
@@ -288,7 +288,7 @@ export function ListenButton({ title, content, variant = "button", size = "norma
           gap: size === "small" ? "0.35rem" : "0.5rem",
         }}
       >
-        {/* Main listen / pause button */}
+        {}
         <button
           id="article-listen-btn"
           onClick={isPlaying ? handlePause : handlePlay}
@@ -316,7 +316,7 @@ export function ListenButton({ title, content, variant = "button", size = "norma
               : "none",
           }}
         >
-          {/* Animated waveform or icon */}
+          {}
           {isPlaying ? (
             <WaveformIcon size={size} />
           ) : (
@@ -327,7 +327,7 @@ export function ListenButton({ title, content, variant = "button", size = "norma
           </span>
         </button>
 
-        {/* Stop button — only visible when active */}
+        {}
         {isActive && (
           <button
             id="article-stop-listen-btn"
@@ -382,7 +382,7 @@ export function ListenButton({ title, content, variant = "button", size = "norma
         </div>
       )}
 
-      {/* Inline keyframe styles */}
+      {}
       <style>{`
         @keyframes lb-bar {
           0%, 100% { transform: scaleY(0.35); }
@@ -458,7 +458,7 @@ function HeadphonesIcon({ paused, size = "normal" }: { paused: boolean; size?: "
   const iconSize = size === "small" ? 13 : 16;
   const playSize = size === "small" ? 12 : 15;
   if (paused) {
-    // Play triangle for "resume"
+    
     return (
       <svg
         width={playSize}
@@ -472,7 +472,7 @@ function HeadphonesIcon({ paused, size = "normal" }: { paused: boolean; size?: "
       </svg>
     );
   }
-  // Headphones icon
+  
   return (
     <svg
       width={iconSize}

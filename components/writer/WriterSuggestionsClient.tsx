@@ -58,11 +58,11 @@ export default function WriterSuggestionsClient({ initialSuggestions }: WriterSu
     }
   };
 
-  // Filter and search
+  
   const filteredSuggestions = suggestions.filter((s) => {
     const matchesStatus = statusFilter === "all" || s.status === statusFilter;
     
-    // Parse out article title or ID from message block if needed
+    
     const articleTitle = s.article?.title || "";
     const matchesSearch =
       s.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -84,13 +84,13 @@ export default function WriterSuggestionsClient({ initialSuggestions }: WriterSu
   };
 
   const getCleanMessage = (message: string) => {
-    // Strip the prefix '[Article: ... (ID: ...)]' if present to show a cleaner message
+    
     return message.replace(/^\[Article:[^\]]+\]\s*/, "").trim();
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {}
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
           <MessageSquare className="text-[var(--link-color)]" size={24} />
@@ -101,9 +101,9 @@ export default function WriterSuggestionsClient({ initialSuggestions }: WriterSu
         </p>
       </div>
 
-      {/* Filter Toolbar */}
+      {}
       <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between p-4 rounded-2xl border border-[var(--border-color)]" style={{ background: "var(--bg-surface)" }}>
-        {/* Search */}
+        {}
         <div className="relative flex-1">
           <input
             type="text"
@@ -114,7 +114,7 @@ export default function WriterSuggestionsClient({ initialSuggestions }: WriterSu
           />
         </div>
 
-        {/* Status Tabs */}
+        {}
         <div className="flex rounded-xl p-1 bg-[var(--bg-base)] border border-[var(--border-color)] shrink-0">
           {(["all", "pending", "reviewed", "resolved"] as const).map((status) => (
             <button
@@ -137,7 +137,7 @@ export default function WriterSuggestionsClient({ initialSuggestions }: WriterSu
         </div>
       </div>
 
-      {/* Suggestions List */}
+      {}
       <div className="space-y-4">
         {filteredSuggestions.length === 0 ? (
           <div className="text-center py-16 border border-[var(--border-color)] rounded-2xl bg-[var(--bg-surface)]">
@@ -162,7 +162,7 @@ export default function WriterSuggestionsClient({ initialSuggestions }: WriterSu
                 className="border border-[var(--border-color)] rounded-2xl p-5 space-y-4 transition-all duration-300 hover:shadow-md"
                 style={{ background: "var(--bg-surface)" }}
               >
-                {/* Article Header info */}
+                {}
                 <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--border-color)] pb-3">
                   <div className="space-y-1">
                     {suggestion.article ? (
@@ -205,12 +205,12 @@ export default function WriterSuggestionsClient({ initialSuggestions }: WriterSu
                   </div>
                 </div>
 
-                {/* The suggestion message */}
+                {}
                 <div className="text-sm text-[var(--text-primary)] leading-relaxed bg-[var(--bg-base)] border border-[var(--border-color)] p-4 rounded-xl font-mono whitespace-pre-wrap select-all">
                   {cleanMsg}
                 </div>
 
-                {/* Action Bar */}
+                {}
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
                   {suggestion.article ? (
                     <Link
@@ -223,7 +223,7 @@ export default function WriterSuggestionsClient({ initialSuggestions }: WriterSu
                     <span className="text-xs text-[var(--text-tertiary)] font-medium">Suggestion on deleted article</span>
                   )}
 
-                  {/* Status update triggers */}
+                  {}
                   <div className="flex items-center gap-2">
                     {updatingId === suggestion._id ? (
                       <div className="flex items-center gap-1.5 text-xs text-[var(--text-tertiary)] font-medium px-3 py-1.5">

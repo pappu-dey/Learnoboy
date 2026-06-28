@@ -2,11 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/lib/models/User";
 
-/**
- * GET /api/auth/verify?token=...
- *
- * Verifies a user's account using the provided verification token.
- */
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -18,7 +14,7 @@ export async function GET(req: NextRequest) {
 
     await connectDB();
 
-    // Find the user with matching token and unexpired window
+    
     const user = await User.findOne({
       verificationToken: token,
       verificationTokenExpiry: { $gt: new Date() },
@@ -30,7 +26,7 @@ export async function GET(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Update user to verified status
+    
     await User.findByIdAndUpdate(user._id, {
       isVerified: true,
       verifiedAt: new Date(),

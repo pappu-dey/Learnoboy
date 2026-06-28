@@ -15,13 +15,24 @@ const FOOTER_LINKS = {
   ],
   Platform: [
     { href: "/", label: "Home" },
+    { href: "/about", label: "About Us" },
+    { href: "/contact", label: "Contact Us" },
     { href: "/search", label: "Search Articles" },
     { href: "/donors", label: "Donors Leaderboard" },
     { href: "/admin", label: "Admin" },
   ],
+  Playgrounds: [
+    { href: "/compiler", label: "Online Compilers" },
+    { href: "/compiler/html", label: "HTML/CSS/JS Sandbox" },
+    { href: "/compiler/python", label: "Python Compiler" },
+    { href: "/compiler/java", label: "Java Compiler" },
+  ],
   Legal: [
     { href: "/privacy", label: "Privacy Policy" },
     { href: "/terms", label: "Terms of Service" },
+    { href: "/cookie-policy", label: "Cookie Policy" },
+    { href: "/disclaimer", label: "Disclaimer" },
+    { href: "/editorial-policy", label: "Editorial Policy" },
   ],
 };
 
@@ -59,7 +70,7 @@ const FEEDBACK_TYPES = ["Bug Report", "Feature Request", "Content Suggestion", "
 
 const DONATE_AMOUNTS = [5, 10, 25, 50];
 
-// ── Feedback Modal ──────────────────────────────────────────────────────────
+
 function FeedbackModal({ onClose }: { onClose: () => void }) {
   const [type, setType] = useState(FEEDBACK_TYPES[3]);
   const [message, setMessage] = useState("");
@@ -157,7 +168,7 @@ function FeedbackModal({ onClose }: { onClose: () => void }) {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Type selector */}
+              {}
               <div className="flex flex-wrap gap-2">
                 {FEEDBACK_TYPES.map((t) => (
                   <button
@@ -184,7 +195,7 @@ function FeedbackModal({ onClose }: { onClose: () => void }) {
                 ))}
               </div>
 
-              {/* Message */}
+              {}
               <div>
                 <label
                   className="block text-xs font-medium mb-1.5"
@@ -207,7 +218,7 @@ function FeedbackModal({ onClose }: { onClose: () => void }) {
                 />
               </div>
 
-              {/* Email (optional) */}
+              {}
               <div>
                 <label
                   className="block text-xs font-medium mb-1.5"
@@ -230,7 +241,7 @@ function FeedbackModal({ onClose }: { onClose: () => void }) {
                 />
               </div>
 
-              {/* Error message */}
+              {}
               {error && (
                 <div className="text-xs text-red-500 font-semibold bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 p-2.5 rounded-lg">
                   ⚠️ {error}
@@ -264,7 +275,7 @@ function FeedbackModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-// ── Footer ──────────────────────────────────────────────────────────────────
+
 export function Footer() {
   const [showFeedback, setShowFeedback] = useState(false);
 
@@ -276,7 +287,7 @@ export function Footer() {
         className="border-t border-[var(--border-color)] mt-20"
         style={{ background: "var(--bg-surface)" }}
       >
-        {/* ── Support banner ─────────────────────────────────────────────── */}
+        {}
         <div
           className="border-b border-[var(--border-color)]"
           style={{
@@ -325,11 +336,11 @@ export function Footer() {
           </div>
         </div>
 
-        {/* ── Main footer grid ────────────────────────────────────────────── */}
+        {}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-            {/* Brand */}
-            <div className="md:col-span-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+            {}
+            <div className="sm:col-span-2 md:col-span-1">
               <Link href="/" className="inline-flex mb-4">
                 <Image
                   src="/images/logo-gif.gif"
@@ -364,7 +375,7 @@ export function Footer() {
               </div>
             </div>
 
-            {/* Nav link columns */}
+            {}
             {Object.entries(FOOTER_LINKS).map(([title, links]) => (
               <div key={title}>
                 <h3
@@ -390,7 +401,7 @@ export function Footer() {
             ))}
           </div>
 
-          {/* ── Bottom bar ───────────────────────────────────────────────── */}
+          {}
           <div
             className="pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-3"
             style={{ borderColor: "var(--border-color)" }}
@@ -399,7 +410,7 @@ export function Footer() {
               © {new Date().getFullYear()} LearnoBoy. All rights reserved.
             </p>
 
-            {/* Inline actions in bottom bar */}
+            {}
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowFeedback(true)}

@@ -13,7 +13,7 @@ export default async function WriterSuggestionsPage() {
 
   await connectDB();
 
-  // Find this writer's Author document to link suggestions
+  
   const authorDoc = await Author.findOne({ email: session.email }).lean();
 
   if (!authorDoc) {
@@ -31,7 +31,7 @@ export default async function WriterSuggestionsPage() {
     );
   }
 
-  // Get Suggestions of type "Content Suggestion" linked to this author
+  
   const rawSuggestions = await Feedback.find({
     author: authorDoc._id,
     type: "Content Suggestion",
@@ -40,7 +40,7 @@ export default async function WriterSuggestionsPage() {
     .sort({ createdAt: -1 })
     .lean();
 
-  // Deeply serialize Mongoose docs to plain objects
+  
   const suggestions = JSON.parse(JSON.stringify(rawSuggestions));
 
   return <WriterSuggestionsClient initialSuggestions={suggestions} />;

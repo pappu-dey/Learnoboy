@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       isVerified: true,
     });
 
-    // Auto sign-in after registration
+    
     await createSession({
       userId: user._id.toString(),
       name: user.name,

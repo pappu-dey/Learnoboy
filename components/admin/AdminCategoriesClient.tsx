@@ -16,7 +16,7 @@ export function AdminCategoriesClient({ initialCategories }: Props) {
   const [categories, setCategories] = useState<ICategory[]>(initialCategories);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  /** Refresh list from server after a new category or subcategory is created */
+  
   const handleCategoryAdded = useCallback(async () => {
     try {
       const res = await fetch("/api/categories");
@@ -46,39 +46,14 @@ export function AdminCategoriesClient({ initialCategories }: Props) {
     }
   }
 
-  // Separate top-level categories and subcategories
-  const { topLevelCategories, subcategoriesByParent, orphanedSubcategories } = useMemo(() => {
-    const topLevels = categories.filter((cat) => !cat.parent);
-    
-    const subsMap: Record<string, ICategory[]> = {};
-    const orphans: ICategory[] = [];
-
-    categories.forEach((cat) => {
-      if (cat.parent) {
-        const parentId = typeof cat.parent === "object" ? cat.parent._id : cat.parent;
-        // Verify parent exists in our list
-        const parentExists = categories.some((c) => c._id === parentId);
-        if (parentExists) {
-          if (!subsMap[parentId]) subsMap[parentId] = [];
-          subsMap[parentId].push(cat);
-        } else {
-          orphans.push(cat);
-        }
-      }
-    });
-
-    return {
-      topLevelCategories: topLevels,
-      subcategoriesByParent: subsMap,
-      orphanedSubcategories: orphans,
-    };
+  
+  const totalSubcategories = useMemo(() => {
+    return categories.reduce((sum, cat) => sum + (cat.subcategories?.length || 0), 0);
   }, [categories]);
-
-  const totalSubcategories = categories.length - topLevelCategories.length;
 
   return (
     <div>
-      {/* ── Page header ── */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -88,17 +63,17 @@ export function AdminCategoriesClient({ initialCategories }: Props) {
             </h1>
           </div>
           <p className="text-sm text-[var(--text-secondary)]">
-            {topLevelCategories.length} parent categories · {totalSubcategories} subcategories
+            {categories.length} parent categories · {totalSubcategories} subcategories
           </p>
         </div>
 
-        {/* Global Add Category Modal */}
+        {}
         <div className="flex gap-2.5">
           <AddCategoryModal onSuccess={handleCategoryAdded} />
         </div>
       </div>
 
-      {/* ── Main content layout ── */}
+      {}
       {categories.length === 0 ? (
         <div
           className="flex flex-col items-center justify-center py-24 rounded-2xl border border-dashed border-[var(--border-color)] text-center"
@@ -120,24 +95,24 @@ export function AdminCategoriesClient({ initialCategories }: Props) {
         </div>
       ) : (
         <div className="space-y-8">
-          {/* Grouped parent category rows */}
+          {}
           <div className="grid grid-cols-1 gap-6">
-            {topLevelCategories.map((parent) => {
-              const subs = subcategoriesByParent[parent._id] || [];
+            {categories.map((parent) => {
+              const subs = parent.subcategories || [];
               return (
                 <div
                   key={parent._id}
                   className="group relative rounded-2xl border border-[var(--border-color)] transition-all duration-300 hover:shadow-lg overflow-hidden flex flex-col"
                   style={{ background: "var(--bg-surface)" }}
                 >
-                  {/* Parent accent colored top-bar */}
+                  {}
                   <div
                     className="h-1.5 w-full"
                     style={{ background: parent.color }}
                   />
 
                   <div className="p-6 flex flex-col md:flex-row md:items-start justify-between gap-6">
-                    {/* Parent Left Section (Icon & Info) */}
+                    {}
                     <div className="flex items-start gap-4 flex-1">
                       <div
                         className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-105"
@@ -163,7 +138,7 @@ export function AdminCategoriesClient({ initialCategories }: Props) {
                       </div>
                     </div>
 
-                    {/* Parent Right Section (Stats & Actions) */}
+                    {}
                     <div className="flex items-center gap-4 self-end md:self-start flex-shrink-0">
                       <div className="text-right">
                         <span className="inline-flex items-center gap-1.5 text-xs text-[var(--text-tertiary)] bg-[var(--bg-muted)] px-2.5 py-1 rounded-full font-medium">
@@ -172,7 +147,7 @@ export function AdminCategoriesClient({ initialCategories }: Props) {
                         </span>
                       </div>
                       <div className="flex gap-2">
-                        {/* Delete Parent Category */}
+                        {}
                         <button
                           onClick={() => handleDelete(parent._id, parent.name)}
                           disabled={deletingId === parent._id || subs.length > 0}
@@ -185,7 +160,7 @@ export function AdminCategoriesClient({ initialCategories }: Props) {
                     </div>
                   </div>
 
-                  {/* Nested Subcategories section */}
+                  {}
                   <div
                     className="border-t border-[var(--border-color)] px-6 py-4 flex flex-col gap-3"
                     style={{ background: "rgba(0,0,0,0.015)" }}
@@ -196,7 +171,7 @@ export function AdminCategoriesClient({ initialCategories }: Props) {
                         <span>Subcategories ({subs.length})</span>
                       </div>
                       
-                      {/* Inline Add Subcategory button */}
+                      {}
                       <AddCategoryModal
                         onSuccess={handleCategoryAdded}
                         defaultParentId={parent._id}
@@ -250,42 +225,7 @@ export function AdminCategoriesClient({ initialCategories }: Props) {
             })}
           </div>
 
-          {/* Orphaned subcategories (if any exist) */}
-          {orphanedSubcategories.length > 0 && (
-            <div className="mt-8 p-6 rounded-2xl border border-yellow-200 dark:border-yellow-900/30 bg-yellow-50/30 dark:bg-yellow-900/5">
-              <h3 className="text-sm font-bold text-yellow-800 dark:text-yellow-400 uppercase tracking-wider mb-3">
-                ⚠️ Orphaned Subcategories ({orphanedSubcategories.length})
-              </h3>
-              <p className="text-xs text-[var(--text-secondary)] mb-4">
-                These subcategories have a parent set in the database, but the parent category could not be found. 
-                You can delete them or recreate their parent categories.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {orphanedSubcategories.map((sub) => (
-                  <div
-                    key={sub._id}
-                    className="flex items-center justify-between gap-3 p-3 rounded-xl border border-yellow-200 dark:border-yellow-900/30 bg-[var(--bg-surface)]"
-                  >
-                    <div className="min-w-0">
-                      <span className="font-semibold text-sm text-[var(--text-primary)] block truncate">
-                        {sub.name}
-                      </span>
-                      <span className="text-[10px] text-[var(--text-tertiary)] block">
-                        Parent ID: {typeof sub.parent === "object" ? sub.parent?._id : sub.parent}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => handleDelete(sub._id, sub.name)}
-                      disabled={deletingId === sub._id}
-                      className="w-7 h-7 flex items-center justify-center rounded text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+
         </div>
       )}
     </div>

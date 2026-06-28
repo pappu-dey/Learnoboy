@@ -123,7 +123,7 @@ export function WriterApplicationForm() {
     }
   };
 
-  // ── Success State ──
+  
   if (submitted) {
     return (
       <div className="text-center py-12 px-6 max-w-lg mx-auto">
@@ -153,7 +153,7 @@ export function WriterApplicationForm() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Step progress bar */}
+      {}
       <div className="mb-8">
         <div className="flex items-center gap-0">
           {STEPS.map((label, idx) => (
@@ -189,12 +189,12 @@ export function WriterApplicationForm() {
         </div>
       </div>
 
-      {/* Card */}
+      {}
       <div
         className="rounded-2xl border border-[var(--border-color)] overflow-hidden"
         style={{ background: "var(--bg-surface)" }}
       >
-        {/* Step 1 — Personal Info */}
+        {}
         {step === 0 && (
           <div className="p-6 space-y-5">
             <div>
@@ -202,7 +202,7 @@ export function WriterApplicationForm() {
               <p className="text-sm text-[var(--text-secondary)] mt-0.5">Tell us a bit about yourself.</p>
             </div>
 
-            {/* Full Name */}
+            {}
             <Field icon={<User size={14} />} label="Full Name *">
               <input
                 type="text"
@@ -214,7 +214,7 @@ export function WriterApplicationForm() {
               />
             </Field>
 
-            {/* Email */}
+            {}
             <Field icon={<Mail size={14} />} label="Email Address *">
               <input
                 type="email"
@@ -226,7 +226,7 @@ export function WriterApplicationForm() {
               />
             </Field>
 
-            {/* Qualification */}
+            {}
             <Field icon={<GraduationCap size={14} />} label="Highest Qualification *">
               <select
                 id="apply-qualification"
@@ -241,7 +241,7 @@ export function WriterApplicationForm() {
               </select>
             </Field>
 
-            {/* College — optional */}
+            {}
             <Field icon={<BookOpen size={14} />} label="College / University (optional)">
               <input
                 type="text"

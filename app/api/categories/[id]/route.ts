@@ -3,7 +3,7 @@ import connectDB from "@/lib/mongodb";
 import { Category } from "@/lib/models";
 import { deleteCategory, updateCategory } from "@/lib/services/categoryService";
 
-/** GET /api/categories/[id] */
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -28,7 +28,7 @@ export async function GET(
   }
 }
 
-/** PATCH /api/categories/[id] */
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -53,7 +53,7 @@ export async function PATCH(
   }
 }
 
-/** DELETE /api/categories/[id] */
+
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

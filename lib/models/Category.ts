@@ -1,5 +1,14 @@
 import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
+export interface ISubcategoryDocument extends Document {
+  name: string;
+  slug: string;
+  description?: string;
+  articleCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface ICategoryDocument extends Document {
   name: string;
   slug: string;
@@ -7,10 +16,22 @@ export interface ICategoryDocument extends Document {
   icon: string;
   color: string;
   articleCount: number;
-  parent?: Types.ObjectId | null;
+  subcategories: Types.DocumentArray<ISubcategoryDocument> | any[];
   createdAt: Date;
   updatedAt: Date;
 }
+
+const SubcategorySchema = new Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    slug: { type: String, required: true, lowercase: true, trim: true },
+    description: { type: String, default: "" },
+    articleCount: { type: Number, default: 0 },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const CategorySchema = new Schema<ICategoryDocument>(
   {
@@ -20,7 +41,7 @@ const CategorySchema = new Schema<ICategoryDocument>(
     icon: { type: String, default: "📚" },
     color: { type: String, default: "#3b82f6" },
     articleCount: { type: Number, default: 0 },
-    parent: { type: Schema.Types.ObjectId, ref: "Category", default: null },
+    subcategories: [SubcategorySchema],
   },
   {
     timestamps: true,
@@ -29,8 +50,8 @@ const CategorySchema = new Schema<ICategoryDocument>(
   }
 );
 
-// NOTE: slug's unique index is already created by `unique: true` above.
-// Adding CategorySchema.index({ slug: 1 }) here would create a duplicate.
+
+
 
 const Category: Model<ICategoryDocument> =
   mongoose.models.Category ||

@@ -5,49 +5,90 @@ import type { ICategory } from "@/types";
 export async function getAllCategories(): Promise<ICategory[]> {
   await connectDB();
   const categories = await Category.find()
-    .populate("parent", "name slug color")
     .sort({ name: 1 })
     .lean();
-  // JSON round-trip converts BSON ObjectIds → plain strings (safe to pass to Client Components)
   return JSON.parse(JSON.stringify(categories)) as unknown as ICategory[];
 }
 
 export async function getCategoryBySlug(slug: string): Promise<ICategory | null> {
   await connectDB();
-  const category = await Category.findOne({ slug })
-    .populate("parent", "name slug color")
-    .lean();
+  const category = await Category.findOne({ slug }).lean();
   return category as unknown as ICategory | null;
 }
 
-export async function createCategory(data: Partial<ICategory>): Promise<ICategory> {
+export async function createCategory(data: any): Promise<any> {
   await connectDB();
-  const cleanData = { ...data };
-  if (cleanData.parent === "" || cleanData.parent === "null") {
-    cleanData.parent = null;
+  const { name, slug, description, color, parent } = data;
+
+  if (parent && parent !== "null") {
+    const parentCat = await Category.findById(parent);
+    if (!parentCat) {
+      throw new Error("Parent category not found");
+    }
+
+    const exists = parentCat.subcategories?.some((sub: any) => sub.slug === slug);
+    if (exists) {
+      const err = new Error("Subcategory with this slug already exists");
+      (err as any).code = 11000;
+      throw err;
+    }
+
+    parentCat.subcategories.push({
+      name,
+      slug,
+      description,
+      articleCount: 0
+    });
+    await parentCat.save();
+    return JSON.parse(JSON.stringify(parentCat.toObject()));
+  } else {
+    const category = new Category({
+      name,
+      slug,
+      description,
+      icon: data.icon || "📚",
+      color: color || "#3b82f6",
+      articleCount: 0,
+      subcategories: [],
+    });
+    await category.save();
+    return JSON.parse(JSON.stringify(category.toObject()));
   }
-  const category = new Category(cleanData);
-  await category.save();
-  return category.toObject() as unknown as ICategory;
 }
 
 export async function updateCategory(
   id: string,
-  data: Partial<ICategory>
-): Promise<ICategory | null> {
+  data: any
+): Promise<any | null> {
   await connectDB();
-  const cleanData = { ...data };
-  if (cleanData.parent === "" || cleanData.parent === "null") {
-    cleanData.parent = null;
+  
+  let category = await Category.findByIdAndUpdate(id, data, { new: true }).lean();
+  if (!category) {
+    const parentCat = await Category.findOne({ "subcategories._id": id });
+    if (parentCat) {
+      const sub = (parentCat.subcategories as any).id(id);
+      if (sub) {
+        if (data.name) sub.name = data.name;
+        if (data.slug) sub.slug = data.slug;
+        if (data.description) sub.description = data.description;
+        await parentCat.save();
+        return JSON.parse(JSON.stringify(parentCat.toObject()));
+      }
+    }
   }
-  const category = await Category.findByIdAndUpdate(id, cleanData, { new: true })
-    .populate("parent", "name slug color")
-    .lean();
-  return category as unknown as ICategory | null;
+  return category ? JSON.parse(JSON.stringify(category)) : null;
 }
 
 export async function deleteCategory(id: string): Promise<boolean> {
   await connectDB();
   const result = await Category.findByIdAndDelete(id);
-  return !!result;
+  if (!result) {
+    const parentCat = await Category.findOneAndUpdate(
+      { "subcategories._id": id },
+      { $pull: { subcategories: { _id: id } } },
+      { new: true }
+    );
+    return !!parentCat;
+  }
+  return true;
 }

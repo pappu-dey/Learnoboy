@@ -1,15 +1,13 @@
 import type { TocItem } from "@/types";
 
-/**
- * Extract Table of Contents items from Markdown content
- */
+
 export function extractTableOfContents(markdown: string): TocItem[] {
   if (!markdown) return [];
   const headingRegex = /^(#{2,4})\s+(.+)$/gm;
   const items: TocItem[] = [];
   let match;
   
-  // Track seen IDs to generate unique IDs, matching rehype-slug's behavior
+  
   const idCounts = new Map<string, number>();
 
   while ((match = headingRegex.exec(markdown)) !== null) {

@@ -133,7 +133,7 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
     );
   }
 
-  // Default card
+  
   return (
     <article
       className="group rounded-xl card-hover"

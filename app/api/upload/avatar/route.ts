@@ -9,7 +9,7 @@ cloudinary.config({
 });
 
 export async function POST(request: NextRequest) {
-  // Auth check — only logged-in users can upload their avatar
+  
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file type (images only)
+    
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file size (5MB max for avatars)
+    
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       return NextResponse.json(

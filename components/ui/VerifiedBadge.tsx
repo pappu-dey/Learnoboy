@@ -34,7 +34,7 @@ export function VerifiedBadge({ size = "md", className = "", showLabel = true }:
         userSelect: "none",
       }}
     >
-      {/* Shield check icon */}
+      {}
       <svg
         width={s.icon}
         height={s.icon}

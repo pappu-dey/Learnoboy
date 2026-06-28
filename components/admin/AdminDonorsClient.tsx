@@ -13,23 +13,23 @@ export function AdminDonorsClient({ initialDonors }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
   
-  // Verify modal state
+  
   const [editingDonor, setEditingDonor] = useState<IDonor | null>(null);
   const [verifyAmount, setVerifyAmount] = useState<string>("");
   const [submittingId, setSubmittingId] = useState<string | null>(null);
 
   const refreshDonors = async () => {
     try {
-      const res = await fetch("/api/donors?admin=true"); // Fetch all donors (done directly in server component on load, but we can call a custom trigger if needed)
-      // Actually, since we update local state optimistically or via response, we can fetch
+      const res = await fetch("/api/donors?admin=true"); 
+      
       const refreshRes = await fetch("/api/donors"); 
-      // Note: we can also just trigger router.refresh() or keep state synced. We will sync state immediately!
+      
     } catch (err) {
       console.error(err);
     }
   };
 
-  // Stats calculation
+  
   const stats = useMemo(() => {
     const total = donors.length;
     const pending = donors.filter((d) => d.status === "pending").length;
@@ -41,7 +41,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
     return { total, pending, approved, rejected, totalRaised };
   }, [donors]);
 
-  // Filtered Donors
+  
   const filteredDonors = useMemo(() => {
     return donors.filter((d) => {
       const matchesSearch =
@@ -53,7 +53,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
     });
   }, [donors, searchQuery, statusFilter]);
 
-  // Handle Verify & Save Amount
+  
   const handleVerifySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingDonor) return;
@@ -80,7 +80,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
       if (!res.ok) {
         alert(json.error ?? "Failed to verify donor.");
       } else {
-        // Update local state
+        
         setDonors((prev) =>
           prev.map((d) =>
             d._id === editingDonor._id
@@ -97,7 +97,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
     }
   };
 
-  // Handle Instant Approve with submitted amount
+  
   const handleInstantApprove = async (d: IDonor) => {
     try {
       const res = await fetch(`/api/donors/${d._id}`, {
@@ -124,7 +124,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
     }
   };
 
-  // Handle Instant Reject
+  
   const handleInstantReject = async (d: IDonor) => {
     try {
       const res = await fetch(`/api/donors/${d._id}`, {
@@ -151,7 +151,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
     }
   };
 
-  // Handle Delete Donor
+  
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this donor record? This action cannot be undone.")) return;
 
@@ -172,7 +172,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-      {/* Page Header */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -187,7 +187,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
         </div>
       </div>
 
-      {/* Stats compartment */}
+      {}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
         {[
           { label: "Total Submissions", count: stats.total, color: "var(--link-color)" },
@@ -211,7 +211,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
         ))}
       </div>
 
-      {/* Search & Filters */}
+      {}
       <div
         className="p-4 rounded-2xl border border-[var(--border-color)] mb-6 flex flex-col md:flex-row items-center gap-4"
         style={{ background: "var(--bg-surface)" }}
@@ -253,7 +253,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
         </div>
       </div>
 
-      {/* Main Table */}
+      {}
       {filteredDonors.length === 0 ? (
         <div
           className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--border-color)] text-center"
@@ -332,7 +332,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex justify-end gap-2">
-                        {/* Instant Verify Checkmark (if pending or rejected) */}
+                        {}
                         {d.status !== "approved" && (
                           <button
                             onClick={() => handleInstantApprove(d)}
@@ -343,7 +343,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
                           </button>
                         )}
 
-                        {/* Instant Reject (if pending or approved) */}
+                        {}
                         {d.status !== "rejected" && (
                           <button
                             onClick={() => handleInstantReject(d)}
@@ -354,7 +354,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
                           </button>
                         )}
 
-                        {/* Edit Amount Pencil (for any status) */}
+                        {}
                         <button
                           onClick={() => {
                             setEditingDonor(d);
@@ -366,7 +366,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
                           <Edit3 size={15} />
                         </button>
 
-                        {/* Delete Button */}
+                        {}
                         <button
                           onClick={() => handleDelete(d._id)}
                           className="w-8 h-8 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all"
@@ -384,7 +384,7 @@ export function AdminDonorsClient({ initialDonors }: Props) {
         </div>
       )}
 
-      {/* Verify Amount Entry Modal */}
+      {}
       {editingDonor && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"

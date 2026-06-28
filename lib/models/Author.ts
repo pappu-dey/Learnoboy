@@ -24,7 +24,7 @@ export interface IAuthorDocument extends Document {
   articleCount: number;
   totalViews: number;
   followers: number;
-  /** Reference back to the User document */
+  
   userId?: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -64,8 +64,8 @@ const AuthorSchema = new Schema<IAuthorDocument>(
   }
 );
 
-// NOTE: slug and email unique indexes are created by `unique: true` above.
-// Adding explicit AuthorSchema.index() calls for them would be duplicates.
+
+
 
 const Author: Model<IAuthorDocument> =
   mongoose.models.Author ||

@@ -9,7 +9,7 @@ interface ArticleMetricsProps {
   isLoggedIn?: boolean;
 }
 
-/* ─── Small floating toast ─── */
+
 function LoginToast({ message, onDismiss }: { message: string; onDismiss: () => void }) {
   useEffect(() => {
     const t = setTimeout(onDismiss, 2500);
@@ -31,7 +31,7 @@ function LoginToast({ message, onDismiss }: { message: string; onDismiss: () => 
           <X size={11} />
         </button>
       </div>
-      {/* Arrow */}
+      {}
       <div className="flex justify-center">
         <div
           className="w-2 h-2 rotate-45 border-b border-r -mt-1"
@@ -42,7 +42,7 @@ function LoginToast({ message, onDismiss }: { message: string; onDismiss: () => 
   );
 }
 
-// Custom SVG Icons
+
 const TwitterIcon = ({ size = 13 }: { size?: number }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
@@ -65,14 +65,14 @@ export function ArticleMetrics({ article, isLoggedIn = false }: ArticleMetricsPr
   const [discussOpen, setDiscussOpen] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
 
-  // Toast state
+  
   const [likeToast, setLikeToast] = useState(false);
   const [discussToast, setDiscussToast] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const likeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Load persisted like state — only when logged in
+  
   useEffect(() => {
     if (!isLoggedIn) return;
     if (localStorage.getItem(`like_article_${article.slug}`) === "true") {
@@ -80,14 +80,14 @@ export function ArticleMetrics({ article, isLoggedIn = false }: ArticleMetricsPr
     }
   }, [article.slug, isLoggedIn]);
 
-  // Sync discuss open state from ArticleComments
+  
   useEffect(() => {
     const handleToggle = () => setDiscussOpen((prev) => !prev);
     window.addEventListener("toggle-discussion", handleToggle);
     return () => window.removeEventListener("toggle-discussion", handleToggle);
   }, []);
 
-  // Sync real comment count
+  
   useEffect(() => {
     const handleCount = (e: Event) => {
       const ev = e as CustomEvent<{ count: number }>;
@@ -97,7 +97,7 @@ export function ArticleMetrics({ article, isLoggedIn = false }: ArticleMetricsPr
     return () => window.removeEventListener("comment-count-changed", handleCount);
   }, []);
 
-  // Close share dropdown on outside click
+  
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -140,7 +140,7 @@ export function ArticleMetrics({ article, isLoggedIn = false }: ArticleMetricsPr
   };
 
   const handleScrollToDiscuss = () => {
-    // Anyone can open discussion — dispatch toggle for all
+    
     window.dispatchEvent(new CustomEvent("toggle-discussion"));
     if (!discussOpen) {
       setTimeout(() => {
@@ -156,7 +156,7 @@ export function ArticleMetrics({ article, isLoggedIn = false }: ArticleMetricsPr
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch { /* ignore */ }
+    } catch {  }
   };
 
   const handleShareTwitter = () => {
@@ -174,7 +174,7 @@ export function ArticleMetrics({ article, isLoggedIn = false }: ArticleMetricsPr
     <section className="mt-6 pt-6 border-t border-[var(--border-color)]">
       <div className="flex items-center gap-3.5 text-xs md:text-sm text-[var(--text-secondary)] font-medium p-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] w-fit max-w-full relative">
 
-        {/* ── Like button ── */}
+        {}
         <div className="relative">
           <button
             onClick={handleLikeToggle}
@@ -199,7 +199,7 @@ export function ArticleMetrics({ article, isLoggedIn = false }: ArticleMetricsPr
 
         <span className="opacity-40 text-xs" aria-hidden="true">•</span>
 
-        {/* ── Share dropdown ── */}
+        {}
         <div className="relative inline-block" ref={dropdownRef}>
           <button
             onClick={() => setShowShareDropdown(!showShareDropdown)}
@@ -252,7 +252,7 @@ export function ArticleMetrics({ article, isLoggedIn = false }: ArticleMetricsPr
 
         <span className="opacity-40 text-xs" aria-hidden="true">•</span>
 
-        {/* ── Discuss toggle — open for everyone ── */}
+        {}
         <div className="relative">
           <button
             onClick={handleScrollToDiscuss}

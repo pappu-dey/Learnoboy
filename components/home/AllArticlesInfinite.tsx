@@ -7,14 +7,14 @@ import { Library, Loader2, Search, X } from "lucide-react";
 
 export function AllArticlesInfinite() {
   const [articles, setArticles] = useState<IArticle[]>([]);
-  const [page, setPage] = useState(2); // Start at page 2 to skip the first 8 articles in "LatestArticles"
+  const [page, setPage] = useState(2); 
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  // Debounce search query to prevent hitting API on every keypress
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
@@ -23,7 +23,7 @@ export function AllArticlesInfinite() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Reset state and run first page search whenever query changes
+  
   useEffect(() => {
     setArticles([]);
     const startPage = debouncedSearchQuery.trim() === "" ? 2 : 1;
@@ -61,7 +61,7 @@ export function AllArticlesInfinite() {
     fetchInitial();
   }, [debouncedSearchQuery]);
 
-  // Infinite Scroll Trigger
+  
   const fetchMoreArticles = async (pageNum: number, searchVal: string) => {
     if (loading || !hasMore) return;
     setLoading(true);
@@ -140,7 +140,7 @@ export function AllArticlesInfinite() {
           </h2>
         </div>
 
-        {/* Premium search bar */}
+        {}
         <div className="relative w-full md:max-w-md">
           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
             <Search size={16} className="text-[var(--text-tertiary)]" />

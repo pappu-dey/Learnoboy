@@ -3,9 +3,9 @@ import mongoose, { Schema, Document, Model, Types } from "mongoose";
 export interface IArticleDocument extends Document {
   title: string;
   slug: string;
-  /** Primary/first category — kept for backward compat; use categories[] for multi */
+  
   category: Types.ObjectId;
-  /** All categories (array, min 1) */
+  
   categories: Types.ObjectId[];
   primaryCategory: string;
   subcategory: string;
@@ -28,7 +28,7 @@ export interface IArticleDocument extends Document {
     canonicalUrl?: string;
     ogImage?: string;
   };
-  /** Denormalized author snapshot for fast rendering without populate */
+  
   authorSnapshot?: {
     name: string;
     slug: string;
@@ -43,13 +43,13 @@ const ArticleSchema = new Schema<IArticleDocument>(
   {
     title: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, lowercase: true },
-    // Legacy single-category field kept for URL routing (`/[category]/[slug]`)
+    
     category: {
       type: Schema.Types.ObjectId,
       ref: "Category",
       required: true,
     },
-    // Multi-category support — stores all selected categories
+    
     categories: [{ type: Schema.Types.ObjectId, ref: "Category" }],
     primaryCategory: { type: String, required: true, lowercase: true, trim: true },
     subcategory: { type: String, required: true, lowercase: true, trim: true },
@@ -105,7 +105,7 @@ const ArticleSchema = new Schema<IArticleDocument>(
   }
 );
 
-// Indexes for performance (slug index already created by unique:true above)
+
 ArticleSchema.index({ category: 1, status: 1 });
 ArticleSchema.index({ categories: 1, status: 1 });
 ArticleSchema.index({ status: 1, publishedAt: -1 });

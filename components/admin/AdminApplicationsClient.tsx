@@ -109,7 +109,7 @@ export default function AdminApplicationsClient() {
 
   return (
     <div className="space-y-6">
-      {/* Toast */}
+      {}
       {toast && (
         <div
           className="fixed top-5 right-5 z-50 flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium shadow-lg"
@@ -124,7 +124,7 @@ export default function AdminApplicationsClient() {
         </div>
       )}
 
-      {/* Modal — Full Application View */}
+      {}
       {modal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -167,7 +167,7 @@ export default function AdminApplicationsClient() {
               </div>
               <ModalRow label="Applied" value={new Date(modal.writerApplication?.appliedAt || modal.createdAt).toLocaleDateString("en-US", { dateStyle: "long" })} />
             </div>
-            {/* Action buttons */}
+            {}
             <div className="p-4 flex items-center justify-end gap-2 border-t border-[var(--border-color)]" style={{ background: "var(--bg-muted)" }}>
               {modal.writerStatus !== "approved" && (
                 <button
@@ -204,7 +204,7 @@ export default function AdminApplicationsClient() {
         </div>
       )}
 
-      {/* Header */}
+      {}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
@@ -225,7 +225,7 @@ export default function AdminApplicationsClient() {
         </button>
       </div>
 
-      {/* Filter bar */}
+      {}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" />
@@ -254,7 +254,7 @@ export default function AdminApplicationsClient() {
         </div>
       </div>
 
-      {/* Applications list */}
+      {}
       <div className="rounded-2xl border border-[var(--border-color)] overflow-hidden" style={{ background: "var(--bg-surface)" }}>
         {loading ? (
           <div className="py-16 text-center text-[var(--text-tertiary)] text-sm">Loading applications…</div>
@@ -270,9 +270,9 @@ export default function AdminApplicationsClient() {
               const isExpanded = expanded === u._id;
               return (
                 <div key={u._id} className="hover:bg-[var(--bg-muted)] transition-colors">
-                  {/* Row */}
+                  {}
                   <div className="flex items-center gap-4 px-5 py-4">
-                    {/* Avatar */}
+                    {}
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold text-white flex-shrink-0 overflow-hidden"
                       style={{ background: "linear-gradient(135deg, #2563eb, #7c3aed)" }}
@@ -280,7 +280,7 @@ export default function AdminApplicationsClient() {
                       {u.avatar ? <img src={u.avatar} alt={u.name} className="w-full h-full object-cover" /> : u.name.slice(0, 2).toUpperCase()}
                     </div>
 
-                    {/* Info */}
+                    {}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-semibold text-sm text-[var(--text-primary)] truncate">{u.name}</p>
@@ -306,12 +306,12 @@ export default function AdminApplicationsClient() {
                       )}
                     </div>
  
-                    {/* Date */}
+                    {}
                     <span className="text-xs text-[var(--text-tertiary)] hidden md:block shrink-0">
                       {new Date(u.writerApplication?.appliedAt || u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </span>
 
-                    {/* Actions */}
+                    {}
                     <div className="flex items-center gap-1.5 shrink-0">
                       <button
                         onClick={() => setModal(u)}
@@ -349,11 +349,11 @@ export default function AdminApplicationsClient() {
                     </div>
                   </div>
 
-                  {/* Expanded — Full details inline */}
+                  {}
                   {isExpanded && (
                     <div className="px-5 py-5 border-t border-[var(--border-color)]" style={{ background: "var(--bg-muted)" }}>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Left column: Structured application details */}
+                        {}
                         <div className="space-y-3.5">
                           <h4 className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1 flex items-center gap-1.5">
                             <ClipboardList size={13} className="text-[var(--link-color)]" /> Application Information
@@ -426,7 +426,7 @@ export default function AdminApplicationsClient() {
                             </div>
                           </div>
 
-                          {/* Expertise - Full list shown here */}
+                          {}
                           {u.writerApplication?.expertise && u.writerApplication.expertise.length > 0 && (
                             <div className="pt-2">
                               <p className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">
@@ -447,7 +447,7 @@ export default function AdminApplicationsClient() {
                           )}
                         </div>
 
-                        {/* Right column: Motivation / why write */}
+                        {}
                         <div className="flex flex-col h-full justify-between space-y-3.5">
                           <div>
                             <h4 className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">
@@ -461,7 +461,7 @@ export default function AdminApplicationsClient() {
                             </div>
                           </div>
 
-                          {/* Quick action buttons for inline review */}
+                          {}
                           {(u.writerStatus === "pending" || u.writerStatus === "needs-review") && (
                             <div className="flex items-center gap-2 pt-4 border-t border-[var(--border-color)] mt-auto">
                               <button
@@ -500,7 +500,7 @@ export default function AdminApplicationsClient() {
           </div>
         )}
 
-        {/* Footer count */}
+        {}
         {!loading && (
           <div className="px-5 py-3 border-t border-[var(--border-color)]">
             <p className="text-xs text-[var(--text-tertiary)]">{filtered.length} application{filtered.length !== 1 ? "s" : ""}</p>

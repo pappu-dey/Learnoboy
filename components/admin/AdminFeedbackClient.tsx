@@ -24,16 +24,16 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
   const router = useRouter();
   const [feedbacks, setFeedbacks] = useState<IFeedback[]>(initialFeedbacks);
   
-  // Search and filter states
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   
-  // Loading and action tracking
+  
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  /** Refresh feedbacks list from the server */
+  
   const refreshFeedbacks = useCallback(async () => {
     try {
       const res = await fetch("/api/feedback");
@@ -47,10 +47,10 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
     }
   }, [router]);
 
-  /** Update feedback status in DB and update state optimistically */
+  
   async function handleUpdateStatus(id: string, newStatus: "reviewed" | "resolved") {
     setUpdatingId(id);
-    // Optimistic UI update
+    
     setFeedbacks((prev) =>
       prev.map((fb) => (fb._id === id ? { ...fb, status: newStatus } : fb))
     );
@@ -63,7 +63,7 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
       });
       
       if (!res.ok) {
-        // Rollback on failure
+        
         alert("Failed to update status.");
         await refreshFeedbacks();
       }
@@ -75,12 +75,12 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
     }
   }
 
-  /** Delete feedback by ID */
+  
   async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this feedback? This cannot be undone.")) return;
     
     setDeletingId(id);
-    // Optimistic deletion
+    
     const cachedFeedbacks = [...feedbacks];
     setFeedbacks((prev) => prev.filter((fb) => fb._id !== id));
 
@@ -100,7 +100,7 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
     }
   }
 
-  // Calculate high-level stats dynamically
+  
   const stats = useMemo(() => {
     const total = feedbacks.length;
     const pending = feedbacks.filter((fb) => fb.status === "pending").length;
@@ -109,7 +109,7 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
     return { total, pending, reviewed, resolved };
   }, [feedbacks]);
 
-  // Filter feedbacks
+  
   const filteredFeedbacks = useMemo(() => {
     return feedbacks.filter((fb) => {
       const matchesSearch =
@@ -123,7 +123,7 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
     });
   }, [feedbacks, searchQuery, statusFilter, typeFilter]);
 
-  // Helpers to get premium color tokens for types and statuses
+  
   const getTypeColor = (type: string) => {
     switch (type) {
       case "Bug Report":
@@ -150,7 +150,7 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
 
   return (
     <div>
-      {/* ── Page Header ── */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -165,7 +165,7 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
         </div>
       </div>
 
-      {/* ── Stats Compartment ── */}
+      {}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
           { label: "All Submissions", count: stats.total, color: "var(--link-color)" },
@@ -188,12 +188,12 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
         ))}
       </div>
 
-      {/* ── Search & Filters Bar ── */}
+      {}
       <div
         className="p-4 rounded-2xl border border-[var(--border-color)] mb-6 flex flex-col md:flex-row items-center gap-4"
         style={{ background: "var(--bg-surface)" }}
       >
-        {/* Search */}
+        {}
         <div className="relative w-full md:flex-1">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" />
           <input
@@ -205,9 +205,9 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
           />
         </div>
 
-        {/* Filters */}
+        {}
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-          {/* Filter Type */}
+          {}
           <div className="flex-1 md:flex-initial">
             <select
               value={typeFilter}
@@ -222,7 +222,7 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
             </select>
           </div>
 
-          {/* Filter Status */}
+          {}
           <div className="flex-1 md:flex-initial">
             <select
               value={statusFilter}
@@ -238,7 +238,7 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
         </div>
       </div>
 
-      {/* ── Feedback Content Area ── */}
+      {}
       {filteredFeedbacks.length === 0 ? (
         <div
           className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--border-color)] text-center"
@@ -271,17 +271,17 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
                 className="group relative p-6 rounded-2xl border border-[var(--border-color)] transition-all duration-300 hover:shadow-md flex flex-col md:flex-row md:items-start justify-between gap-6"
                 style={{ background: "var(--bg-surface)" }}
               >
-                {/* Accent Stripe on hover */}
+                {}
                 <div
                   className="absolute left-0 top-4 bottom-4 w-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                   style={{ background: typeStyle.text }}
                 />
 
-                {/* Left Side: Content info */}
+                {}
                 <div className="flex-1 space-y-3.5 min-w-0">
-                  {/* Tags / Meta Header */}
+                  {}
                   <div className="flex flex-wrap items-center gap-2">
-                    {/* Feedback Type */}
+                    {}
                     <span
                       className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border"
                       style={{
@@ -293,7 +293,7 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
                       {fb.type}
                     </span>
 
-                    {/* Status Badge */}
+                    {}
                     <span
                       className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md"
                       style={{
@@ -304,7 +304,7 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
                       {statusStyle.label}
                     </span>
 
-                    {/* Datetime stamp */}
+                    {}
                     <span className="text-xs text-[var(--text-tertiary)] flex items-center gap-1 ml-1.5">
                       <Calendar size={12} />
                       {new Date(fb.createdAt).toLocaleString("en-US", {
@@ -314,12 +314,12 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
                     </span>
                   </div>
 
-                  {/* Feedback Message */}
+                  {}
                   <p className="text-sm leading-relaxed text-[var(--text-primary)] font-medium whitespace-pre-line">
                     {fb.message}
                   </p>
 
-                  {/* Contact Email (if provided) */}
+                  {}
                   {fb.email ? (
                     <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
                       <Mail size={13} className="text-[var(--text-tertiary)]" />
@@ -335,7 +335,7 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
                   )}
                 </div>
 
-                {/* Right Side: Quick Action Panel */}
+                {}
                 <div className="flex md:flex-col items-center gap-2 self-end md:self-start flex-shrink-0">
                   {fb.status === "pending" && (
                     <button
@@ -366,7 +366,7 @@ export function AdminFeedbackClient({ initialFeedbacks }: Props) {
                     </div>
                   )}
 
-                  {/* Delete Button */}
+                  {}
                   <button
                     onClick={() => handleDelete(fb._id)}
                     disabled={deletingId === fb._id}

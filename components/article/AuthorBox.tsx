@@ -24,7 +24,7 @@ export function AuthorBox({ author, articleCount }: AuthorBoxProps) {
       </p>
 
       <div className="flex flex-col sm:flex-row gap-5">
-        {/* Avatar */}
+        {}
         <Link
           href={`/author/${author.slug}`}
           className="flex-shrink-0 self-start"
@@ -38,9 +38,9 @@ export function AuthorBox({ author, articleCount }: AuthorBoxProps) {
           />
         </Link>
 
-        {/* Info */}
+        {}
         <div className="flex-1 min-w-0">
-          {/* Name + verified */}
+          {}
           <div className="flex items-center gap-2 flex-wrap mb-1">
             <Link
               href={`/author/${author.slug}`}
@@ -51,7 +51,7 @@ export function AuthorBox({ author, articleCount }: AuthorBoxProps) {
             {author.isVerified && <VerifiedBadge size="sm" />}
           </div>
 
-          {/* Expertise chips */}
+          {}
           {(author.expertise?.length ?? 0) > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-2">
               {author.expertise!.slice(0, 4).map((exp) => (
@@ -66,12 +66,12 @@ export function AuthorBox({ author, articleCount }: AuthorBoxProps) {
             </div>
           )}
 
-          {/* Bio */}
+          {}
           <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-3 line-clamp-3">
             {getAuthorBio(author)}
           </p>
 
-          {/* Stats + social */}
+          {}
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-3 text-xs text-[var(--text-tertiary)]">
               <span className="flex items-center gap-1">
@@ -86,7 +86,7 @@ export function AuthorBox({ author, articleCount }: AuthorBoxProps) {
               )}
             </div>
 
-            {/* Social icons */}
+            {}
             {socialLinks.length > 0 && (
               <div className="flex items-center gap-1.5">
                 {socialLinks.map(({ href, icon, label }) => (
@@ -104,7 +104,7 @@ export function AuthorBox({ author, articleCount }: AuthorBoxProps) {
               </div>
             )}
 
-            {/* View profile CTA */}
+            {}
             <Link
               href={`/author/${author.slug}`}
               className="ml-auto flex items-center gap-1 text-xs font-semibold text-[var(--link-color)] hover:opacity-80 transition-opacity"

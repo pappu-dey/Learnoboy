@@ -1,6 +1,4 @@
-/**
- * Global loading state — shown during ISR revalidation / cold starts.
- */
+
 export default function HomeLoading() {
   return <PageLoader />;
 }

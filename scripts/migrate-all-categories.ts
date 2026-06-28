@@ -1,7 +1,4 @@
-/**
- * Comprehensive category migration script:
- * Maps all existing subcategories in the database to their correct parent categories.
- */
+
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
@@ -14,7 +11,7 @@ if (!MONGODB_URI) {
   process.exit(1);
 }
 
-// Inline schema for safety
+
 const CategorySchema = new mongoose.Schema({
   name: String,
   slug: String,
@@ -44,7 +41,7 @@ async function runMigration() {
   let updatedCount = 0;
 
   for (const [parentSlug, childSlugs] of Object.entries(COMPREHENSIVE_MAPPING)) {
-    // Find parent category
+    
     const parentDoc = await Category.findOne({ slug: parentSlug });
     if (!parentDoc) {
       console.warn(`⚠️ Parent category with slug "${parentSlug}" not found. Skipping its children.`);
@@ -60,7 +57,7 @@ async function runMigration() {
         continue;
       }
 
-      // Update the parent field and inherit parent color if not custom
+      
       const parentIdStr = String(parentDoc._id);
       const currentParentStr = childDoc.parent ? String(childDoc.parent) : null;
 
@@ -68,7 +65,7 @@ async function runMigration() {
         console.log(`   ℹ️ "${childDoc.name}" is already linked.`);
       } else {
         childDoc.parent = parentDoc._id;
-        // Inherit parent's color for subcategories
+        
         childDoc.color = parentDoc.color;
         await childDoc.save();
         console.log(`   ✅ Linked "${childDoc.name}" -> "${parentDoc.name}" (Color inherited: ${parentDoc.color})`);
@@ -77,7 +74,7 @@ async function runMigration() {
     }
   }
 
-  // Ensure top-level categories have parent set to null
+  
   const topLevels = [
     "javascript", "python", "data-structures", "web-development", "databases", "algorithms",
     "c", "cpp", "java", "operating-systems", "computer-networks", "software-engineering", 

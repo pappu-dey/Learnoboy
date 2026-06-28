@@ -33,7 +33,7 @@ const CommentSchema = new Schema<ICommentDocument>(
   }
 );
 
-// Indexing for efficient comment retrieval on articles
+
 CommentSchema.index({ articleId: 1, parentId: 1, createdAt: -1 });
 
 const Comment: Model<ICommentDocument> =

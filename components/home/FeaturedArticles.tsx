@@ -21,14 +21,14 @@ export function FeaturedArticles({ articles }: FeaturedArticlesProps) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Large featured hero */}
+        {}
         {hero && (
           <div className="lg:col-span-2">
             <ArticleCard article={hero} variant="featured" />
           </div>
         )}
 
-        {/* Secondary featured */}
+        {}
         {rest.length > 0 && (
           <div className="flex flex-col gap-4">
             {rest.slice(0, 2).map((article) => (

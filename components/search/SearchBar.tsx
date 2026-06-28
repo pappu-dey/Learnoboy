@@ -121,7 +121,7 @@ export function SearchBar({
         </div>
       </form>
 
-      {/* Dropdown results */}
+      {}
       {isOpen && results.length > 0 && (
         <div
           ref={dropdownRef}

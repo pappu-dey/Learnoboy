@@ -9,13 +9,13 @@ interface TableOfContentsProps {
 }
 
 export function TableOfContents({ items }: TableOfContentsProps) {
-  // Only keep level 2 (##) headings
+  
   const h2Items = items.filter((item) => item.level === 2);
   const [activeId, setActiveId] = useState<string>("");
   const [isOpen, setIsOpen] = useState(false);
   const [readIds, setReadIds] = useState<string[]>([]);
 
-  // Set initial open state: open on desktop (xl width >= 1280px), collapsed on mobile
+  
   useEffect(() => {
     if (typeof window !== "undefined") {
       setIsOpen(window.innerWidth >= 1280);
@@ -45,7 +45,7 @@ export function TableOfContents({ items }: TableOfContentsProps) {
     return () => observer.disconnect();
   }, [h2Items]);
 
-  // Track headings that have entered the viewport or been scrolled past (scrolled-to headings)
+  
   useEffect(() => {
     if (h2Items.length === 0) return;
 
@@ -63,7 +63,7 @@ export function TableOfContents({ items }: TableOfContentsProps) {
                 const el = document.getElementById(item.id);
                 if (el) {
                   const rect = el.getBoundingClientRect();
-                  // Mark as read if the heading top has crossed the viewport upper section
+                  
                   if (rect.top <= 200) {
                     updated.push(item.id);
                     changed = true;
@@ -81,7 +81,7 @@ export function TableOfContents({ items }: TableOfContentsProps) {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    // Initial check
+    
     handleScroll();
     
     return () => window.removeEventListener("scroll", handleScroll);
@@ -121,7 +121,7 @@ export function TableOfContents({ items }: TableOfContentsProps) {
         />
       </button>
 
-      {/* Thin Progress Bar under header */}
+      {}
       <div className="w-full h-1 bg-[var(--border-color)] rounded-full mt-2.5 overflow-hidden">
         <div 
           className="h-full bg-[var(--link-color)] transition-all duration-300 rounded-full"
@@ -152,7 +152,7 @@ export function TableOfContents({ items }: TableOfContentsProps) {
                     borderRadius: isActive ? "0 8px 8px 0" : "8px",
                   }}
                   onClick={(e) => {
-                    // Check if left click and no modifier keys (command, control, shift, alt) are pressed
+                    
                     if (
                       e.button !== 0 ||
                       e.ctrlKey ||
@@ -160,7 +160,7 @@ export function TableOfContents({ items }: TableOfContentsProps) {
                       e.shiftKey ||
                       e.altKey
                     ) {
-                      return; // Let browser handle it natively (e.g. open in new tab)
+                      return; 
                     }
 
                     e.preventDefault();
@@ -169,7 +169,7 @@ export function TableOfContents({ items }: TableOfContentsProps) {
                       const top =
                         el.getBoundingClientRect().top + window.scrollY - 90;
                       window.scrollTo({ top, behavior: "smooth" });
-                      // On mobile, automatically collapse dropdown after clicking
+                      
                       if (window.innerWidth < 1280) {
                         setIsOpen(false);
                       }

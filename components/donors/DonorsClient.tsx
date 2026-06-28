@@ -23,7 +23,7 @@ export function DonorsClient({ initialDonors }: DonorsClientProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  // Refresh donors list
+  
   const refreshDonors = async () => {
     try {
       const res = await fetch("/api/donors");
@@ -36,19 +36,19 @@ export function DonorsClient({ initialDonors }: DonorsClientProps) {
     }
   };
 
-  // Top 3 Donors calculation (since donors are sorted by amount desc already)
+  
   const topDonors = useMemo(() => {
     return donors.slice(0, 3);
   }, [donors]);
 
-  // Filtered donors based on search query (showing all approved supporters)
+  
   const filteredDonors = useMemo(() => {
     return donors.filter((donor) =>
       donor.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [donors, searchQuery]);
 
-  // Pagination for all donors
+  
   const totalPages = Math.ceil(filteredDonors.length / itemsPerPage);
   const paginatedDonors = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -61,19 +61,19 @@ export function DonorsClient({ initialDonors }: DonorsClientProps) {
     }
   };
 
-  // Podium formatting
-  // Visual order: [2nd (Silver), 1st (Gold), 3rd (Bronze)]
+  
+  
   const podiumDonors = useMemo(() => {
     const result = [null, null, null] as (IDonor | null)[];
-    if (topDonors[1]) result[0] = topDonors[1]; // 2nd place
-    if (topDonors[0]) result[1] = topDonors[0]; // 1st place
-    if (topDonors[2]) result[2] = topDonors[2]; // 3rd place
+    if (topDonors[1]) result[0] = topDonors[1]; 
+    if (topDonors[0]) result[1] = topDonors[0]; 
+    if (topDonors[2]) result[2] = topDonors[2]; 
     return result;
   }, [topDonors]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-      {/* ── Hero Banner ── */}
+      {}
       <div
         className="text-center py-16 px-6 rounded-3xl mb-12 relative overflow-hidden"
         style={{
@@ -101,7 +101,7 @@ export function DonorsClient({ initialDonors }: DonorsClientProps) {
         </button>
       </div>
 
-      {/* ── Top Donors Podium (Olympics Style) ── */}
+      {}
       {topDonors.length > 0 && (
         <div className="mb-16">
           <h2 className="text-center text-xl font-bold text-[var(--text-primary)] mb-10 flex items-center justify-center gap-2">
@@ -110,7 +110,7 @@ export function DonorsClient({ initialDonors }: DonorsClientProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto items-end pt-12 px-4">
             
-            {/* 2nd Place: Silver */}
+            {}
             {podiumDonors[0] ? (
               <div className="flex flex-col items-center order-2 md:order-1 mt-6 md:mt-0 transition-transform duration-300 hover:translate-y-[-6px]">
                 <div className="w-16 h-16 rounded-full border-4 border-slate-300 dark:border-slate-500 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl shadow-lg relative mb-4">
@@ -142,7 +142,7 @@ export function DonorsClient({ initialDonors }: DonorsClientProps) {
               <div className="hidden md:block order-2 md:order-1 h-[120px]" />
             )}
 
-            {/* 1st Place: Gold */}
+            {}
             {podiumDonors[1] ? (
               <div className="flex flex-col items-center order-1 md:order-2 transition-transform duration-300 hover:translate-y-[-8px]">
                 <div className="w-20 h-20 rounded-full border-4 border-amber-400 bg-amber-50 dark:bg-amber-950/20 flex items-center justify-center text-3xl shadow-xl relative mb-4 animate-pulse" style={{ boxShadow: "0 0 25px rgba(245, 158, 11, 0.35)" }}>
@@ -175,7 +175,7 @@ export function DonorsClient({ initialDonors }: DonorsClientProps) {
               <div className="hidden md:block order-1 md:order-2 h-[160px]" />
             )}
 
-            {/* 3rd Place: Bronze */}
+            {}
             {podiumDonors[2] ? (
               <div className="flex flex-col items-center order-3 transition-transform duration-300 hover:translate-y-[-4px]">
                 <div className="w-16 h-16 rounded-full border-4 border-amber-750 dark:border-amber-900 bg-orange-50 dark:bg-orange-950/20 flex items-center justify-center text-2xl shadow-lg relative mb-4">
@@ -211,10 +211,10 @@ export function DonorsClient({ initialDonors }: DonorsClientProps) {
         </div>
       )}
 
-      {/* ── Search & Full List ── */}
+      {}
       <div className="border border-[var(--border-color)] rounded-3xl p-6 md:p-8" style={{ background: "var(--bg-surface)" }}>
         
-        {/* Search header */}
+        {}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-[var(--border-color)]">
           <div>
             <h2 className="text-lg font-bold text-[var(--text-primary)]">
@@ -233,14 +233,14 @@ export function DonorsClient({ initialDonors }: DonorsClientProps) {
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
-                setCurrentPage(1); // Reset page to 1
+                setCurrentPage(1); 
               }}
               className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl text-xs border border-[var(--border-color)] bg-[var(--bg-base)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--link-color)] transition-shadow"
             />
           </div>
         </div>
 
-        {/* List Content */}
+        {}
         {filteredDonors.length === 0 ? (
           <div className="text-center py-16">
             <span className="text-3xl mb-3 block">🤍</span>
@@ -291,7 +291,7 @@ export function DonorsClient({ initialDonors }: DonorsClientProps) {
               ))}
             </div>
 
-            {/* Pagination Controls */}
+            {}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 pt-6">
                 <button
@@ -319,7 +319,7 @@ export function DonorsClient({ initialDonors }: DonorsClientProps) {
         )}
       </div>
 
-      {/* ── Reusable Modal Integration ── */}
+      {}
       {showDonateModal && (
         <DonateModal
           onClose={() => setShowDonateModal(false)}

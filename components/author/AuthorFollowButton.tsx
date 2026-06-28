@@ -13,17 +13,17 @@ function getFollowedSlugs(): Set<string> {
   try {
     const raw = localStorage.getItem("followed_authors");
     if (raw) return new Set<string>(JSON.parse(raw));
-  } catch { /* ignore */ }
+  } catch {  }
   return new Set<string>();
 }
 
 function saveFollowedSlugs(slugs: Set<string>) {
   try {
     localStorage.setItem("followed_authors", JSON.stringify([...slugs]));
-  } catch { /* ignore */ }
+  } catch {  }
 }
 
-/* ─── Small floating toast ─── */
+
 function LoginToast({ message, onDismiss }: { message: string; onDismiss: () => void }) {
   useEffect(() => {
     const t = setTimeout(onDismiss, 2500);
@@ -57,7 +57,7 @@ export function AuthorFollowButton({ slug, initialFollowers, isLoggedIn = false 
   const [showToast, setShowToast] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Fetch live follower count on mount (bypasses stale ISR cache)
+  
   useEffect(() => {
     fetch(`/api/authors/${slug}/follow`)
       .then((r) => r.json())
@@ -66,10 +66,10 @@ export function AuthorFollowButton({ slug, initialFollowers, isLoggedIn = false 
           setFollowers(data.followers);
         }
       })
-      .catch(() => { /* keep initial */ });
+      .catch(() => {  });
   }, [slug]);
 
-  // Load follow state from localStorage if logged in
+  
   useEffect(() => {
     if (!isLoggedIn) return;
     const wasFollowing = getFollowedSlugs().has(slug);
@@ -90,7 +90,7 @@ export function AuthorFollowButton({ slug, initialFollowers, isLoggedIn = false 
               localStorage.setItem(syncKey, "true");
             }
           })
-          .catch(() => { /* ignore */ });
+          .catch(() => {  });
       }
     }
   }, [slug, isLoggedIn]);
@@ -122,7 +122,7 @@ export function AuthorFollowButton({ slug, initialFollowers, isLoggedIn = false 
           const data = await res.json();
           if (data.success && typeof data.followers === "number") setFollowers(data.followers);
         }
-      } catch { /* ignore */ }
+      } catch {  }
     }, 500);
   };
 
@@ -155,7 +155,7 @@ export function AuthorFollowButton({ slug, initialFollowers, isLoggedIn = false 
         )}
       </div>
 
-      {/* Follower count — always live from API */}
+      {}
       <span className="text-sm text-[var(--text-secondary)] font-medium">
         <span className="font-bold text-[var(--text-primary)]">{followers.toLocaleString()}</span>{" "}
         {followers === 1 ? "follower" : "followers"}
