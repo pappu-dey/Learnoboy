@@ -11,7 +11,6 @@ import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import { getBreadcrumbJsonLd, BASE_URL } from "@/lib/utils/seo";
 import { format } from "date-fns";
 import { AuthorFollowButton } from "@/components/author/AuthorFollowButton";
-import { getSession } from "@/lib/auth/session";
 
 const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -82,8 +81,6 @@ export async function generateMetadata({ params }: AuthorPageProps): Promise<Met
 
 export default async function AuthorPage({ params }: AuthorPageProps) {
   const { slug } = await params;
-  const session = await getSession();
-  const isLoggedIn = !!session;
 
   await connectDB();
   const author = await Author.findOne({ slug }).lean();
@@ -269,7 +266,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
                   <Calendar size={13} />
                   <span>Member since {format(new Date(author.createdAt || Date.now()), "MMMM yyyy")}</span>
                 </div>
-                <AuthorFollowButton slug={author.slug} initialFollowers={author.followers ?? 0} isLoggedIn={isLoggedIn} />
+                <AuthorFollowButton slug={author.slug} initialFollowers={author.followers ?? 0} />
               </div>
             </div>
           </div>

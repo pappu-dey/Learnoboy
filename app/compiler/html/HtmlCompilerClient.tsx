@@ -15,117 +15,83 @@ import {
   Maximize2,
   Minimize2,
   Check,
-  Code2
+  Code2,
+  Sparkles,
+  MoreVertical
 } from "lucide-react";
 
 
-const BOILERPLATE = {
-  html: `<!-- LearnoBoy HTML Compiler Playground -->
-<div class="card">
-  <div class="avatar">👦</div>
-  <h1>Hello LearnoBoy!</h1>
-  <p>Start writing HTML, CSS, and JS to see changes in real-time.</p>
-  <button id="action-btn">Click Me!</button>
-</div>`,
-  css: `/* Custom Styles for Preview */
+interface ProjectFile {
+  name: string;
+  type: "html" | "css" | "js";
+  content: string;
+  isDeletable?: boolean;
+}
+
+const INITIAL_FILES: ProjectFile[] = [
+  {
+    name: "index.html",
+    type: "html",
+    content: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>My LearnoBoy Sandbox</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <h1>Hello LearnoBoy!</h1>
+    <p>Start writing HTML, CSS, and JS to see changes in real-time.</p>
+    <button id="click-me">Click Me!</button>
+
+    <script src="script.js"></script>
+  </body>
+</html>`,
+    isDeletable: false
+  },
+  {
+    name: "styles.css",
+    type: "css",
+    content: `/* Custom Styles for Preview */
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  color: #f8fafc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  margin: 0;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.card {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 40px;
-  border-radius: 20px;
+  font-family: system-ui, sans-serif;
   text-align: center;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  max-width: 400px;
-  width: 100%;
-  animation: float 4s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-.avatar {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
-
-h1 {
-  font-size: 28px;
-  font-weight: 800;
-  margin: 0 0 12px;
-  background: linear-gradient(135deg, #60a5fa, #c084fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: -0.02em;
-}
-
-p {
-  color: #94a3b8;
-  font-size: 15px;
-  line-height: 1.6;
-  margin: 0 0 24px;
+  background-color: #f0f2f5;
+  color: #333;
+  padding: 50px;
 }
 
 button {
-  background: linear-gradient(135deg, #2563eb, #3b82f6);
-  color: #ffffff;
+  background-color: #2563eb;
+  color: white;
   border: none;
-  font-weight: 600;
-  padding: 12px 28px;
-  border-radius: 12px;
+  padding: 10px 20px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  font-weight: bold;
 }
 
 button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
-}
-
-button:active {
-  transform: translateY(0);
+  background-color: #1d4ed8;
 }`,
-  js: `// Custom Scripting Actions
-const btn = document.getElementById("action-btn");
+    isDeletable: false
+  },
+  {
+    name: "script.js",
+    type: "js",
+    content: `// Custom Scripting Actions
+const btn = document.getElementById("click-me");
 
 if (btn) {
   btn.addEventListener("click", () => {
-    console.log("👦 Action button clicked!");
-    
-    // Add custom interaction effect
-    const colors = ["#2563eb", "#7c3aed", "#ec4899", "#10b981", "#f59e0b"];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    
-    console.log("🎨 Updating button shadow to matches: " + randomColor);
-    btn.style.boxShadow = "0 6px 20px " + randomColor;
-    
-    // Alert or update text
-    const title = document.querySelector("h1");
-    if (title) {
-      title.style.background = "linear-gradient(135deg, " + randomColor + ", #c084fc)";
-      title.style.webkitBackgroundClip = "text";
-    }
+    console.log("Button clicked! 🎉");
+    alert("Button clicked! 🎉");
   });
 }
 
-console.log("🚀 HTML compiler template loaded successfully!");`
-};
+console.log("HTML compiler template loaded successfully!");`,
+    isDeletable: false
+  }
+];
 
 interface ConsoleLog {
   type: "log" | "error" | "warn" | "info";
@@ -134,13 +100,9 @@ interface ConsoleLog {
 }
 
 export default function HtmlCompilerClient() {
+  const [files, setFiles] = useState<ProjectFile[]>(INITIAL_FILES);
+  const [activeFileName, setActiveFileName] = useState("index.html");
   
-  const [htmlCode, setHtmlCode] = useState(BOILERPLATE.html);
-  const [cssCode, setCssCode] = useState(BOILERPLATE.css);
-  const [jsCode, setJsCode] = useState(BOILERPLATE.js);
-  
-  
-  const [activeTab, setActiveTab] = useState<"html" | "css" | "js">("html");
   const [autoRun, setAutoRun] = useState(true);
   const [layout, setLayout] = useState<"side" | "stack">("side");
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -149,23 +111,101 @@ export default function HtmlCompilerClient() {
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
 
-  
+  // Mobile layout state
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeMobileView, setActiveMobileView] = useState<"code" | "output">("code");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Add File modal states
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newFileName, setNewFileName] = useState("");
+  const [newFileType, setNewFileType] = useState<"html" | "css" | "js">("html");
+
+  const handleNewFileNameChange = (val: string) => {
+    setNewFileName(val);
+    if (val.endsWith(".html")) setNewFileType("html");
+    else if (val.endsWith(".css")) setNewFileType("css");
+    else if (val.endsWith(".js")) setNewFileType("js");
+  };
+
+  const handleCreateFile = (e: React.FormEvent) => {
+    e.preventDefault();
+    let name = newFileName.trim();
+    if (!name) return;
+
+    const ext = `.${newFileType}`;
+    if (!name.endsWith(ext)) {
+      name += ext;
+    }
+
+    if (files.some(f => f.name.toLowerCase() === name.toLowerCase())) {
+      alert("A file with this name already exists.");
+      return;
+    }
+
+    let defaultContent = "";
+    if (newFileType === "html") {
+      defaultContent = `<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <h1>New Page: ${name}</h1>
+    <script src="script.js"></script>
+  </body>
+</html>`;
+    } else if (newFileType === "css") {
+      defaultContent = `/* Styles for ${name} */`;
+    } else if (newFileType === "js") {
+      defaultContent = `// Script for ${name}
+console.log("Loaded script: ${name}");`;
+    }
+
+    const newFile: ProjectFile = {
+      name,
+      type: newFileType,
+      content: defaultContent,
+      isDeletable: true
+    };
+
+    setFiles(prev => [...prev, newFile]);
+    setActiveFileName(name);
+    setIsAddModalOpen(false);
+    setNewFileName("");
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const [srcDoc, setSrcDoc] = useState("");
 
-  
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lineNumbersRef = useRef<HTMLDivElement>(null);
 
-  
   useEffect(() => {
     try {
       const searchParams = new URLSearchParams(window.location.search);
       const shareCode = searchParams.get("code");
       if (shareCode) {
         const decoded = JSON.parse(atob(shareCode));
-        if (decoded.html !== undefined) setHtmlCode(decoded.html);
-        if (decoded.css !== undefined) setCssCode(decoded.css);
-        if (decoded.js !== undefined) setJsCode(decoded.js);
+        if (Array.isArray(decoded) && decoded.length > 0) {
+          setFiles(decoded);
+          setActiveFileName(decoded[0].name);
+        } else if (decoded && (decoded.html !== undefined || decoded.css !== undefined || decoded.js !== undefined)) {
+          setFiles([
+            { name: "index.html", type: "html", content: decoded.html || "", isDeletable: false },
+            { name: "styles.css", type: "css", content: decoded.css || "", isDeletable: false },
+            { name: "script.js", type: "js", content: decoded.js || "", isDeletable: false }
+          ]);
+          setActiveFileName("index.html");
+        }
         console.log("📂 Loaded shared playground project successfully.");
       }
     } catch (e) {
@@ -173,7 +213,6 @@ export default function HtmlCompilerClient() {
     }
   }, []);
 
-  
   const handleScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
     const textarea = e.currentTarget;
     if (lineNumbersRef.current) {
@@ -181,7 +220,6 @@ export default function HtmlCompilerClient() {
     }
   };
 
-  
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Tab") {
       e.preventDefault();
@@ -191,9 +229,7 @@ export default function HtmlCompilerClient() {
       const val = textarea.value;
       const newVal = val.substring(0, start) + "  " + val.substring(end);
 
-      if (activeTab === "html") setHtmlCode(newVal);
-      else if (activeTab === "css") setCssCode(newVal);
-      else if (activeTab === "js") setJsCode(newVal);
+      setFiles(prev => prev.map(f => f.name === activeFileName ? { ...f, content: newVal } : f));
 
       setTimeout(() => {
         textarea.selectionStart = textarea.selectionEnd = start + 2;
@@ -201,8 +237,73 @@ export default function HtmlCompilerClient() {
     }
   };
 
-  
-  const getCompiledSource = (html: string, css: string, js: string) => {
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const textarea = e.target;
+    const val = textarea.value;
+    const selectionStart = textarea.selectionStart;
+
+    if (activeFileName.endsWith(".html") && selectionStart > 0 && val[selectionStart - 1] === ">") {
+      const beforeCursor = val.substring(0, selectionStart - 1);
+      const match = beforeCursor.match(/<([a-zA-Z0-9\-]+)(?:\s+[^>]*)?$/);
+      if (match) {
+        const tagName = match[1];
+        const selfClosing = ["img", "input", "br", "hr", "meta", "link", "source", "embed"];
+        if (!selfClosing.includes(tagName.toLowerCase())) {
+          const closeTag = `</${tagName}>`;
+          const newVal = val.substring(0, selectionStart) + closeTag + val.substring(selectionStart);
+          
+          setFiles(prev => prev.map(f => f.name === activeFileName ? { ...f, content: newVal } : f));
+          
+          setTimeout(() => {
+            if (textareaRef.current) {
+              textareaRef.current.selectionStart = textareaRef.current.selectionEnd = selectionStart;
+            }
+          }, 0);
+          return;
+        }
+      }
+    }
+
+    setFiles(prev => prev.map(f => f.name === activeFileName ? { ...f, content: val } : f));
+  };
+
+  const getCompiledSource = () => {
+    const activeFile = files.find(f => f.name === activeFileName);
+    const entryHtmlFile = activeFile?.type === "html" 
+      ? activeFile 
+      : (files.find(f => f.type === "html") || files[0]);
+
+    if (!entryHtmlFile) return "";
+
+    let html = entryHtmlFile.content;
+
+    // Resolve CSS links: <link rel="stylesheet" href="styles.css">
+    const cssLinkRegex = /<link[^>]*rel=["']stylesheet["'][^>]*href=["']([^"']+)["'][^>]*>|<link[^>]*href=["']([^"']+)["'][^>]*rel=["']stylesheet["'][^>]*>/g;
+    html = html.replace(cssLinkRegex, (match, href1, href2) => {
+      const href = href1 || href2;
+      const cssFile = files.find(f => f.name === href && f.type === "css");
+      if (cssFile) {
+        return `<style data-file="${href}">${cssFile.content}</style>`;
+      }
+      return match;
+    });
+
+    // Resolve JS scripts: <script src="script.js"></script>
+    const jsScriptRegex = /<script[^>]*src=["']([^"']+)["'][^>]*><\/script>/g;
+    html = html.replace(jsScriptRegex, (match, src) => {
+      const jsFile = files.find(f => f.name === src && f.type === "js");
+      if (jsFile) {
+        return `<script data-file="${src}">
+          try {
+            ${jsFile.content}
+          } catch (err) {
+            console.error("[${src}] " + err.message);
+          }
+        </script>`;
+      }
+      return match;
+    });
+
     const consoleInterceptor = `
       <script>
         (function() {
@@ -253,37 +354,26 @@ export default function HtmlCompilerClient() {
       </script>
     `;
 
-    return `
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            ${css}
-          </style>
-          ${consoleInterceptor}
-        </head>
-        <body>
-          ${html}
-          <script>
-            try {
-              ${js}
-            } catch (err) {
-              console.error(err.message);
-            }
-          </script>
-        </body>
-      </html>
-    `;
+    if (html.includes("<head>")) {
+      html = html.replace("<head>", `<head>\n${consoleInterceptor}`);
+    } else if (html.includes("<html>")) {
+      html = html.replace("<html>", `<html>\n<head>\n${consoleInterceptor}</head>`);
+    } else {
+      html = consoleInterceptor + html;
+    }
+
+    return html;
   };
 
-  
   const runCode = () => {
-    setSrcDoc(getCompiledSource(htmlCode, cssCode, jsCode));
+    setSrcDoc(getCompiledSource());
   };
 
-  
+  const runCodeMobile = () => {
+    runCode();
+    setActiveMobileView("output");
+  };
+
   useEffect(() => {
     const handleLogMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === "COMPILER_CONSOLE_LOG") {
@@ -301,7 +391,6 @@ export default function HtmlCompilerClient() {
     return () => window.removeEventListener("message", handleLogMessage);
   }, []);
 
-  
   useEffect(() => {
     if (autoRun) {
       const delayDebounce = setTimeout(() => {
@@ -309,41 +398,39 @@ export default function HtmlCompilerClient() {
       }, 500);
       return () => clearTimeout(delayDebounce);
     }
-  }, [htmlCode, cssCode, jsCode, autoRun]);
+  }, [files, autoRun]);
 
-  
   const handleReset = () => {
     if (confirm("Reset code back to standard templates? All current changes will be lost.")) {
-      setHtmlCode(BOILERPLATE.html);
-      setCssCode(BOILERPLATE.css);
-      setJsCode(BOILERPLATE.js);
+      setFiles(INITIAL_FILES);
+      setActiveFileName("index.html");
       setConsoleLogs([]);
     }
   };
 
   const handleClear = () => {
-    if (confirm("Wipe all editor canvases clean?")) {
-      setHtmlCode("");
-      setCssCode("");
-      setJsCode("");
+    if (confirm("Wipe all editor files clean? All code will be deleted.")) {
+      setFiles(prev => prev.map(f => ({ ...f, content: "" })));
       setConsoleLogs([]);
     }
   };
 
   const handleCopyCode = () => {
-    const combined = `/* HTML */\n${htmlCode}\n\n/* CSS */\n${cssCode}\n\n/* JS */\n${jsCode}`;
-    navigator.clipboard.writeText(combined);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const activeFile = files.find(f => f.name === activeFileName);
+    if (activeFile) {
+      navigator.clipboard.writeText(activeFile.content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const handleDownload = () => {
-    const combinedHtml = getCompiledSource(htmlCode, cssCode, jsCode);
+    const combinedHtml = getCompiledSource();
     const blob = new Blob([combinedHtml], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "index.html";
+    a.download = activeFileName.endsWith(".html") ? activeFileName : "index.html";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -352,8 +439,7 @@ export default function HtmlCompilerClient() {
 
   const handleShare = () => {
     try {
-      const codes = { html: htmlCode, css: cssCode, js: jsCode };
-      const base64 = btoa(JSON.stringify(codes));
+      const base64 = btoa(JSON.stringify(files));
       const shareUrl = `${window.location.origin}${window.location.pathname}?code=${base64}`;
       navigator.clipboard.writeText(shareUrl);
       setShared(true);
@@ -363,26 +449,25 @@ export default function HtmlCompilerClient() {
     }
   };
 
-  
-  const activeCode = activeTab === "html" ? htmlCode : activeTab === "css" ? cssCode : jsCode;
+  const activeFile = files.find(f => f.name === activeFileName);
+  const activeCode = activeFile ? activeFile.content : "";
   const linesCount = (activeCode.match(/\n/g) || []).length + 1;
   const lineNumbers = Array.from({ length: linesCount }, (_, i) => i + 1);
 
   return (
-    <div 
-      className={`flex flex-col bg-[var(--bg-base)] text-[var(--text-primary)] border-t border-[var(--border-color)] transition-all ${
-        isFullscreen ? "fixed inset-0 z-[9999] h-screen" : "h-[calc(100vh-64px)] w-full"
-      }`}
-    >
-      {}
+    <div className={`w-full bg-[var(--bg-base)] text-[var(--text-primary)] overflow-y-auto ${isFullscreen ? "h-screen" : "h-[calc(100vh-64px)] scroll-smooth"}`}>
+      <div 
+        className={`flex flex-col bg-[var(--bg-base)] transition-all shrink-0 ${
+          isFullscreen ? "fixed inset-0 z-[9999] h-screen" : "h-full w-full border-t border-[var(--border-color)]"
+        }`}
+      >
       <h1 className="sr-only">Online HTML, CSS, and JavaScript Sandbox Compiler</h1>
 
-      {}
+      {/* Desktop Toolbar Header */}
       <div 
-        className="flex flex-wrap items-center justify-between px-4 py-2 bg-[var(--bg-surface)] border-b border-[var(--border-color)] gap-3 shrink-0"
+        className="hidden md:flex flex-wrap items-center justify-between px-4 py-2 bg-[var(--bg-surface)] border-b border-[var(--border-color)] gap-3 shrink-0"
         style={{ zIndex: 10 }}
       >
-        {}
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-blue-600 text-white shrink-0">
             <Code2 size={16} />
@@ -390,9 +475,7 @@ export default function HtmlCompilerClient() {
           <span className="font-bold text-sm tracking-tight hidden sm:inline-block">HTML Sandbox Editor</span>
         </div>
 
-        {}
         <div className="flex items-center flex-wrap gap-2">
-          {}
           <button
             id="compiler-run-btn"
             onClick={runCode}
@@ -403,7 +486,6 @@ export default function HtmlCompilerClient() {
             <span>Run</span>
           </button>
 
-          {}
           <label className="flex items-center gap-2 px-2.5 py-1.5 border border-[var(--border-color)] rounded-lg text-xs font-medium cursor-pointer bg-[var(--bg-base)] select-none">
             <input 
               id="compiler-autorun-checkbox"
@@ -417,7 +499,6 @@ export default function HtmlCompilerClient() {
 
           <div className="w-px h-6 bg-[var(--border-color)] hidden xs:block" />
 
-          {}
           <button
             id="compiler-copy-btn"
             onClick={handleCopyCode}
@@ -436,20 +517,10 @@ export default function HtmlCompilerClient() {
             <Download size={14} />
           </button>
 
-          <button
-            id="compiler-share-btn"
-            onClick={handleShare}
-            className="flex items-center gap-1.5 px-3 py-1.5 border border-[var(--border-color)] rounded-lg hover:bg-[var(--bg-surface)] bg-[var(--bg-base)] transition-colors cursor-pointer text-[var(--text-secondary)] font-medium text-xs"
-            title="Share Playground Link"
-          >
-            <Share2 size={13} />
-            <span>{shared ? "Copied Link!" : "Share"}</span>
-          </button>
+
         </div>
 
-        {}
         <div className="flex items-center gap-2">
-          {}
           <button
             id="compiler-layout-btn"
             onClick={() => setLayout(layout === "side" ? "stack" : "side")}
@@ -459,7 +530,6 @@ export default function HtmlCompilerClient() {
             {layout === "side" ? <Rows size={14} /> : <Columns size={14} />}
           </button>
 
-          {}
           <button
             id="compiler-fullscreen-btn"
             onClick={() => setIsFullscreen(!isFullscreen)}
@@ -471,7 +541,6 @@ export default function HtmlCompilerClient() {
 
           <div className="w-px h-6 bg-[var(--border-color)]" />
 
-          {}
           <button
             id="compiler-reset-btn"
             onClick={handleReset}
@@ -492,122 +561,293 @@ export default function HtmlCompilerClient() {
         </div>
       </div>
 
-      {}
-      <div className={`flex-1 flex overflow-hidden ${layout === "side" ? "flex-col lg:flex-row" : "flex-col"}`}>
+      {/* Mobile Toolbar Header */}
+      <div 
+        className="flex md:hidden items-center justify-between px-3 py-2 bg-[#121316] border-b border-[#1f2026] shrink-0 h-14 relative"
+        style={{ zIndex: 50 }}
+      >
+        {/* Left: Code vs Output Switcher */}
+        <div className="flex items-center bg-[#1c1d22] p-0.5 rounded-lg border border-[#2b2c35]">
+          <button
+            onClick={() => setActiveMobileView("code")}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+              activeMobileView === "code"
+                ? "bg-[#2b2d35] text-white"
+                : "text-[#888aa0] hover:text-[#a0a2b8]"
+            }`}
+          >
+            Code
+          </button>
+          <button
+            onClick={() => setActiveMobileView("output")}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+              activeMobileView === "output"
+                ? "bg-[#2b2d35] text-white"
+                : "text-[#888aa0] hover:text-[#a0a2b8]"
+            }`}
+          >
+            Output
+          </button>
+        </div>
+
+        {/* Right: RUN, Dropdown Menu */}
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={runCodeMobile}
+            className="flex items-center gap-1 px-3 py-1.5 bg-[#f43f5e] hover:bg-[#db2777] text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
+          >
+            <Play size={10} fill="white" className="mt-[1px]" />
+            <span>RUN</span>
+          </button>
+
+          {/* Three-dots menu button */}
+          <div className="relative">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-1.5 text-[#888aa0] hover:text-white transition-colors cursor-pointer"
+              aria-label="More options"
+            >
+              <MoreVertical size={18} />
+            </button>
+
+            {isMenuOpen && (
+              <>
+                {/* Backdrop overlay to close menu */}
+                <div 
+                  className="fixed inset-0 z-40 bg-transparent" 
+                  onClick={() => setIsMenuOpen(false)}
+                />
+                
+                {/* Dropdown Menu */}
+                <div className="absolute right-0 mt-2 w-48 bg-[#1a1b21] border border-[#2b2d35] rounded-xl shadow-2xl p-1.5 z-50 text-white flex flex-col font-sans">
+                  {/* Auto-run Toggle */}
+                  <label className="flex items-center gap-2.5 px-3 py-2 hover:bg-[#2b2d35]/60 rounded-lg cursor-pointer select-none text-xs font-medium">
+                    <input 
+                      type="checkbox" 
+                      checked={autoRun} 
+                      onChange={() => setAutoRun(!autoRun)} 
+                      className="accent-[#10b981] w-3.5 h-3.5 cursor-pointer"
+                    />
+                    <span>Auto-run code</span>
+                  </label>
+
+                  <div className="h-px bg-[#2b2d35] my-1" />
+
+                  {/* Copy Code */}
+                  <button
+                    onClick={() => {
+                      handleCopyCode();
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center gap-2.5 w-full text-left px-3 py-2 hover:bg-[#2b2d35]/60 rounded-lg text-xs font-medium cursor-pointer"
+                  >
+                    {copied ? <Check size={13} className="text-emerald-500" /> : <Copy size={13} />}
+                    <span>{copied ? "Copied!" : "Copy Active Code"}</span>
+                  </button>
+
+                  {/* Download Code */}
+                  <button
+                    onClick={() => {
+                      handleDownload();
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center gap-2.5 w-full text-left px-3 py-2 hover:bg-[#2b2d35]/60 rounded-lg text-xs font-medium cursor-pointer"
+                  >
+                    <Download size={13} />
+                    <span>Download entry html</span>
+                  </button>
+
+
+
+                  <div className="h-px bg-[#2b2d35] my-1" />
+
+                  {/* Reset */}
+                  <button
+                    onClick={() => {
+                      handleReset();
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-amber-500 hover:bg-[#2b2d35]/60 rounded-lg text-xs font-medium cursor-pointer"
+                  >
+                    <RotateCcw size={13} />
+                    <span>Reset Boilerplate</span>
+                  </button>
+
+                  {/* Clear */}
+                  <button
+                    onClick={() => {
+                      handleClear();
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-rose-500 hover:bg-[#2b2d35]/60 rounded-lg text-xs font-medium cursor-pointer"
+                  >
+                    <Trash2 size={13} />
+                    <span>Clear Workspace</span>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Panel Area */}
+      <div className={`flex-1 flex overflow-hidden ${layout === "side" ? "flex-col md:flex-row" : "flex-col"}`}>
         
-        {}
-        <div className={`flex flex-col bg-[var(--bg-base)] border-r border-[var(--border-color)] min-h-[30%] ${
-          layout === "side" ? "w-full lg:w-1/2" : "w-full h-1/2 border-b"
-        }`}>
-          {}
-          <div className="flex items-center justify-between px-2 bg-[var(--bg-surface)] border-b border-[var(--border-color)] select-none shrink-0 h-10">
+        {/* Code Editor Container */}
+        <div 
+          className={`flex-col bg-[#0d0e12] md:border-r border-[#1f2026] md:flex ${
+            activeMobileView === "code" ? "flex" : "hidden"
+          } ${
+            layout === "side" ? "w-full md:w-1/2" : "w-full md:h-1/2 border-b"
+          }`}
+        >
+          {/* Desktop File Tabs Header */}
+          <div className="hidden md:flex items-center justify-between px-2 bg-[var(--bg-surface)] border-b border-[var(--border-color)] select-none shrink-0 h-10 overflow-x-auto scrollbar-none">
             <div className="flex items-center gap-1">
-              {[
-                { id: "html", label: "HTML", dot: "bg-orange-500" },
-                { id: "css", label: "CSS", dot: "bg-blue-500" },
-                { id: "js", label: "JavaScript", dot: "bg-yellow-500" },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  id={`compiler-tab-${tab.id}`}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-t-lg border-b-2 transition-all cursor-pointer ${
-                    activeTab === tab.id
-                      ? "border-blue-600 text-blue-600 bg-[var(--bg-base)]"
-                      : "border-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-base)]/50"
-                  }`}
-                >
-                  <span className={`w-2 h-2 rounded-full ${tab.dot}`} />
-                  {tab.label}
-                </button>
-              ))}
+              {files.map((file) => {
+                let dot = "bg-orange-500";
+                if (file.type === "css") dot = "bg-blue-500";
+                else if (file.type === "js") dot = "bg-yellow-500";
+
+                return (
+                  <button
+                    key={file.name}
+                    onClick={() => setActiveFileName(file.name)}
+                    className={`flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-t-lg border-b-2 transition-all cursor-pointer ${
+                      activeFileName === file.name
+                        ? "border-blue-600 text-blue-600 bg-[var(--bg-base)]"
+                        : "border-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-base)]/50"
+                    }`}
+                  >
+                    <span className={`w-2 h-2 rounded-full ${dot}`} />
+                    <span>{file.name}</span>
+                    {file.isDeletable && (
+                      <span 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setFiles(prev => prev.filter(f => f.name !== file.name));
+                          if (activeFileName === file.name) {
+                            setActiveFileName("index.html");
+                          }
+                        }}
+                        className="text-slate-400 hover:text-rose-500 font-normal ml-1 cursor-pointer"
+                      >
+                        ✕
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+              {/* Add file button */}
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="flex items-center justify-center w-8 h-8 text-slate-400 hover:text-slate-200 transition-colors font-medium text-lg cursor-pointer"
+                title="Add New File"
+              >
+                +
+              </button>
             </div>
-            <div className="text-[10px] uppercase font-semibold text-[var(--text-tertiary)] px-2">
+            <div className="text-[10px] uppercase font-semibold text-[var(--text-tertiary)] px-2 whitespace-nowrap">
               Editor
             </div>
           </div>
 
-          {}
+          {/* Mobile File Tabs Header */}
+          <div className="flex md:hidden items-center justify-between bg-[#121316] border-b border-[#1f2026] select-none shrink-0 overflow-x-auto scrollbar-none h-11 px-2 font-sans">
+            <div className="flex items-center gap-1">
+              {files.map((file) => {
+                let icon = <span className="text-orange-500 font-bold text-xs mr-1">&lt;&gt;</span>;
+                if (file.type === "css") icon = <span className="text-blue-400 font-bold text-xs mr-1">#</span>;
+                else if (file.type === "js") icon = <span className="bg-yellow-500 text-black font-extrabold text-[8px] px-0.5 rounded-sm scale-90 mr-1.5">JS</span>;
+
+                return (
+                  <button
+                    key={file.name}
+                    onClick={() => setActiveFileName(file.name)}
+                    className={`flex items-center px-3.5 py-2 text-xs font-medium rounded-t-lg transition-all cursor-pointer border-t border-x ${
+                      activeFileName === file.name
+                        ? "bg-[#0d0e12] text-white border-[#2b2c35]"
+                        : "bg-[#18181c] text-[#888aa0] border-transparent hover:bg-[#1e1e24]"
+                    }`}
+                  >
+                    {icon}
+                    <span className="mr-2 text-[11px] font-mono">{file.name}</span>
+                    {file.isDeletable ? (
+                      <span 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setFiles(prev => prev.filter(f => f.name !== file.name));
+                          if (activeFileName === file.name) {
+                            setActiveFileName("index.html");
+                          }
+                        }}
+                        className="text-[#5b5d6b] hover:text-rose-500 transition-colors text-[9px] ml-1 p-0.5 cursor-pointer"
+                      >
+                        ✕
+                      </span>
+                    ) : (
+                      <span 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setFiles(prev => prev.map(f => f.name === file.name ? { ...f, content: "" } : f));
+                        }}
+                        className="text-[#3b3d4b] hover:text-[#5b5d6b] transition-colors text-[9px] ml-1 p-0.5 cursor-pointer"
+                      >
+                        ✕
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+              
+              {/* Add file button */}
+              <button 
+                onClick={() => setIsAddModalOpen(true)}
+                className="flex items-center justify-center w-8 h-8 rounded-lg text-[#888aa0] hover:bg-[#2b2d35]/30 hover:text-white transition-colors text-base font-medium cursor-pointer"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* Editor Textarea Area */}
           <div className="flex-1 relative flex overflow-hidden">
-            {}
             <div 
               ref={lineNumbersRef}
-              className="w-12 bg-[var(--bg-surface)] border-r border-[var(--border-color)] text-right py-3 select-none overflow-hidden font-mono text-xs text-[var(--text-tertiary)] flex flex-col items-stretch shrink-0"
-              style={{ lineHeight: "1.7", boxSizing: "border-box" }}
+              className="w-12 bg-[var(--bg-surface)] md:bg-[var(--bg-surface)] bg-[#121316] border-r border-[var(--border-color)] md:border-[var(--border-color)] border-[#1f2026] text-right py-3 select-none overflow-hidden font-mono text-sm text-[var(--text-tertiary)] flex flex-col items-stretch shrink-0"
+              style={{ lineHeight: "24px", boxSizing: "border-box" }}
             >
               {lineNumbers.map((num) => (
-                <div key={num} className="pr-3 leading-6">
+                <div key={num} className="pr-3" style={{ height: "24px", lineHeight: "24px" }}>
                   {num}
                 </div>
               ))}
             </div>
 
-            {}
             <div className="flex-1 relative h-full">
-              {}
               <textarea
-                ref={activeTab === "html" ? textareaRef : null}
-                id="compiler-html-textarea"
-                aria-label="HTML Code Input"
-                value={htmlCode}
-                onChange={(e) => setHtmlCode(e.target.value)}
-                onScroll={activeTab === "html" ? handleScroll : undefined}
+                ref={textareaRef}
+                value={files.find(f => f.name === activeFileName)?.content || ""}
+                onChange={handleTextareaChange}
+                onScroll={handleScroll}
                 onKeyDown={handleKeyDown}
                 spellCheck="false"
                 autoCapitalize="none"
                 autoComplete="off"
-                className={`absolute inset-0 w-full h-full p-3 font-mono text-sm leading-6 resize-none bg-transparent text-[var(--text-primary)] border-none outline-none focus:ring-0 ${
-                  activeTab === "html" ? "z-10 opacity-100" : "z-0 opacity-0 pointer-events-none"
-                }`}
-                placeholder="<!-- Write HTML code here -->"
+                wrap="off"
+                className="absolute inset-0 w-full h-full p-3 font-mono text-sm resize-none bg-transparent text-[var(--text-primary)] border-none outline-none focus:ring-0 z-10 opacity-100"
+                placeholder={
+                  activeFileName.endsWith(".html")
+                    ? "<!-- Write HTML code here -->"
+                    : activeFileName.endsWith(".css")
+                      ? "/* Write CSS styles here */"
+                      : "// Write JavaScript code here"
+                }
                 style={{ 
                   fontFamily: "var(--font-mono)",
-                  tabSize: 2,
-                  WebkitTextFillColor: "inherit"
-                }}
-              />
-
-              {}
-              <textarea
-                ref={activeTab === "css" ? textareaRef : null}
-                id="compiler-css-textarea"
-                aria-label="CSS Code Input"
-                value={cssCode}
-                onChange={(e) => setCssCode(e.target.value)}
-                onScroll={activeTab === "css" ? handleScroll : undefined}
-                onKeyDown={handleKeyDown}
-                spellCheck="false"
-                autoCapitalize="none"
-                autoComplete="off"
-                className={`absolute inset-0 w-full h-full p-3 font-mono text-sm leading-6 resize-none bg-transparent text-[var(--text-primary)] border-none outline-none focus:ring-0 ${
-                  activeTab === "css" ? "z-10 opacity-100" : "z-0 opacity-0 pointer-events-none"
-                }`}
-                placeholder="/* Write CSS styles here */"
-                style={{ 
-                  fontFamily: "var(--font-mono)",
-                  tabSize: 2,
-                  WebkitTextFillColor: "inherit"
-                }}
-              />
-
-              {}
-              <textarea
-                ref={activeTab === "js" ? textareaRef : null}
-                id="compiler-js-textarea"
-                aria-label="JavaScript Code Input"
-                value={jsCode}
-                onChange={(e) => setJsCode(e.target.value)}
-                onScroll={activeTab === "js" ? handleScroll : undefined}
-                onKeyDown={handleKeyDown}
-                spellCheck="false"
-                autoCapitalize="none"
-                autoComplete="off"
-                className={`absolute inset-0 w-full h-full p-3 font-mono text-sm leading-6 resize-none bg-transparent text-[var(--text-primary)] border-none outline-none focus:ring-0 ${
-                  activeTab === "js" ? "z-10 opacity-100" : "z-0 opacity-0 pointer-events-none"
-                }`}
-                placeholder="// Write JavaScript code here"
-                style={{ 
-                  fontFamily: "var(--font-mono)",
+                  fontSize: "14px",
+                  lineHeight: "24px",
                   tabSize: 2,
                   WebkitTextFillColor: "inherit"
                 }}
@@ -616,11 +856,15 @@ export default function HtmlCompilerClient() {
           </div>
         </div>
 
-        {}
-        <div className={`flex-1 flex flex-col bg-white overflow-hidden relative min-h-[30%] ${
-          layout === "side" ? "w-full lg:w-1/2" : "w-full h-1/2"
-        }`}>
-          {}
+        {/* Live Output Preview Container */}
+        <div 
+          className={`flex-1 flex-col bg-white overflow-hidden relative md:flex ${
+            activeMobileView === "output" ? "flex" : "hidden"
+          } ${
+            layout === "side" ? "w-full md:w-1/2" : "w-full md:h-1/2"
+          }`}
+        >
+          {/* Output Preview Toolbar Header */}
           <div className="flex items-center justify-between px-3 bg-[var(--bg-surface)] border-b border-[var(--border-color)] select-none shrink-0 h-10">
             <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-secondary)]">
               <Eye size={13} className="text-blue-600" />
@@ -642,7 +886,7 @@ export default function HtmlCompilerClient() {
             </div>
           </div>
 
-          {}
+          {/* Iframe Preview Container */}
           <div className="flex-1 bg-white relative">
             {srcDoc ? (
               <iframe
@@ -659,10 +903,9 @@ export default function HtmlCompilerClient() {
             )}
           </div>
 
-          {}
+          {/* Dev Console Container */}
           {isConsoleOpen && (
             <div className="h-44 border-t border-[var(--border-color)] bg-[#0f172a] text-[#f8fafc] flex flex-col shrink-0">
-              {}
               <div className="flex items-center justify-between px-3 py-1.5 bg-[#1e293b] border-b border-slate-800 shrink-0 select-none">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-slate-300">
                   <TerminalIcon size={12} className="text-yellow-400" />
@@ -686,7 +929,6 @@ export default function HtmlCompilerClient() {
                 </div>
               </div>
 
-              {}
               <div className="flex-1 p-3 overflow-y-auto font-mono text-xs space-y-2.5">
                 {consoleLogs.length === 0 ? (
                   <div className="text-slate-500 text-center py-6 italic select-none">
@@ -700,7 +942,7 @@ export default function HtmlCompilerClient() {
                         log.type === "error" 
                           ? "text-rose-400" 
                           : log.type === "warn" 
-                            ? "text-amber-400" 
+                            ? "text-[#f59e0b]" 
                             : log.type === "info" 
                               ? "text-sky-400" 
                               : "text-slate-200"
@@ -719,6 +961,154 @@ export default function HtmlCompilerClient() {
           )}
         </div>
       </div>
+
+      {/* Add File Modal */}
+      {isAddModalOpen && (
+        <div 
+          className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          onClick={() => setIsAddModalOpen(false)}
+        >
+          <form 
+            onSubmit={handleCreateFile}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm rounded-xl p-5 border border-[#2b2d35] bg-[#1a1b21] shadow-2xl text-white space-y-4 font-sans"
+          >
+            <h3 className="text-sm font-semibold text-slate-200">Create New File</h3>
+            
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">File Name</label>
+              <input
+                required
+                type="text"
+                value={newFileName}
+                onChange={(e) => handleNewFileNameChange(e.target.value)}
+                placeholder="e.g. about.html, styles.css"
+                className="w-full px-3 py-2 rounded-lg bg-[#2b2d35] border border-slate-700 outline-none text-xs text-white placeholder-slate-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">File Type</label>
+              <select
+                value={newFileType}
+                onChange={(e) => setNewFileType(e.target.value as any)}
+                className="w-full px-3 py-2 rounded-lg bg-[#2b2d35] border border-slate-700 outline-none text-xs text-white focus:border-blue-500 cursor-pointer"
+              >
+                <option value="html">HTML File (.html)</option>
+                <option value="css">CSS Stylesheet (.css)</option>
+                <option value="js">JavaScript Script (.js)</option>
+              </select>
+            </div>
+
+            <div className="flex gap-2 justify-end pt-2 text-xs">
+              <button
+                type="button"
+                onClick={() => setIsAddModalOpen(false)}
+                className="px-4 py-2 border border-slate-700 hover:bg-[#2b2d35] rounded-lg transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold cursor-pointer"
+              >
+                Create
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+
+      {!isFullscreen && (
+        <div className="bg-[var(--bg-surface)] border-t border-[var(--border-color)]">
+          <div className="max-w-5xl mx-auto px-6 py-16 space-y-12">
+            <div className="space-y-4">
+              <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight" style={{ color: "var(--text-primary)" }}>
+                Online HTML, CSS, and JavaScript Playground Compiler
+              </h2>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                Welcome to LearnoBoy's interactive front-end coding playground. This web sandbox is designed for developers, students, and educators to write, compile, and preview client-side code in real-time. Whether you are practicing HTML tags, learning CSS styling, or testing interactive JavaScript events, this tool provides a live, zero-setup programming workspace right in your browser.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+              <div className="space-y-3">
+                <h3 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                  🚀 Dynamic Multi-File Support
+                </h3>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  Unlike simple static compilers, our playground offers a multi-file tabs interface. You can create multiple HTML pages, custom style sheets, and scripts by clicking the <span className="font-semibold text-blue-500 font-mono">+</span> button. This enables designing complex web applications with modular code architectures.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <h3 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                  🔗 Manual Asset Linking & Control
+                </h3>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  Get full control over how your files connect. To style your pages or run logic, link your custom CSS and JS files using standard HTML tags:
+                  <code className="block mt-2 p-2 bg-[#121316] rounded border border-[#2b2d35] text-[10px] text-orange-400 font-mono">
+                    &lt;link rel="stylesheet" href="styles.css"&gt;<br />
+                    &lt;script src="script.js"&gt;&lt;/script&gt;
+                  </code>
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <h3 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                  💬 Real-Time Console Stream
+                </h3>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  Debug your Javascript instantly. The embedded Developer Console logs console output, warnings, errors, and system events. This allows you to track code execution and inspect variables on the fly, just like your browser's inspect element tool.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <h3 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                  💻 Responsive & Mobile IDE
+                </h3>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  Write code anywhere. Our compiler is fully responsive and switches to an optimized mobile IDE viewport on smaller screens, featuring scrollable file tabs, overlay action dropdowns, and switchable Code vs Output tabs.
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t border-[var(--border-color)] pt-8 space-y-6">
+              <h3 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
+                Frequently Asked Questions (FAQs)
+              </h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+                    Q: Do I need to pay or install anything to use this compiler?
+                  </h4>
+                  <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                    A: No, LearnoBoy Sandbox is 100% free, runs completely client-side in your web browser, and does not require any third-party plugins, downloads, or local setup.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+                    Q: How do I link stylesheets and javascripts to my HTML files?
+                  </h4>
+                  <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                    A: Insert the stylesheet link tag in the head of your HTML (e.g. <code>&lt;link rel="stylesheet" href="styles.css"&gt;</code>) and script source tag before the body closes (e.g. <code>&lt;script src="script.js"&gt;&lt;/script&gt;</code>).
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+                    Q: Can I share my project with others?
+                  </h4>
+                  <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                    A: Yes! Simply copy the combined code or download the files.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

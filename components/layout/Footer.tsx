@@ -7,11 +7,11 @@ import { useState } from "react";
 
 const FOOTER_LINKS = {
   Learn: [
-    { href: "/javascript", label: "JavaScript" },
-    { href: "/python", label: "Python" },
-    { href: "/data-structures", label: "Data Structures" },
+    { href: "/coding/javascript", label: "JavaScript" },
+    { href: "/coding/python", label: "Python" },
+    { href: "/dsa", label: "Data Structures" },
     { href: "/web-development", label: "Web Development" },
-    { href: "/databases", label: "Databases" },
+    { href: "/database", label: "Databases" },
   ],
   Platform: [
     { href: "/", label: "Home" },
@@ -19,13 +19,12 @@ const FOOTER_LINKS = {
     { href: "/contact", label: "Contact Us" },
     { href: "/search", label: "Search Articles" },
     { href: "/donors", label: "Donors Leaderboard" },
-    { href: "/admin", label: "Admin" },
   ],
   Playgrounds: [
     { href: "/compiler", label: "Online Compilers" },
     { href: "/compiler/html", label: "HTML/CSS/JS Sandbox" },
-    { href: "/compiler/python", label: "Python Compiler" },
-    { href: "/compiler/java", label: "Java Compiler" },
+    { href: "/compiler", label: "Python Compiler" },
+    { href: "/compiler", label: "Java Compiler" },
   ],
   Legal: [
     { href: "/privacy", label: "Privacy Policy" },
@@ -343,12 +342,11 @@ export function Footer() {
             <div className="sm:col-span-2 md:col-span-1">
               <Link href="/" className="inline-flex mb-4">
                 <Image
-                  src="/images/logo-gif.gif"
+                  src="/images/logo.png"
                   alt="LearnoBoy"
-                  width={300}
-                  height={300}
-                  unoptimized
-                  style={{ height: "200px", width: "auto", borderRadius: "30%" }}
+                  width={120}
+                  height={120}
+                  style={{ height: "120px", width: "auto", borderRadius: "28%", objectFit: "contain" }}
                 />
               </Link>
               <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--text-secondary)" }}>
@@ -386,7 +384,7 @@ export function Footer() {
                 </h3>
                 <ul className="space-y-2">
                   {links.map((link) => (
-                    <li key={link.href}>
+                    <li key={`${link.href}-${link.label}`}>
                       <Link
                         href={link.href}
                         className="text-sm transition-colors duration-200"

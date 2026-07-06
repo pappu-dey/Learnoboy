@@ -10,7 +10,6 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    
     await connectDB();
 
     const [slugs, categories, authors, tags] = await Promise.all([
@@ -22,72 +21,45 @@ export async function GET() {
 
     const now = new Date().toISOString();
 
-    
+    // ─── Static Pages ──────────────────────────────────────────────────────────
     const staticPages = [
-      { url: BASE_URL, lastmod: now, priority: "1.0", changefreq: "daily" },
-      {
-        url: `${BASE_URL}/about`,
-        lastmod: now,
-        priority: "0.8",
-        changefreq: "monthly",
-      },
-      {
-        url: `${BASE_URL}/contact`,
-        lastmod: now,
-        priority: "0.7",
-        changefreq: "monthly",
-      },
-      {
-        url: `${BASE_URL}/search`,
-        lastmod: now,
-        priority: "0.5",
-        changefreq: "monthly",
-      },
-      {
-        url: `${BASE_URL}/donors`,
-        lastmod: now,
-        priority: "0.6",
-        changefreq: "monthly",
-      },
-      {
-        url: `${BASE_URL}/apply`,
-        lastmod: now,
-        priority: "0.7",
-        changefreq: "monthly",
-      },
-      {
-        url: `${BASE_URL}/privacy`,
-        lastmod: now,
-        priority: "0.3",
-        changefreq: "yearly",
-      },
-      {
-        url: `${BASE_URL}/terms`,
-        lastmod: now,
-        priority: "0.3",
-        changefreq: "yearly",
-      },
-      {
-        url: `${BASE_URL}/cookie-policy`,
-        lastmod: now,
-        priority: "0.3",
-        changefreq: "yearly",
-      },
-      {
-        url: `${BASE_URL}/disclaimer`,
-        lastmod: now,
-        priority: "0.3",
-        changefreq: "yearly",
-      },
-      {
-        url: `${BASE_URL}/author`,
-        lastmod: now,
-        priority: "0.7",
-        changefreq: "weekly",
-      },
+      // Home
+      { url: BASE_URL,                          lastmod: now, priority: "1.0",  changefreq: "daily"   },
+
+      // Primary info pages
+      { url: `${BASE_URL}/about`,               lastmod: now, priority: "0.8",  changefreq: "monthly" },
+      { url: `${BASE_URL}/contact`,             lastmod: now, priority: "0.7",  changefreq: "monthly" },
+      { url: `${BASE_URL}/search`,              lastmod: now, priority: "0.6",  changefreq: "weekly"  },
+      { url: `${BASE_URL}/donors`,              lastmod: now, priority: "0.6",  changefreq: "monthly" },
+      { url: `${BASE_URL}/apply`,               lastmod: now, priority: "0.7",  changefreq: "monthly" },
+
+      // Author listing
+      { url: `${BASE_URL}/author`,              lastmod: now, priority: "0.7",  changefreq: "weekly"  },
+
+      // Compiler / interactive tools
+      { url: `${BASE_URL}/compiler`,            lastmod: now, priority: "0.7",  changefreq: "weekly"  },
+      { url: `${BASE_URL}/compiler/html`,       lastmod: now, priority: "0.8",  changefreq: "weekly"  },
+
+      // Tools hub
+      { url: `${BASE_URL}/tools`,               lastmod: now, priority: "0.8",  changefreq: "monthly" },
+      { url: `${BASE_URL}/tools/calculator`,    lastmod: now, priority: "0.8",  changefreq: "monthly" },
+
+      // Unit converters
+      { url: `${BASE_URL}/tools/unitconverters`,           lastmod: now, priority: "0.8",  changefreq: "monthly" },
+      { url: `${BASE_URL}/tools/unitconverters/academic`,  lastmod: now, priority: "0.85", changefreq: "monthly" },
+      { url: `${BASE_URL}/tools/unitconverters/area`,      lastmod: now, priority: "0.85", changefreq: "monthly" },
+      { url: `${BASE_URL}/tools/unitconverters/age`,       lastmod: now, priority: "0.85", changefreq: "monthly" },
+      { url: `${BASE_URL}/tools/unitconverters/interest`,  lastmod: now, priority: "0.85", changefreq: "monthly" },
+
+      // Legal / policy pages (lower priority, rarely change)
+      { url: `${BASE_URL}/privacy`,             lastmod: now, priority: "0.3",  changefreq: "yearly"  },
+      { url: `${BASE_URL}/terms`,               lastmod: now, priority: "0.3",  changefreq: "yearly"  },
+      { url: `${BASE_URL}/cookie-policy`,       lastmod: now, priority: "0.3",  changefreq: "yearly"  },
+      { url: `${BASE_URL}/disclaimer`,          lastmod: now, priority: "0.3",  changefreq: "yearly"  },
+      { url: `${BASE_URL}/editorial-policy`,    lastmod: now, priority: "0.3",  changefreq: "yearly"  },
     ];
 
-    
+    // ─── Category & Sub-category Pages ────────────────────────────────────────
     const categoryPages: { url: string; lastmod: string; priority: string; changefreq: string }[] = [];
     categories.forEach((cat) => {
       categoryPages.push({
@@ -109,15 +81,15 @@ export async function GET() {
       }
     });
 
-    
-    const articlePages = slugs.map(({ category, subcategory, slug }) => ({
+    // ─── Article Pages (use real updatedAt as lastmod) ─────────────────────────
+    const articlePages = slugs.map(({ category, subcategory, slug, lastmod }) => ({
       url: `${BASE_URL}/${category}/${subcategory}/${slug}`,
-      lastmod: now,
+      lastmod,
       priority: "0.9",
       changefreq: "monthly",
     }));
 
-    
+    // ─── Author Profile Pages ─────────────────────────────────────────────────
     const authorPages = authors.map((auth: any) => ({
       url: `${BASE_URL}/author/${auth.slug}`,
       lastmod: now,
@@ -125,7 +97,7 @@ export async function GET() {
       changefreq: "weekly",
     }));
 
-    
+    // ─── Tag Pages ────────────────────────────────────────────────────────────
     const tagPages = tags.map((tag: any) => ({
       url: `${BASE_URL}/tag/${tag.slug}`,
       lastmod: now,
@@ -133,6 +105,7 @@ export async function GET() {
       changefreq: "weekly",
     }));
 
+    // ─── Merge & Deduplicate ──────────────────────────────────────────────────
     const allPages = [
       ...staticPages,
       ...categoryPages,
@@ -141,18 +114,19 @@ export async function GET() {
       ...tagPages,
     ];
 
-    
     const seenUrls = new Set<string>();
     const uniquePages = allPages.filter((page) => {
-      if (seenUrls.has(page.url)) {
-        return false;
-      }
+      if (seenUrls.has(page.url)) return false;
       seenUrls.add(page.url);
       return true;
     });
 
+    // ─── Render XML ───────────────────────────────────────────────────────────
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+          http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 ${uniquePages
   .map(
     (page) => `  <url>
@@ -167,8 +141,9 @@ ${uniquePages
 
     return new NextResponse(xml, {
       headers: {
-        "Content-Type": "application/xml",
-        "Cache-Control": "public, max-age=86400, s-maxage=86400",
+        "Content-Type": "application/xml; charset=utf-8",
+        // Cache for 1 hour; bust with revalidatePath("/sitemap.xml") on every publish
+        "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=60",
       },
     });
   } catch (error) {
@@ -176,4 +151,3 @@ ${uniquePages
     return new NextResponse("Error generating sitemap", { status: 500 });
   }
 }
-

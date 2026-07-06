@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { UserPlus, UserCheck, X } from "lucide-react";
+import { getClientSession } from "@/lib/auth/clientSession";
 
 interface AuthorFollowButtonProps {
   slug: string;
@@ -52,10 +53,21 @@ function LoginToast({ message, onDismiss }: { message: string; onDismiss: () => 
 }
 
 export function AuthorFollowButton({ slug, initialFollowers, isLoggedIn = false }: AuthorFollowButtonProps) {
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(isLoggedIn);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followers, setFollowers] = useState(initialFollowers);
   const [showToast, setShowToast] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setIsUserLoggedIn(true);
+    } else {
+      getClientSession().then((user) => {
+        if (user) setIsUserLoggedIn(true);
+      });
+    }
+  }, [isLoggedIn]);
 
   
   useEffect(() => {
@@ -71,7 +83,7 @@ export function AuthorFollowButton({ slug, initialFollowers, isLoggedIn = false 
 
   
   useEffect(() => {
-    if (!isLoggedIn) return;
+    if (!isUserLoggedIn) return;
     const wasFollowing = getFollowedSlugs().has(slug);
     setIsFollowing(wasFollowing);
 
@@ -93,10 +105,10 @@ export function AuthorFollowButton({ slug, initialFollowers, isLoggedIn = false 
           .catch(() => {  });
       }
     }
-  }, [slug, isLoggedIn]);
+  }, [slug, isUserLoggedIn]);
 
   const handleToggle = () => {
-    if (!isLoggedIn) {
+    if (!isUserLoggedIn) {
       setShowToast(true);
       return;
     }
@@ -133,15 +145,15 @@ export function AuthorFollowButton({ slug, initialFollowers, isLoggedIn = false 
       <div className="relative">
         <button
           onClick={handleToggle}
-          aria-pressed={isLoggedIn ? isFollowing : undefined}
+          aria-pressed={isUserLoggedIn ? isFollowing : undefined}
           aria-label={isFollowing ? "Unfollow this author" : "Follow this author"}
           className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold border transition-all cursor-pointer select-none active:scale-95 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--link-color)] ${
-            isLoggedIn && isFollowing
+            isUserLoggedIn && isFollowing
               ? "bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/20"
               : "bg-[var(--link-color)] text-white border-[var(--link-color)] hover:bg-[var(--link-hover)]"
           }`}
         >
-          {isLoggedIn && isFollowing ? (
+          {isUserLoggedIn && isFollowing ? (
             <><UserCheck size={16} className="animate-pulse" aria-hidden="true" /><span>Following</span></>
           ) : (
             <><UserPlus size={16} aria-hidden="true" /><span>Follow</span></>

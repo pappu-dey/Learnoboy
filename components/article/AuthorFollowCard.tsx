@@ -6,6 +6,7 @@ import { UserPlus, UserCheck, Users, X } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import type { IAuthor } from "@/types";
 import { AuthorAvatar } from "./AuthorPrimitives";
+import { getClientSession } from "@/lib/auth/clientSession";
 
 interface AuthorFollowCardProps {
   author: IAuthor;
@@ -57,11 +58,22 @@ function LoginToast({ message, onDismiss }: { message: string; onDismiss: () => 
 }
 
 export function AuthorFollowCard({ author, isLoggedIn = false }: AuthorFollowCardProps) {
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(isLoggedIn);
   const [isFollowing, setIsFollowing] = useState(false);
   
   const [followers, setFollowers] = useState<number>(author.followers ?? 0);
   const [showToast, setShowToast] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setIsUserLoggedIn(true);
+    } else {
+      getClientSession().then((user) => {
+        if (user) setIsUserLoggedIn(true);
+      });
+    }
+  }, [isLoggedIn]);
 
   
   useEffect(() => {
@@ -77,7 +89,7 @@ export function AuthorFollowCard({ author, isLoggedIn = false }: AuthorFollowCar
 
   
   useEffect(() => {
-    if (!isLoggedIn) return;
+    if (!isUserLoggedIn) return;
     const wasFollowing = getFollowedSlugs().has(author.slug);
     setIsFollowing(wasFollowing);
 
@@ -99,10 +111,10 @@ export function AuthorFollowCard({ author, isLoggedIn = false }: AuthorFollowCar
           .catch(() => {  });
       }
     }
-  }, [author.slug, isLoggedIn]);
+  }, [author.slug, isUserLoggedIn]);
 
   const handleFollowToggle = () => {
-    if (!isLoggedIn) {
+    if (!isUserLoggedIn) {
       setShowToast(true);
       return;
     }
@@ -170,7 +182,7 @@ export function AuthorFollowCard({ author, isLoggedIn = false }: AuthorFollowCar
               <div className="flex items-center gap-1.5 mt-1 text-[11px] text-[var(--text-tertiary)] font-medium">
                 <Users size={11} aria-hidden="true" />
                 <span>{followers.toLocaleString()} {followers === 1 ? "follower" : "followers"}</span>
-                {isLoggedIn && isFollowing && (
+                {isUserLoggedIn && isFollowing && (
                   <>
                     <span className="opacity-40">•</span>
                     <span className="text-green-600 font-semibold">You follow this author</span>
@@ -184,15 +196,15 @@ export function AuthorFollowCard({ author, isLoggedIn = false }: AuthorFollowCar
           <div className="relative flex-shrink-0">
             <button
               onClick={handleFollowToggle}
-              aria-pressed={isLoggedIn ? isFollowing : undefined}
+              aria-pressed={isUserLoggedIn ? isFollowing : undefined}
               aria-label={isFollowing ? `Unfollow ${author.name}` : `Follow ${author.name}`}
               className={`flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer select-none active:scale-95 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--link-color)] ${
-                isLoggedIn && isFollowing
+                isUserLoggedIn && isFollowing
                   ? "bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/20"
                   : "bg-[var(--link-color)] text-white border-[var(--link-color)] hover:bg-[var(--link-hover)]"
               }`}
             >
-              {isLoggedIn && isFollowing ? (
+              {isUserLoggedIn && isFollowing ? (
                 <>
                   <UserCheck size={13} className="animate-pulse" aria-hidden="true" />
                   <span>Following</span>

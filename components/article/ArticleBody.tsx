@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
-import "highlight.js/styles/github.css";
+import YouTube from "@/components/YouTube";
 
 interface ArticleBodyProps {
   content: string;
@@ -25,6 +25,7 @@ function CopyButton({ text }: { text: string }) {
     <button
       onClick={handleCopy}
       aria-label="Copy code"
+      data-hide-print
       style={{
         position: "absolute",
         top: "0.75rem",
@@ -92,6 +93,49 @@ function CodeBlock({
       <CopyButton text={rawText} />
     </div>
   );
+}
+
+function parseYouTubeUrl(url: string): { id: string; start?: number } | null {
+  if (!url) return null;
+  try {
+    if (url.includes("youtu.be/")) {
+      const parts = url.split("youtu.be/");
+      if (parts.length > 1) {
+        const pathAndQuery = parts[1].split("?");
+        const id = pathAndQuery[0];
+        let start: number | undefined;
+        if (pathAndQuery.length > 1) {
+          const params = new URLSearchParams(pathAndQuery[1]);
+          const t = params.get("t") || params.get("start");
+          if (t) {
+            start = parseInt(t.replace("s", ""), 10);
+          }
+        }
+        return { id, start: isNaN(start as number) ? undefined : start };
+      }
+    }
+    const parsed = new URL(url);
+    if (parsed.hostname.includes("youtube.com")) {
+      let id = parsed.searchParams.get("v");
+      if (!id && parsed.pathname.startsWith("/embed/")) {
+        id = parsed.pathname.split("/embed/")[1]?.split("?")[0];
+      }
+      if (!id && parsed.pathname.startsWith("/watch/")) {
+        id = parsed.pathname.split("/watch/")[1]?.split("?")[0];
+      }
+      if (id) {
+        const t = parsed.searchParams.get("t") || parsed.searchParams.get("start");
+        let start: number | undefined;
+        if (t) {
+          start = parseInt(t.replace("s", ""), 10);
+        }
+        return { id, start: isNaN(start as number) ? undefined : start };
+      }
+    }
+  } catch {
+    // Ignore URL parsing exceptions for non-URLs
+  }
+  return null;
 }
 
 export function ArticleBody({ content }: ArticleBodyProps) {
@@ -209,9 +253,81 @@ export function ArticleBody({ content }: ArticleBodyProps) {
           font-style: italic;
           color: var(--text-secondary);
         }
-        /* highlight.js theme fix for light/dark */
+        /* highlight.js theme inlined (replaces blocking github.css) */
         .article-content .hljs {
           background: transparent !important;
+          color: var(--text-primary);
+        }
+        .article-content .hljs-doctag,
+        .article-content .hljs-keyword,
+        .article-content .hljs-meta .hljs-keyword,
+        .article-content .hljs-template-tag,
+        .article-content .hljs-template-variable,
+        .article-content .hljs-type,
+        .article-content .hljs-variable.language_ {
+          color: #d73a49;
+        }
+        .article-content .hljs-title,
+        .article-content .hljs-title.class_,
+        .article-content .hljs-title.class_.inherited__,
+        .article-content .hljs-title.function_ {
+          color: #6f42c1;
+        }
+        .article-content .hljs-attr,
+        .article-content .hljs-attribute,
+        .article-content .hljs-literal,
+        .article-content .hljs-meta,
+        .article-content .hljs-number,
+        .article-content .hljs-operator,
+        .article-content .hljs-variable,
+        .article-content .hljs-selector-attr,
+        .article-content .hljs-selector-class,
+        .article-content .hljs-selector-id {
+          color: #005cc5;
+        }
+        .article-content .hljs-regexp,
+        .article-content .hljs-string,
+        .article-content .hljs-meta .hljs-string {
+          color: #032f62;
+        }
+        .article-content .hljs-built_in,
+        .article-content .hljs-symbol {
+          color: #e36209;
+        }
+        .article-content .hljs-comment,
+        .article-content .hljs-code,
+        .article-content .hljs-formula {
+          color: #6a737d;
+        }
+        .article-content .hljs-name,
+        .article-content .hljs-quote,
+        .article-content .hljs-selector-tag,
+        .article-content .hljs-selector-pseudo {
+          color: #22863a;
+        }
+        .article-content .hljs-subst {
+          color: var(--text-primary);
+        }
+        .article-content .hljs-section {
+          color: #005cc5;
+          font-weight: bold;
+        }
+        .article-content .hljs-bullet {
+          color: #735c0f;
+        }
+        .article-content .hljs-emphasis {
+          font-style: italic;
+        }
+        .article-content .hljs-strong {
+          font-weight: bold;
+        }
+        .article-content .hljs-addition {
+          color: #22863a;
+          background-color: #f0fff4;
+        }
+        .article-content .hljs-deletion {
+          color: #b31d28;
+          background-color: #ffeef0;
         }
       `}</style>
 
@@ -220,8 +336,46 @@ export function ArticleBody({ content }: ArticleBodyProps) {
         rehypePlugins={[rehypeSlug, rehypeHighlight]}
         components={{
           p: (props) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const { children, node, ...rest } = props as any;
+
+            // Detect standalone YouTube link
+            const activeChildren = node?.children?.filter(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (c: any) => !(c.type === "text" && !c.value.trim())
+            ) || [];
+
+            if (activeChildren.length === 1) {
+              const childNode = activeChildren[0];
+              if (childNode.type === "element" && childNode.tagName === "a") {
+                const href = childNode.properties?.href || "";
+                const yt = parseYouTubeUrl(href);
+                if (yt) {
+                  const linkText = childNode.children
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    ?.map((c: any) => c.value || "")
+                    .join("")
+                    .trim() || "";
+                  const isUrlLike =
+                    linkText.startsWith("http://") ||
+                    linkText.startsWith("https://") ||
+                    linkText.includes("youtube.com") ||
+                    linkText.includes("youtu.be");
+                  const title = isUrlLike ? undefined : linkText;
+
+                  return (
+                    <YouTube
+                      id={yt.id}
+                      title={title}
+                      start={yt.start}
+                    />
+                  );
+                }
+              }
+            }
+
             const hasImage = node?.children?.some(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (child: any) => child.type === "element" && child.tagName === "img"
             );
             if (hasImage) {

@@ -711,3 +711,299 @@
   border-radius: 6px;
   font-weight: 700;
 }
+
+
+/* ═══════════════════════════════════════════════════════════
+   Print / Download-as-PDF styles
+   Triggered when user clicks the ↓ PDF button in articles
+   ═══════════════════════════════════════════════════════════ */
+@media print {
+  /* ── Page setup ── */
+  @page {
+    size: A4;
+    margin: 18mm 20mm 20mm;
+  }
+
+  /* ── Hide ALL UI chrome, nav, buttons ── */
+  header,
+  nav,
+  footer,
+  aside,
+  [data-hide-print],
+  .no-print,
+  #reading-progress-bar,
+  .cookie-banner,
+  .cookie-backdrop {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* ── Clean full-page body ── */
+  html, body {
+    background: #ffffff !important;
+    color: #111111 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 11pt !important;
+    line-height: 1.75 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── Strip ALL decorative styles ── */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* ── Flatten the flex/grid page layout to simple block ── */
+  .max-w-7xl,
+  .max-w-4xl,
+  .flex,
+  .flex-1 {
+    display: block !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+  }
+
+  /* ── Article & content areas ── */
+  main,
+  article,
+  .article-content {
+    display: block !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: #111 !important;
+    font-size: 11pt !important;
+  }
+
+  /* ── Headings ── */
+  h1 {
+    font-size: 20pt !important;
+    font-weight: bold !important;
+    color: #000 !important;
+    margin: 0 0 10pt !important;
+    line-height: 1.3 !important;
+    page-break-after: avoid;
+    border: none !important;
+    background: transparent !important;
+  }
+  h2 {
+    font-size: 15pt !important;
+    font-weight: bold !important;
+    color: #111 !important;
+    margin: 16pt 0 6pt !important;
+    padding-bottom: 3pt !important;
+    border-bottom: 1px solid #ccc !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    background: transparent !important;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 13pt !important;
+    font-weight: bold !important;
+    color: #111 !important;
+    margin: 12pt 0 5pt !important;
+    page-break-after: avoid;
+    border: none !important;
+    background: transparent !important;
+  }
+  h4, h5, h6 {
+    font-size: 11pt !important;
+    font-weight: bold !important;
+    color: #111 !important;
+    margin: 10pt 0 4pt !important;
+    page-break-after: avoid;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  /* ── Paragraphs ── */
+  p {
+    font-size: 11pt !important;
+    color: #222 !important;
+    margin: 0 0 8pt !important;
+    line-height: 1.7 !important;
+    background: transparent !important;
+  }
+
+  /* ── Lists ── */
+  ul, ol {
+    padding-left: 16pt !important;
+    margin: 4pt 0 8pt !important;
+  }
+  li {
+    font-size: 11pt !important;
+    color: #222 !important;
+    margin-bottom: 3pt !important;
+    line-height: 1.6 !important;
+    list-style-position: outside !important;
+    background: transparent !important;
+  }
+  ul > li {
+    list-style: disc !important;
+    padding-left: 0 !important;
+  }
+  ul > li::before { display: none !important; }
+  ol > li { list-style: decimal !important; }
+
+  /* ── Code block wrapper (the div around pre + CopyButton) ── */
+  div:has(> pre) {
+    position: static !important;
+    margin: 8pt 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* ── Code blocks ── */
+  pre {
+    background: #f5f5f5 !important;
+    border: 1px solid #d0d0d0 !important;
+    border-radius: 4px !important;
+    padding: 8pt 10pt !important;
+    margin: 8pt 0 !important;
+    font-family: "Courier New", Courier, monospace !important;
+    font-size: 8.5pt !important;
+    color: #111 !important;
+    white-space: pre-wrap !important;
+    word-break: break-all !important;
+    overflow: visible !important;
+    page-break-inside: avoid;
+  }
+  pre code {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+    color: #111 !important;
+  }
+
+  /* ── Inline code ── */
+  code {
+    background: #f0f0f0 !important;
+    border: 1px solid #d5d5d5 !important;
+    border-radius: 3px !important;
+    padding: 1pt 4pt !important;
+    font-family: "Courier New", Courier, monospace !important;
+    font-size: 9pt !important;
+    color: #111 !important;
+  }
+
+  /* ── Blockquotes ── */
+  blockquote {
+    border-left: 3px solid #888 !important;
+    border-right: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-radius: 0 !important;
+    margin: 8pt 0 !important;
+    padding: 6pt 12pt !important;
+    color: #444 !important;
+    font-style: italic !important;
+    background: #fafafa !important;
+  }
+  blockquote p { color: #444 !important; }
+
+  /* ── Tables ── */
+  div:has(> table) {
+    border: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    margin: 8pt 0 !important;
+  }
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    margin: 8pt 0 !important;
+    page-break-inside: avoid;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    font-size: 9.5pt !important;
+  }
+  th, td {
+    border: 1px solid #bbb !important;
+    padding: 4pt 7pt !important;
+    color: #111 !important;
+    background: transparent !important;
+    font-size: 9pt !important;
+  }
+  th {
+    background: #eeeeee !important;
+    font-weight: 700 !important;
+  }
+
+  /* ── Images in article body ── */
+  figure { margin: 8pt 0 !important; }
+  figure img {
+    max-width: 100% !important;
+    border: 1px solid #ddd !important;
+    border-radius: 0 !important;
+    page-break-inside: avoid;
+  }
+  figcaption {
+    font-size: 8pt !important;
+    color: #666 !important;
+    text-align: center !important;
+    margin-top: 3pt !important;
+  }
+
+  /* ── Links ── */
+  a {
+    color: #0050cc !important;
+    text-decoration: underline !important;
+  }
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 7.5pt;
+    color: #777;
+    word-break: break-all;
+  }
+  a[href^="#"]::after,
+  a[href^="/"]::after,
+  a[href^="javascript:"]::after { content: "" !important; }
+
+  /* ── HR ── */
+  hr {
+    border: none !important;
+    border-top: 1px solid #ccc !important;
+    margin: 10pt 0 !important;
+  }
+
+  /* ── strong / em ── */
+  strong { color: #000 !important; font-weight: 700 !important; }
+  em     { color: #333 !important; font-style: italic !important; }
+
+  /* ── Flatten highlight.js colors to plain black ── */
+  .hljs, .hljs * { color: #111 !important; background: transparent !important; }
+
+  /* ── Learno-Boy branded footer ── */
+  body::after {
+    content: "Downloaded from learnoboy.online";
+    display: block;
+    margin-top: 24pt;
+    padding-top: 8pt;
+    border-top: 1px solid #ccc;
+    font-size: 8pt;
+    color: #999;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    letter-spacing: 0.03em;
+  }
+}
+
+
+

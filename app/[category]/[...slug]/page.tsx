@@ -21,7 +21,6 @@ import { ReadNext } from "@/components/article/ReadNext";
 import { AuthorFollowCard } from "@/components/article/AuthorFollowCard";
 import { ArticleMetrics } from "@/components/article/ArticleMetrics";
 import { ArticleComments } from "@/components/article/ArticleComments";
-import { getSession } from "@/lib/auth/session";
 
 
 function parseFaqsFromContent(content: string): { question: string; answer: string }[] {
@@ -179,8 +178,6 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 
 export default async function ArticlePage({ params }: PageParams) {
   const { category: categorySlug, slug } = await params;
-  const session = await getSession();
-  const isLoggedIn = !!session;
 
   if (!slug || slug.length === 0) {
     notFound();
@@ -378,9 +375,9 @@ export default async function ArticlePage({ params }: PageParams) {
             {}
             <ArticleHeader article={article} content={contentWithoutFaq} />
 
-            {}
+            {/* Cover image — hidden in PDF */}
             {article.coverImage && (
-              <div className="relative w-full rounded-2xl overflow-hidden mb-8" style={{ aspectRatio: "16/9" }}>
+              <div data-hide-print className="relative w-full rounded-2xl overflow-hidden mb-8" style={{ aspectRatio: "16/9" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={article.coverImage}
@@ -415,9 +412,9 @@ export default async function ArticlePage({ params }: PageParams) {
               )}
             </div>
 
-            {}
+            {/* Tags — hidden in PDF print */}
             {seoKeywords.length > 0 ? (
-              <div className="flex flex-wrap items-center gap-2 mt-8 pt-6 border-t border-[var(--border-color)]">
+              <div data-hide-print className="flex flex-wrap items-center gap-2 mt-8 pt-6 border-t border-[var(--border-color)]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -444,7 +441,7 @@ export default async function ArticlePage({ params }: PageParams) {
                 </div>
               </div>
             ) : tags && tags.length > 0 ? (
-              <div className="flex flex-wrap items-center gap-2 mt-8 pt-6 border-t border-[var(--border-color)]">
+              <div data-hide-print className="flex flex-wrap items-center gap-2 mt-8 pt-6 border-t border-[var(--border-color)]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -473,45 +470,41 @@ export default async function ArticlePage({ params }: PageParams) {
               </div>
             ) : null}
 
-            {}
+            {/* Mobile TOC — hidden in PDF */}
             {tocItems.length > 0 && (
-              <div className="block xl:hidden mt-8">
+              <div data-hide-print className="block xl:hidden mt-8">
                 <TableOfContents items={tocItems} />
               </div>
             )}
 
-            {}
-            <FAQSection faqs={articleFaqs} />
+            {/* FAQ, ReadNext, Author, Comments, Metrics, Related — all hidden in PDF */}
+            <div data-hide-print>
+              <FAQSection faqs={articleFaqs} />
 
-            {}
-            <ReadNext nextArticle={relatedArticles.length > 0 ? relatedArticles[0] : null} />
+              <ReadNext nextArticle={relatedArticles.length > 0 ? relatedArticles[0] : null} />
 
-            {}
-            {article.author && (
-              <div id="comments-section" className="space-y-6">
-                <AuthorFollowCard
-                  author={JSON.parse(JSON.stringify(article.author)) as IAuthor}
-                  readingTime={article.readingTime}
-                  views={article.views}
-                  isLoggedIn={isLoggedIn}
-                />
-                <ArticleComments
-                  articleId={article._id}
-                  author={JSON.parse(JSON.stringify(article.author)) as IAuthor}
-                  readingTime={article.readingTime}
-                  views={article.views}
-                  hideHeader={true}
-                  defaultOpen={false}
-                  isLoggedIn={isLoggedIn}
-                />
-              </div>
-            )}
+              {article.author && (
+                <div id="comments-section" className="space-y-6">
+                  <AuthorFollowCard
+                    author={JSON.parse(JSON.stringify(article.author)) as IAuthor}
+                    readingTime={article.readingTime}
+                    views={article.views}
+                  />
+                  <ArticleComments
+                    articleId={article._id}
+                    author={JSON.parse(JSON.stringify(article.author)) as IAuthor}
+                    readingTime={article.readingTime}
+                    views={article.views}
+                    hideHeader={true}
+                    defaultOpen={false}
+                  />
+                </div>
+              )}
 
-            {}
-            <ArticleMetrics article={article} isLoggedIn={isLoggedIn} />
+              <ArticleMetrics article={article} />
 
-            {}
-            <RelatedArticles articles={relatedArticles} />
+              <RelatedArticles articles={relatedArticles} />
+            </div>
           </article>
 
           {}

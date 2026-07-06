@@ -26,6 +26,7 @@ interface SubCategoryItem {
   name: string;
   slug: string;
   desc: string;
+  href?: string;
 }
 
 interface NavSection {
@@ -80,7 +81,7 @@ const NAVIGATION_ITEMS: NavSection[] = [
       { name: "Next.js", slug: "nextjs", desc: "App Router SSR & statically optimized route pages" },
       { name: "Node.js", slug: "nodejs", desc: "Asynchronous backend runtime event loop" },
       { name: "Express.js", slug: "expressjs", desc: "Lightweight middleware REST API routing" },
-      { name: "HTML Compiler", slug: "compiler/html", desc: "Live preview playground for HTML, CSS, JS" },
+      { name: "HTML Compiler", slug: "compiler/html", desc: "Live preview playground for HTML, CSS, JS", href: "/compiler/html" },
     ]
   },
   {
@@ -102,14 +103,14 @@ const NAVIGATION_ITEMS: NavSection[] = [
     color: "#d946ef", 
     icon: <Sparkles size={14} />,
     items: [
-      { name: "Operating Systems", slug: "operating-systems", desc: "Processes, threads, memory, & scheduling" },
-      { name: "Computer Networks", slug: "computer-networks", desc: "TCP/IP layers, routing, & sockets" },
-      { name: "Software Engineering", slug: "software-engineering", desc: "Systems engineering, Agile & patterns" },
-      { name: "Machine Learning", slug: "machine-learning", desc: "Supervised and unsupervised classifiers" },
-      { name: "Cyber Security", slug: "cyber-security", desc: "Secure encryption, pen testing, & defense" },
-      { name: "Interview Preparation", slug: "interview-preparation", desc: "Step-by-step coding and system design prep" },
-      { name: "Roadmaps", slug: "roadmaps", desc: "Visual developer learning pathways" },
-      { name: "Projects", slug: "projects", desc: "Portfolio-worthy step-by-step developer projects" }
+      { name: "Operating Systems", slug: "operating-systems", desc: "Processes, threads, memory, & scheduling", href: "/cs-fundamentals/operating-systems" },
+      { name: "Computer Networks", slug: "computer-networks", desc: "TCP/IP layers, routing, & sockets", href: "/cs-fundamentals/computer-networks" },
+      { name: "Software Engineering", slug: "software-engineering", desc: "Systems engineering, Agile & patterns", href: "/cs-fundamentals/software-engineering" },
+      { name: "Machine Learning", slug: "machine-learning", desc: "Supervised and unsupervised classifiers", href: "/machine-learning" },
+      { name: "Cyber Security", slug: "cyber-security", desc: "Secure encryption, pen testing, & defense", href: "/cyber-security" },
+      { name: "Interview Preparation", slug: "interview-preparation", desc: "Step-by-step coding and system design prep", href: "/coding/interview-preparation" },
+      { name: "Roadmaps", slug: "roadmaps", desc: "Visual developer learning pathways", href: "/coding/roadmaps" },
+      { name: "Projects", slug: "projects", desc: "Portfolio-worthy step-by-step developer projects", href: "/coding/projects" }
     ]
   }
 ];
@@ -535,7 +536,7 @@ export function Header({ session }: { session: any }) {
                     {section.items.map((item) => (
                       <Link
                         key={item.slug}
-                        href={`/${item.slug}`}
+                        href={item.href || `/${section.slug}/${item.slug}`}
                         className="flex flex-col p-3 rounded-xl border border-transparent hover:border-[var(--border-color)] transition-all hover:bg-[var(--bg-base)] group/item focus-visible:ring-2 focus-visible:ring-[var(--link-color)]"
                       >
                         <span
@@ -633,7 +634,7 @@ export function Header({ session }: { session: any }) {
                       {section.items.map((item) => (
                         <Link
                           key={item.slug}
-                          href={`/${item.slug}`}
+                          href={item.href || `/${section.slug}/${item.slug}`}
                           onClick={() => setIsMenuOpen(false)}
                           className="block py-2.5 px-3.5 rounded-xl text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all"
                         >

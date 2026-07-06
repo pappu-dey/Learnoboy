@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import { Article, Category, Author, Tag } from "@/lib/models";
 import type { IArticle, PaginatedResponse } from "@/types";
 import { slugify } from "@/lib/utils/slugify";
+import { cache } from "react";
 
 export interface GetArticlesOptions {
   page?: number;
@@ -17,9 +18,9 @@ export interface GetArticlesOptions {
 }
 
 
-export async function getArticles(
+export const getArticles = cache(async (
   options: GetArticlesOptions = {}
-): Promise<PaginatedResponse<IArticle>> {
+): Promise<PaginatedResponse<IArticle>> => {
   await connectDB();
 
   const {
@@ -127,13 +128,13 @@ export async function getArticles(
     limit,
     totalPages: Math.ceil(total / limit),
   };
-}
+});
 
 
-export async function getArticleBySlug(
+export const getArticleBySlug = cache(async (
   categorySlug: string,
   articleSlug: string
-): Promise<IArticle | null> {
+): Promise<IArticle | null> => {
   await connectDB();
 
   const article = await Article.findOne({ slug: articleSlug, status: "published" })
@@ -168,10 +169,10 @@ export async function getArticleBySlug(
   Article.findByIdAndUpdate(article._id, { $inc: { views: 1 } }).exec();
 
   return populated;
-}
+});
 
 
-export async function getArticleById(id: string): Promise<IArticle | null> {
+export const getArticleById = cache(async (id: string): Promise<IArticle | null> => {
   await connectDB();
   const article = await Article.findById(id)
     .populate("category", "name slug icon color")
@@ -181,14 +182,14 @@ export async function getArticleById(id: string): Promise<IArticle | null> {
     .lean();
 
   return injectAutoTags(article) as unknown as IArticle | null;
-}
+});
 
 
-export async function getRelatedArticles(
+export const getRelatedArticles = cache(async (
   categoryId: string,
   currentSlug: string,
   limit = 4
-): Promise<IArticle[]> {
+): Promise<IArticle[]> => {
   await connectDB();
   const articles = await Article.find({
     category: categoryId,
@@ -205,10 +206,10 @@ export async function getRelatedArticles(
   const injectedArticles = articles.map(art => injectAutoTags(art));
 
   return injectedArticles as unknown as IArticle[];
-}
+});
 
 
-export async function getFeaturedArticles(limit = 3): Promise<IArticle[]> {
+export const getFeaturedArticles = cache(async (limit = 3): Promise<IArticle[]> => {
   await connectDB();
   const articles = await Article.find({ isFeatured: true, status: "published" })
     .populate("category", "name slug icon color")
@@ -218,10 +219,10 @@ export async function getFeaturedArticles(limit = 3): Promise<IArticle[]> {
     .lean();
 
   return articles as unknown as IArticle[];
-}
+});
 
 
-export async function getLatestArticles(limit = 8): Promise<IArticle[]> {
+export const getLatestArticles = cache(async (limit = 8): Promise<IArticle[]> => {
   await connectDB();
   const articles = await Article.find({ status: "published" })
     .populate("category", "name slug icon color")
@@ -231,7 +232,7 @@ export async function getLatestArticles(limit = 8): Promise<IArticle[]> {
     .lean();
 
   return articles as unknown as IArticle[];
-}
+});
 
 export async function processKeywords(keywords: string): Promise<string[]> {
   const keywordList = keywords
@@ -309,11 +310,11 @@ export function injectAutoTags(article: any) {
   };
 }
 
-export async function getArticleBySubcategoryAndSlug(
+export const getArticleBySubcategoryAndSlug = cache(async (
   primaryCategory: string,
   subcategory: string,
   articleSlug: string
-): Promise<IArticle | null> {
+): Promise<IArticle | null> => {
   await connectDB();
   const article = await Article.findOne({
     slug: articleSlug,
@@ -333,7 +334,7 @@ export async function getArticleBySubcategoryAndSlug(
   Article.findByIdAndUpdate(article._id, { $inc: { views: 1 } }).exec();
 
   return injectAutoTags(article) as unknown as IArticle;
-}
+});
 
 
 export async function createArticle(data: Partial<IArticle>): Promise<IArticle> {
@@ -416,18 +417,20 @@ export async function deleteArticle(id: string): Promise<IArticle | null> {
 
 
 export async function getAllArticleSlugs(): Promise<
-  { category: string; subcategory: string; slug: string }[]
+  { category: string; subcategory: string; slug: string; lastmod: string }[]
 > {
   await connectDB();
   const articles = await Article.find({ status: "published" })
-    .select("slug primaryCategory subcategory")
+    .select("slug primaryCategory subcategory updatedAt publishedAt")
     .lean();
 
   return articles.map((a: any) => {
+    const lastmod = (a.updatedAt || a.publishedAt || new Date()).toISOString();
     return {
       category: a.primaryCategory || "dsa",
       subcategory: a.subcategory || "graph",
       slug: a.slug,
+      lastmod,
     };
   });
 }

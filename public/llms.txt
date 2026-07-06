@@ -1,0 +1,34 @@
+# LearnoBoy
+
+> LearnoBoy is a premium educational platform offering comprehensive tutorials on programming, computer science fundamentals, developer tools, and developer roadmaps.
+
+## Core Resources
+
+- [Home Page](https://www.learnoboy.online/) - Access the latest articles, categories, and developer tools.
+- [About Us](https://www.learnoboy.online/about) - Learn more about our mission, content standards, and editorial policies.
+- [Contact](https://www.learnoboy.online/contact) - Get in touch with our team or report issues.
+- [HTML Compiler](https://www.learnoboy.online/compiler/html) - Interactive online coding environment for learning HTML, CSS, and JavaScript.
+
+## Computer Science Fundamentals
+
+- [CS Fundamentals](https://www.learnoboy.online/cs-fundamentals) - Core theoretical computer science topics.
+- [Operating Systems](https://www.learnoboy.online/cs-fundamentals/operating-systems) - Detailed guide to OS concepts, process management, memory management, and file systems.
+- [Computer Networks](https://www.learnoboy.online/cs-fundamentals/computer-networks) - Guides on networking protocols, layers, and architecture.
+- [Software Engineering](https://www.learnoboy.online/cs-fundamentals/software-engineering) - Best practices, SDLC, design patterns, and engineering paradigms.
+
+## Programming & Developer Tutorials
+
+- [Coding Resources](https://www.learnoboy.online/coding) - Tutorials and practical exercises.
+- [Python Tutorials](https://www.learnoboy.online/coding/python) - Learn Python scripting, variables, structures, and data science.
+- [Web Development](https://www.learnoboy.online/coding/web-development) - Tutorials on building modern, performant web applications using HTML, CSS, JavaScript, and React.
+- [Dynamic Programming](https://www.learnoboy.online/coding/algorithms/dynamic-programming) - Comprehensive algorithm guide for DP interview prep.
+
+## Developer Tools
+
+- [Developer Tools Hub](https://www.learnoboy.online/tools) - Interactive web tools for developers.
+- [Unit Converters](https://www.learnoboy.online/tools/unitconverters) - Perform dynamic academic, age, area, and interest conversion calculations.
+
+## Crawling & AI Policy
+
+- [Robots Configuration](https://www.learnoboy.online/robots.txt) - Rules specifying disallowed search engine and AI agent behaviors.
+- [Sitemap](https://www.learnoboy.online/sitemap.xml) - Complete list of active article slugs and categories for indexation.

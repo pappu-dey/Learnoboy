@@ -105,6 +105,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
         revalidatePath(`/${pCat}`);
         revalidatePath(`/${pCat}/${subcat}`);
         revalidatePath(`/${pCat}/${subcat}/${article.slug}`);
+        revalidatePath("/sitemap.xml");
         console.log(`[Cache Revalidation] Triggered revalidation for updated article "${article.title}"`);
       } catch (revalError) {
         console.error("[Cache Revalidation] Failed to revalidate paths:", revalError);
@@ -149,6 +150,7 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
         revalidatePath(`/${pCat}`);
         revalidatePath(`/${pCat}/${subcat}`);
         revalidatePath(`/${pCat}/${subcat}/${article.slug}`);
+        revalidatePath("/sitemap.xml");
         console.log(`[Cache Revalidation] Triggered revalidation for deleted article "${article.title}"`);
       } catch (revalError) {
         console.error("[Cache Revalidation] Failed to revalidate paths:", revalError);

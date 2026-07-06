@@ -1,20 +1,21 @@
 import connectDB from "@/lib/mongodb";
 import { Category } from "@/lib/models";
 import type { ICategory } from "@/types";
+import { cache } from "react";
 
-export async function getAllCategories(): Promise<ICategory[]> {
+export const getAllCategories = cache(async (): Promise<ICategory[]> => {
   await connectDB();
   const categories = await Category.find()
     .sort({ name: 1 })
     .lean();
   return JSON.parse(JSON.stringify(categories)) as unknown as ICategory[];
-}
+});
 
-export async function getCategoryBySlug(slug: string): Promise<ICategory | null> {
+export const getCategoryBySlug = cache(async (slug: string): Promise<ICategory | null> => {
   await connectDB();
   const category = await Category.findOne({ slug }).lean();
   return category as unknown as ICategory | null;
-}
+});
 
 export async function createCategory(data: any): Promise<any> {
   await connectDB();

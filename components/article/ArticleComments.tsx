@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import type { IAuthor } from "@/types";
+import { getClientSession } from "@/lib/auth/clientSession";
 
 
 interface Reply {
@@ -94,6 +95,7 @@ export function ArticleComments({
   defaultOpen = false,
   isLoggedIn = false,
 }: ArticleCommentsProps) {
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(isLoggedIn);
   const [showComments, setShowComments] = useState(defaultOpen);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
@@ -102,6 +104,16 @@ export function ArticleComments({
   const [submitError, setSubmitError] = useState("");
   const [currentPath, setCurrentPath] = useState("");
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setIsUserLoggedIn(true);
+    } else {
+      getClientSession().then((user) => {
+        if (user) setIsUserLoggedIn(true);
+      });
+    }
+  }, [isLoggedIn]);
 
   useEffect(() => {
     setCurrentPath(window.location.pathname);
@@ -142,7 +154,7 @@ export function ArticleComments({
 
   
   const handleLikeComment = async (commentId: string, parentId?: string) => {
-    if (!isLoggedIn) {
+    if (!isUserLoggedIn) {
       window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
       return;
     }
@@ -241,7 +253,7 @@ export function ArticleComments({
   
   const handlePostComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCommentText.trim() || !isLoggedIn || !articleId) return;
+    if (!newCommentText.trim() || !isUserLoggedIn || !articleId) return;
 
     setSubmitting(true);
     setSubmitError("");
@@ -360,7 +372,7 @@ export function ArticleComments({
         >
 
           {}
-          {isLoggedIn ? (
+          {isUserLoggedIn ? (
             <form onSubmit={handlePostComment} className="space-y-3">
               {replyingTo && (
                 <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
@@ -438,11 +450,11 @@ export function ArticleComments({
               </div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">No discussion yet</p>
               <p className="text-xs text-[var(--text-tertiary)] max-w-xs">
-                {isLoggedIn
+                {isUserLoggedIn
                   ? "Be the first to ask a question or share your thoughts on this article."
                   : "Sign in to start the discussion."}
               </p>
-              {!isLoggedIn && (
+              {!isUserLoggedIn && (
                 <Link
                   href={`/login?redirect=${encodeURIComponent(currentPath)}`}
                   className="mt-1 flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[var(--link-color)] hover:bg-[var(--link-hover)] transition-colors"
@@ -462,7 +474,7 @@ export function ArticleComments({
                   {}
                   <CommentRow
                     comment={comment}
-                    isLoggedIn={isLoggedIn}
+                    isLoggedIn={isUserLoggedIn}
                     onLike={() => handleLikeComment(comment._id)}
                     onReply={() => {
                       setReplyingTo(comment._id);
@@ -478,7 +490,7 @@ export function ArticleComments({
                         <ReplyRow
                           key={reply._id}
                           reply={reply}
-                          isLoggedIn={isLoggedIn}
+                          isLoggedIn={isUserLoggedIn}
                           onLike={() => handleLikeComment(reply._id, comment._id)}
                         />
                       ))}

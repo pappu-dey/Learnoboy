@@ -128,6 +128,7 @@ export async function POST(request: NextRequest) {
         revalidatePath(`/${pCat}`);
         revalidatePath(`/${pCat}/${subcat}`);
         revalidatePath(`/${pCat}/${subcat}/${article.slug}`);
+        revalidatePath("/sitemap.xml");
         console.log(`[Cache Revalidation] Triggered revalidation for newly created article "${article.title}"`);
       } catch (revalError) {
         console.error("[Cache Revalidation] Failed to revalidate paths:", revalError);

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { IArticle, ICategory } from "@/types";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://www.learnoboy.online";
 const SITE_NAME =
   process.env.NEXT_PUBLIC_SITE_NAME || "Learno-Boy";
 const SITE_DESCRIPTION =

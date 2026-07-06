@@ -7,8 +7,8 @@ import User from "./User";
 import Feedback from "./Feedback";
 import Donor from "./Donor";
 import Comment from "./Comment";
+import Upload from "./Upload";
 
-
-export { Article, Author, Category, Tag, User, Feedback, Donor, Comment };
+export { Article, Author, Category, Tag, User, Feedback, Donor, Comment, Upload };
 
 

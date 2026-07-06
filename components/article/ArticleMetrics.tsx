@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Heart, Share2, MessageSquare, Link2, Check, X } from "lucide-react";
 import type { IArticle } from "@/types";
+import { getClientSession } from "@/lib/auth/clientSession";
 
 interface ArticleMetricsProps {
   article: IArticle;
@@ -58,6 +59,7 @@ const LinkedinIcon = ({ size = 13 }: { size?: number }) => (
 );
 
 export function ArticleMetrics({ article, isLoggedIn = false }: ArticleMetricsProps) {
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(isLoggedIn);
   const [likes, setLikes] = useState(article.likes || 0);
   const [hasLiked, setHasLiked] = useState(false);
   const [showShareDropdown, setShowShareDropdown] = useState(false);
@@ -72,13 +74,23 @@ export function ArticleMetrics({ article, isLoggedIn = false }: ArticleMetricsPr
   const dropdownRef = useRef<HTMLDivElement>(null);
   const likeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      setIsUserLoggedIn(true);
+    } else {
+      getClientSession().then((user) => {
+        if (user) setIsUserLoggedIn(true);
+      });
+    }
+  }, [isLoggedIn]);
+
   
   useEffect(() => {
-    if (!isLoggedIn) return;
+    if (!isUserLoggedIn) return;
     if (localStorage.getItem(`like_article_${article.slug}`) === "true") {
       setHasLiked(true);
     }
-  }, [article.slug, isLoggedIn]);
+  }, [article.slug, isUserLoggedIn]);
 
   
   useEffect(() => {
@@ -128,7 +140,7 @@ export function ArticleMetrics({ article, isLoggedIn = false }: ArticleMetricsPr
   }, []);
 
   const handleLikeToggle = () => {
-    if (!isLoggedIn) {
+    if (!isUserLoggedIn) {
       setLikeToast(true);
       return;
     }
@@ -179,14 +191,14 @@ export function ArticleMetrics({ article, isLoggedIn = false }: ArticleMetricsPr
           <button
             onClick={handleLikeToggle}
             className={`flex items-center gap-1.5 transition-colors cursor-pointer select-none active:scale-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--link-color)] rounded ${
-              isLoggedIn && hasLiked
+              isUserLoggedIn && hasLiked
                 ? "text-red-500 font-bold"
                 : "hover:text-red-500 text-[var(--text-secondary)]"
             }`}
             aria-label={hasLiked ? "Unlike article" : "Like article"}
-            aria-pressed={isLoggedIn ? hasLiked : undefined}
+            aria-pressed={isUserLoggedIn ? hasLiked : undefined}
           >
-            <Heart size={14} fill={isLoggedIn && hasLiked ? "currentColor" : "none"} aria-hidden="true" />
+            <Heart size={14} fill={isUserLoggedIn && hasLiked ? "currentColor" : "none"} aria-hidden="true" />
             <span>{likes} {likes === 1 ? "Like" : "Likes"}</span>
           </button>
           {likeToast && (

@@ -36,6 +36,20 @@ export function CookieConsent() {
     if (!stored) {
       const t = setTimeout(() => setVisible(true), 700);
       return () => clearTimeout(t);
+    } else {
+      try {
+        const accepted = JSON.parse(stored);
+        if (typeof window !== "undefined" && (window as any).gtag) {
+          (window as any).gtag("consent", "update", {
+            analytics_storage: accepted.analytics ? "granted" : "denied",
+            ad_storage: accepted.marketing ? "granted" : "denied",
+            ad_user_data: accepted.marketing ? "granted" : "denied",
+            ad_personalization: accepted.marketing ? "granted" : "denied",
+          });
+        }
+      } catch (e) {
+        // ignore
+      }
     }
   }, []);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Share2, Edit3, Link2, Check, Send, X, Loader2 } from "lucide-react";
+import { Share2, Edit3, Link2, Check, Send, X, Loader2, Download } from "lucide-react";
 
 
 const TwitterIcon = ({ size = 13 }: { size?: number }) => (
@@ -28,6 +28,7 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
   const [showShareDropdown, setShowShareDropdown] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
   
   
   const [email, setEmail] = useState("");
@@ -55,7 +56,7 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error("Failed to copy link:", err);
+      console.error("Failed to copy link:", err)
     }
   };
 
@@ -68,6 +69,111 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
   const handleShareLinkedIn = () => {
     const url = encodeURIComponent(window.location.href);
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, "_blank", "noopener,noreferrer");
+  };
+
+  const handleDownloadPDF = () => {
+    setIsPrinting(true);
+
+    // Inject a temporary <style> for print — only visible during print
+    const styleId = "learnoboy-print-style";
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement("style");
+      style.id = styleId;
+      style.media = "print";
+      style.textContent = `
+        /* ── Hide everything except the article content ── */
+        body > * { display: none !important; }
+        body > #__next { display: block !important; }
+
+        /* Show only the article main area */
+        header, nav, footer,
+        aside,
+        [data-hide-print],
+        .no-print {
+          display: none !important;
+        }
+
+        /* Reset for clean PDF look */
+        @page {
+          margin: 15mm 20mm;
+          size: A4;
+        }
+
+        body {
+          background: #fff !important;
+          color: #111 !important;
+          font-family: Georgia, 'Times New Roman', serif;
+          font-size: 11pt;
+          line-height: 1.7;
+        }
+
+        /* Article content */
+        article, main, [data-article-content] {
+          display: block !important;
+          max-width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          box-shadow: none !important;
+          border: none !important;
+        }
+
+        h1 { font-size: 22pt; margin-bottom: 8pt; }
+        h2 { font-size: 16pt; margin-top: 18pt; margin-bottom: 6pt; }
+        h3 { font-size: 13pt; margin-top: 14pt; }
+        h4, h5, h6 { font-size: 11pt; margin-top: 10pt; }
+
+        pre, code {
+          background: #f4f4f4 !important;
+          border: 1px solid #ddd !important;
+          border-radius: 4px;
+          font-family: 'Courier New', monospace;
+          font-size: 9pt;
+          padding: 2px 5px;
+          white-space: pre-wrap;
+          word-break: break-all;
+        }
+
+        pre { padding: 8pt 10pt; page-break-inside: avoid; }
+
+        img { max-width: 100%; page-break-inside: avoid; }
+
+        a { color: #0066cc; text-decoration: underline; }
+
+        blockquote {
+          border-left: 3px solid #888;
+          margin-left: 0;
+          padding-left: 12pt;
+          color: #444;
+          font-style: italic;
+        }
+
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 5pt 8pt; font-size: 9.5pt; }
+        th { background: #f0f0f0; font-weight: bold; }
+
+        /* Watermark / footer on each page */
+        @page {
+          @bottom-center {
+            content: "learnoboy.online — " counter(page) " of " counter(pages);
+            font-size: 8pt;
+            color: #888;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // Set document title to article name so the PDF filename is meaningful
+    const originalTitle = document.title;
+    document.title = articleTitle;
+
+    // Slight delay so state update & title change propagate before print dialog
+    setTimeout(() => {
+      window.print();
+      // Restore title after print dialog closes
+      document.title = originalTitle;
+      setIsPrinting(false);
+    }, 150);
   };
 
   const handleSuggestSubmit = async (e: React.FormEvent) => {
@@ -107,6 +213,30 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
     }
   };
 
+  // ── Download PDF Button ────────────────────────────────────────────────────
+  const downloadPdfButton = (
+    <button
+      onClick={handleDownloadPDF}
+      disabled={isPrinting}
+      className={
+        inline
+          ? "hover:text-[var(--link-color)] text-[var(--text-secondary)] transition-colors cursor-pointer flex items-center gap-1.5 font-semibold focus:outline-none disabled:opacity-50"
+          : "flex items-center justify-center w-8 h-8 rounded-full border border-[var(--border-color)] hover:border-[var(--link-color)] hover:text-[var(--link-color)] bg-[var(--bg-base)] text-[var(--text-secondary)] transition-all cursor-pointer shadow-sm hover:shadow active:scale-95 disabled:opacity-50"
+      }
+      title="Download as PDF"
+      aria-label="Download article as PDF"
+      data-hide-print
+    >
+      {isPrinting ? (
+        <Loader2 size={inline ? 13 : 14} className="animate-spin inline" />
+      ) : (
+        <Download size={inline ? 13 : 14} className="inline" />
+      )}
+      {inline ? <span>{isPrinting ? "..." : "PDF"}</span> : <span className="sr-only">Download PDF</span>}
+    </button>
+  );
+
+  // ── Suggest Edit Button ────────────────────────────────────────────────────
   const suggestEditButton = (
     <button
       onClick={() => {
@@ -121,6 +251,7 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
       }
       title="Suggest Edit"
       aria-label="Suggest Edit"
+      data-hide-print
     >
       <Edit3 size={inline ? 13 : 14} className="inline" />
       {inline ? <span>Suggest</span> : <span className="sr-only">Suggest Edit</span>}
@@ -130,9 +261,15 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
   return (
     <>
       {inline ? (
-        suggestEditButton
+        // ── Inline mode: Suggest • PDF ──────────────────────────────────────
+        <span className="flex items-center gap-1.5" data-hide-print>
+          {suggestEditButton}
+          <span className="opacity-40 text-xs" aria-hidden="true">•</span>
+          {downloadPdfButton}
+        </span>
       ) : (
-        <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+        // ── Icon bar mode ───────────────────────────────────────────────────
+        <div className="flex items-center gap-2 md:gap-3 flex-wrap" data-hide-print>
           {}
           <div className="relative" ref={dropdownRef}>
             <button
@@ -178,6 +315,9 @@ export function ArticleHeaderActions({ articleId, articleTitle, inline = false }
 
           {}
           {suggestEditButton}
+
+          {}
+          {downloadPdfButton}
         </div>
       )}
 
