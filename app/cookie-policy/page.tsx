@@ -21,7 +21,7 @@ export default function CookiePolicyPage() {
             Transparent explanations on how and why we use cookies to provide a premium, secure learning experience at LearnoBoy.
           </p>
           <div className="mt-4 text-xs text-[var(--text-tertiary)] uppercase tracking-wider font-semibold">
-            Last Updated: June 2026
+            Last Updated: July 2026
           </div>
         </div>
 
@@ -61,9 +61,9 @@ export default function CookiePolicyPage() {
             <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-4">
               <Eye size={24} />
             </div>
-            <h3 className="font-bold text-[var(--text-primary)] mb-2">Consent-Based Analytics</h3>
+            <h3 className="font-bold text-[var(--text-primary)] mb-2">Analytics &amp; Advertising</h3>
             <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-              Analytics cookies are fully optional. We only collect performance data if you explicitly choose to enable them.
+              Analytics and advertising cookies (Google Analytics &amp; AdSense) are optional. We only activate them with your explicit consent.
             </p>
           </div>
 
@@ -101,6 +101,9 @@ export default function CookiePolicyPage() {
               </li>
               <li>
                 <strong>Analytics Cookies (Google Analytics)</strong>: If explicitly accepted by you, we use Google Analytics cookies (such as <code>_ga</code> and <code>_ga_*</code>) to compile aggregated, anonymous metrics. These help us understand how users find the platform, which pages they visit, and how long they stay, allowing us to optimize site performance and features.
+              </li>
+              <li>
+                <strong>Advertising Cookies (Google AdSense)</strong>: If you consent to advertising cookies, Google AdSense may set cookies (such as <code>__gads</code>, <code>__gpi</code>) to serve you personalized or contextual advertisements based on your browsing interests. AdSense data is processed by Google LLC under their own <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline font-medium">Privacy Policy</a>. You can opt out of personalized ads at <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="underline font-medium">Google Ad Settings</a>.
               </li>
             </ul>
           </section>

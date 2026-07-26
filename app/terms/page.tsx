@@ -21,7 +21,7 @@ export default function TermsPage() {
             Please read these terms carefully before using LearnoBoy. They outline your rights as a reader, writer, and account holder.
           </p>
           <div className="mt-4 text-xs text-[var(--text-tertiary)] uppercase tracking-wider font-semibold">
-            Last Updated: June 2026
+            Last Updated: July 2026
           </div>
         </div>
 
@@ -46,7 +46,7 @@ export default function TermsPage() {
             </div>
             <div className="flex items-start gap-3">
               <span className="p-1 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mt-0.5">✔</span>
-              <span>We <strong>never share</strong> your email or personal information with 3rd-party advertisers.</span>
+              <span>We share data with <strong>Google AdSense &amp; Analytics</strong> to serve ads and measure performance. We never <em>sell</em> your personal data.</span>
             </div>
             <div className="flex items-start gap-3">
               <span className="p-1 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mt-0.5">✔</span>
@@ -130,9 +130,9 @@ export default function TermsPage() {
             <div className="p-5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-muted)] flex gap-4">
               <div className="shrink-0 mt-1 text-xl">📊</div>
               <div>
-                <h3 className="font-semibold text-[var(--text-primary)] mb-1">Platform Analytics</h3>
+                <h3 className="font-semibold text-[var(--text-primary)] mb-1">Platform Analytics &amp; Advertising</h3>
                 <p className="text-sm">
-                  We use third-party analytics services (Google Analytics) to help us measure traffic, usability, and visitor patterns. Consent to analytics tracking is completely voluntary and governed by our Cookie Consent banner, where you can opt in or out at your discretion.
+                  We use <strong>Google Analytics</strong> to measure traffic, usability, and visitor patterns. We also use <strong>Google AdSense</strong> to display advertisements, which may use cookies to serve personalized ads based on your browsing behavior. Consent to analytics and advertising cookies is managed via our Cookie Consent banner. Our full data practices are described in our <a href="/privacy" className="underline font-semibold">Privacy Policy</a>.
                 </p>
               </div>
             </div>

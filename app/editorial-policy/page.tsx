@@ -21,7 +21,7 @@ export default function EditorialPolicyPage() {
             Our guidelines and standards for producing clear, accurate, and high-quality educational material.
           </p>
           <div className="mt-4 text-xs text-[var(--text-tertiary)] uppercase tracking-wider font-semibold">
-            Last Updated: June 28, 2026
+            Last Updated: July 2026
           </div>
         </div>
 
@@ -50,7 +50,7 @@ export default function EditorialPolicyPage() {
             </div>
             <div className="flex items-start gap-3">
               <span className="p-1 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mt-0.5">✔</span>
-              <span><strong>Currently ad-free</strong> with fully independent, unbiased educational content.</span>
+              <span><strong>Ad-supported platform</strong> via Google AdSense — ads never influence editorial decisions or content.</span>
             </div>
           </div>
         </div>
@@ -153,13 +153,21 @@ export default function EditorialPolicyPage() {
               6. Editorial Independence & Ads Policy
             </h2>
             <p className="mb-4">
-              Our editorial decisions are based on educational value, accuracy, and usefulness—not on commercial interests. Current or future advertisers, sponsors, affiliates, or partners do not control our editorial decisions or influence the information presented in our content.
+              Our editorial decisions are based on educational value, accuracy, and usefulness—not on commercial interests. Current or future advertisers, sponsors, affiliates, or partners do <strong>not</strong> control our editorial decisions or influence the information presented in our content.
             </p>
-            <div className="p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-sm">
-              <span className="font-bold text-emerald-600 dark:text-emerald-400 block mb-1">
-                LearnoBoy is currently an ad-free platform.
+            <div className="p-5 rounded-xl border border-amber-500/20 bg-amber-500/5 text-sm space-y-3">
+              <span className="font-bold text-amber-600 dark:text-amber-400 block">
+                LearnoBoy is ad-supported via Google AdSense.
               </span>
-              At present, we do not display advertisements, sponsored content, or intrusive promotional material on our website. As LearnoBoy grows, we may introduce advertising, affiliate links, sponsorships, premium services, or other monetization methods to help support ongoing operations. If this changes, policies will be updated and commercial links will be clearly identified.
+              <p>
+                To help fund ongoing platform operations and keep content free for all readers, LearnoBoy displays advertisements served by <strong>Google AdSense</strong>. These ads are algorithmically served by Google based on your browsing context and preferences — they are <strong>not</strong> handpicked or editorially influenced by LearnoBoy.
+              </p>
+              <p>
+                Advertisements are clearly separated from editorial content at all times. No advertiser has any influence over what topics we cover, how articles are written, or the conclusions our writers reach. Our editorial integrity is fully independent of our advertising relationships.
+              </p>
+              <p>
+                If we introduce sponsored content, affiliate links, or paid partnerships in the future, these will be <strong>clearly and prominently labeled</strong> to distinguish them from organic editorial content.
+              </p>
             </div>
           </section>
 

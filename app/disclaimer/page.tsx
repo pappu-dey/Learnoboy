@@ -21,7 +21,7 @@ export default function DisclaimerPage() {
             Important legal information regarding the educational nature, accuracy, and use of content on LearnoBoy.
           </p>
           <div className="mt-4 text-xs text-[var(--text-tertiary)] uppercase tracking-wider font-semibold">
-            Last Updated: June 2026
+            Last Updated: July 2026
           </div>
         </div>
 
@@ -128,11 +128,21 @@ export default function DisclaimerPage() {
           <section className="pb-8">
             <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
               <BarChart2 className="text-blue-500" size={24} />
-              5. Third-Party Analytics Disclaimer
+              5. Third-Party Analytics &amp; Advertising Disclaimer
             </h2>
-            <p>
-              We utilize third-party statistical tools, specifically Google Analytics, to collect anonymous aggregated metrics about our visitors' usage patterns. This service operates under the independent privacy policy and terms of Google LLC. While we aim to implement this service securely, we offer no warranties regarding the accuracy of tracking data, Google's server uptime, or Google's internal data processing compliance.
+            <p className="mb-4">
+              We utilize third-party services from Google LLC to support platform operations:
             </p>
+            <div className="space-y-3">
+              <div className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-muted)] text-sm">
+                <strong className="block mb-1">Google Analytics</strong>
+                We use Google Analytics to collect anonymous, aggregated metrics about our visitors&apos; usage patterns. This service operates under Google&apos;s independent privacy policy and terms. While we implement this service securely, we offer no warranties regarding the accuracy of tracking data or Google&apos;s internal data processing compliance.
+              </div>
+              <div className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-muted)] text-sm">
+                <strong className="block mb-1">Google AdSense</strong>
+                We use Google AdSense to display advertisements on our platform. AdSense may use cookies and collect data about your browsing behavior to serve personalized or contextual ads. This service is governed entirely by <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline font-medium">Google&apos;s Privacy Policy</a>. LearnoBoy does not control how Google collects, processes, or uses advertising data. We disclaim all responsibility for Google&apos;s independent data practices.
+              </div>
+            </div>
           </section>
 
         </div>
