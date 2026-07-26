@@ -49,6 +49,9 @@ export function getDefaultMetadata(): Metadata {
         "max-snippet": -1,
       },
     },
+    other: {
+      "google-adsense-account": "ca-pub-7695474068218242",
+    },
   };
 }
 

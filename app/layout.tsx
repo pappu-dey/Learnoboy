@@ -68,6 +68,14 @@ export default function RootLayout({
             gtag('config', '${gaId}');
           `}
         </Script>
+
+        {/* Google AdSense */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7695474068218242"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </head>
       <body style={{ fontFamily: "var(--font-inter, var(--font-sans))" }} suppressHydrationWarning>
         <Header session={null} />
