@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
+import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import YouTube from "@/components/YouTube";
@@ -333,7 +334,7 @@ export function ArticleBody({ content }: ArticleBodyProps) {
 
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeSlug, rehypeHighlight]}
+        rehypePlugins={[rehypeRaw, rehypeSlug, rehypeHighlight]}
         components={{
           p: (props) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
